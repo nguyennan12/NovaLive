@@ -1,5 +1,5 @@
 import * as Models from '#models/product.model.js'
-import updateSubModel from '#helpers/updateNestedObject.js'
+import updateSubModel from '#helpers/object.helper.js'
 import productRepo from '#models/repository/product.repo.js'
 
 export class Product {
