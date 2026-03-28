@@ -1,0 +1,28 @@
+{
+  "name": "E-commerce",
+  "version": "1.0.0",
+  "main": "server.js",
+  "license": "MIT",
+  "imports": {
+    "#*": "./src/*"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=dev nodemon server.js",
+    "pro": "cross-env NODE_ENV=pro node server.js"
+  },
+  "dependencies": {
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "http-status-codes": "^2.3.0",
+    "mongoose": "^9.3.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.1.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.4.0",
+    "nodemon": "^3.1.14"
+  }
+}
