@@ -1,9 +1,17 @@
 import express from 'express'
+import { ProductRouter } from './product/product.router.js'
+import converter from '#utils/converter.js'
 
 const Router = express.Router()
 
-Router.get('/', (req, res) => {
-  res.send('Run server successfully')
-})
+const fakeAuth = (req, res, next) => {
+  req.user = {
+    userId: converter.toObjectId('69be6f4cef1796d702458fa2')
+  }
+  next()
+}
+Router.use(fakeAuth)
 
-export default Router;
+Router.use('/v1/api/product', ProductRouter)
+
+export default Router

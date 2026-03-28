@@ -9,7 +9,7 @@ const connectDB = async () => {
       throw new Error('Missing MongoDB URL. Check .env and NODE_ENV config.')
     }
 
-    await mongoose.connect(url, { maxPoolSize })
+    await mongoose.connect(url, { maxPoolSize, dbName: 'ecommerce' })
     console.log('MongoDB connected')
   } catch (err) {
     console.error('MongoDB connection error:', err.message)
