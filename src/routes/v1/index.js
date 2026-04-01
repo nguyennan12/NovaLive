@@ -1,5 +1,5 @@
 import express from 'express'
-import { ProductRouter } from './product/product.router.js'
+import { ProductRouter } from './product.router.js'
 import converter from '#utils/converter.js'
 
 const Router = express.Router()
