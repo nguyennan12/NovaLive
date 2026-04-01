@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import ApiError from '#core/error.response.js'
 import { StatusCodes } from 'http-status-codes'
 import JWT from 'jsonwebtoken'

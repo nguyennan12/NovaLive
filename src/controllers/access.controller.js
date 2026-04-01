@@ -38,8 +38,43 @@ const login = async (req, res, next) => {
   }).send(res)
 }
 
+const logout = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Logout successfully!',
+    metadata: await accessService.logout({ keyStore: req.keyStore })
+  }).send(res)
+}
+
+const refreshtoken = async (req, res, next) => {
+  const metadata = await accessService.refreshtoken({
+    refreshToken: req.refreshToken,
+    user: req.user,
+    keyStore: req.keyStore
+  })
+  console.log('🚀 ~ refreshtoken ~ metadata:', metadata)
+
+  //lưu refresh token vào cookie
+  if (metadata.tokens && metadata.tokens.refreshToken) {
+    res.cookie('refreshToken', metadata.tokens.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: REFRESHTOKEN_LIFE
+    })
+    delete metadata.tokens.refreshToken
+  }
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Refresh token successfully!',
+    metadata: metadata
+  }).send(res)
+}
+
 export default {
   signUp,
   verify,
-  login
+  login,
+  logout,
+  refreshtoken
 }

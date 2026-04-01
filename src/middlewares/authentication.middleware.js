@@ -1,20 +1,25 @@
 /* eslint-disable no-unused-vars */
 import asyncHandler from '#helpers/asyncHandler.js'
-import authHelper from '#helpers/auth.helper'
+import authHelper from '#helpers/auth.helper.js'
 import tokenService from '#services/token.service.js'
 import { HEADER } from '#utils/constant.js'
+import ApiError from '#core/error.response.js'
+import { StatusCodes } from 'http-status-codes'
 
 const authentication = asyncHandler(async (req, res, next) => {
+  //kiểm tra thông tin người gửi request
   const userId = req.headers[HEADER.CLIENT_ID]
   if (!userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid Request')
 
-  const keyStore = await tokenService.getTokensByUserId({ userId })
+  //lấy key ra gồm (access, refresh, public, private)
+  const keyStore = await tokenService.getkeyStoreByUserId({ userId })
   if (!keyStore) throw new ApiError(StatusCodes.NOT_FOUND, 'Not found keyStore')
 
   const refreshToken = req.cookies.refreshToken
+  console.log('🚀 ~ refreshToken:', refreshToken)
   if (refreshToken) {
     try {
-      const decodeUser = verifyJWT(refreshToken, keyStore.publicKey)
+      const decodeUser = authHelper.verifyJWT(refreshToken, keyStore.publicKey)
       if (userId !== decodeUser.userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid user id')
       //lưu vào req để tầng sau xử lý
       req.keyStore = keyStore
@@ -31,6 +36,7 @@ const authentication = asyncHandler(async (req, res, next) => {
   if (userId !== decodeUser.userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid user id')
   req.keyStore = keyStore
   req.user = decodeUser
+  return next()
 })
 
 export default authentication

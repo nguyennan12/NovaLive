@@ -32,7 +32,7 @@ const SignUp = async ({ email, password }) => {
   //tạo accessToken voi refreshToken
   const tokens = await authHelper.createTokenPair({ userId: newUser._id, email }, publicKey, privateKey)
   //lưu token vào db
-  await tokenService.createToken({
+  await tokenService.createKeyStore({
     userId: newUser._id,
     publicKey,
     privateKey,
@@ -76,14 +76,49 @@ const login = async ({ email, password }) => {
 
   //tạo accessToken voi refreshToken
   const tokens = await authHelper.createTokenPair({ userId: foundUser._id, email }, publicKey, privateKey)
+  //lưu token vào db
+  await tokenService.createKeyStore({
+    userId: foundUser._id,
+    publicKey,
+    privateKey,
+    refreshToken: tokens.refreshToken
+  })
   return {
     user: data.getInfo(['_id', 'user_name', 'user_email'], foundUser),
     tokens
   }
 }
 
+const logout = async ({ keyStore }) => {
+  if (!keyStore?._id) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid keyStore')
+  return await tokenService.deleteKeyStoreById(keyStore._id)
+}
+
+const refreshtoken = async ({ refreshToken, user, keyStore }) => {
+  console.log('🚀 ~ refreshtoken ~ refreshToken:', refreshToken)
+  if (!refreshToken) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid refresh token')
+  if (keyStore.refreshToken !== refreshToken) throw new ApiError(StatusCodes.UNAUTHORIZED, 'User not registeted')
+  const { userId, email, } = user
+  //kiểm tra xem refresh token dc sử dụng chưa, nếu r thì xóa toàn bộ keyStore của user đó
+  if (keyStore.refreshTokenUsed.includes(refreshToken)) {
+    await tokenService.deleteKeyStoreByUserId(userId)
+    throw new ApiError(StatusCodes.FORBIDDEN, 'Something wrong happen! please relogin')
+  }
+  //maybe có user r khỏi check có tồn tại k
+  //tạo cặnp token mới
+  const tokens = await authHelper.createTokenPair({ userId, email }, keyStore.publicKey, keyStore.privateKey)
+  await tokenService.updateRefreshToken({ oldRefreshToken: refreshToken, newRefreshToken: tokens.refreshToken })
+  return {
+    user: data.getInfo(['userId', 'email'], user),
+    tokens
+  }
+}
+
+
 export default {
   SignUp,
   verify,
-  login
+  login,
+  logout,
+  refreshtoken
 }
