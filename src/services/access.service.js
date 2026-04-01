@@ -94,9 +94,31 @@ const logout = async ({ keyStore }) => {
   return await tokenService.deleteKeyStoreById(keyStore._id)
 }
 
+const refreshtoken = async ({ refreshToken, user, keyStore }) => {
+  console.log('🚀 ~ refreshtoken ~ refreshToken:', refreshToken)
+  if (!refreshToken) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid refresh token')
+  if (keyStore.refreshToken !== refreshToken) throw new ApiError(StatusCodes.UNAUTHORIZED, 'User not registeted')
+  const { userId, email, } = user
+  //kiểm tra xem refresh token dc sử dụng chưa, nếu r thì xóa toàn bộ keyStore của user đó
+  if (keyStore.refreshTokenUsed.includes(refreshToken)) {
+    await tokenService.deleteKeyStoreByUserId(userId)
+    throw new ApiError(StatusCodes.FORBIDDEN, 'Something wrong happen! please relogin')
+  }
+  //maybe có user r khỏi check có tồn tại k
+  //tạo cặnp token mới
+  const tokens = await authHelper.createTokenPair({ userId, email }, keyStore.publicKey, keyStore.privateKey)
+  await tokenService.updateRefreshToken({ oldRefreshToken: refreshToken, newRefreshToken: tokens.refreshToken })
+  return {
+    user: data.getInfo(['userId', 'email'], user),
+    tokens
+  }
+}
+
+
 export default {
   SignUp,
   verify,
   login,
-  logout
+  logout,
+  refreshtoken
 }

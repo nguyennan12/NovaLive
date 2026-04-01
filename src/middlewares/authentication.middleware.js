@@ -16,6 +16,7 @@ const authentication = asyncHandler(async (req, res, next) => {
   if (!keyStore) throw new ApiError(StatusCodes.NOT_FOUND, 'Not found keyStore')
 
   const refreshToken = req.cookies.refreshToken
+  console.log('🚀 ~ refreshToken:', refreshToken)
   if (refreshToken) {
     try {
       const decodeUser = authHelper.verifyJWT(refreshToken, keyStore.publicKey)

@@ -17,8 +17,21 @@ const deleteKeyStoreById = async (keyStoreId) => {
   return await tokenModel.deleteOne({ _id: converter.toObjectId(keyStoreId) })
 }
 
+const deleteKeyStoreByUserId = async (UserId) => {
+  return await tokenModel.deleteOne({ UserId })
+}
+
+const updateRefreshToken = async ({ oldRefreshToken, newRefreshToken }) => {
+  return await tokenModel.updateOne({
+    $set: { refreshToken: newRefreshToken },
+    $addToSet: { refreshTokenUsed: oldRefreshToken }
+  })
+}
+
 export default {
   createKeyStore,
   getkeyStoreByUserId,
-  deleteKeyStoreById
+  deleteKeyStoreById,
+  deleteKeyStoreByUserId,
+  updateRefreshToken
 }
