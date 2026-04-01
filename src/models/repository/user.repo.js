@@ -15,8 +15,17 @@ const createUser = async ({ email, password }) => {
   })
 }
 
+const changeStatus = async ({ email, status = 'active' }) => {
+  return await UserModel.findOneAndUpdate(
+    { user_email: email },
+    { user_status: status },
+    { returnDocument: 'after' }
+  )
+}
+
 
 export default {
   findUserByEmail,
-  createUser
+  createUser,
+  changeStatus
 }

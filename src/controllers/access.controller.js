@@ -10,7 +10,15 @@ const signUp = async (req, res, next) => {
     metadata: await accessService.SignUp(req.body)
   }).send(res)
 }
+const verify = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Verify account successfully!',
+    metadata: await accessService.verify(req.body)
+  }).send(res)
+}
 
 export default {
-  signUp
+  signUp,
+  verify
 }

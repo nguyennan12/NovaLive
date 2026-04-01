@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.23",
     "mongoose": "^9.3.3",
+    "nodemailer": "^8.0.4",
     "slugify": "^1.6.8"
   },
   "devDependencies": {

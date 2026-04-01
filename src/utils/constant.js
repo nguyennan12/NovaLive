@@ -9,7 +9,8 @@ export const DOCUMENT_NAME = {
   USER: 'User',
   ROLE: 'Role',
   RESOURCE: 'Resource',
-  TOKEN: 'token'
+  TOKEN: 'Token',
+  OTP: 'Otp'
 }
 
 export const COLLECTION_NAME = {
@@ -23,7 +24,8 @@ export const COLLECTION_NAME = {
   USER: 'Users',
   ROLE: 'Roles',
   RESOURCE: 'Resources',
-  TOKEN: 'Tokens'
+  TOKEN: 'Tokens',
+  OTP: 'Otp'
 }
 
 
@@ -33,3 +35,4 @@ export const HEADER = {
   AUTHORIZATION: 'authorization',
   REFRESHTOKEN: 'x-rtoken-id'
 }
+

@@ -16,5 +16,12 @@ export const PASSWORD_RULE_MESSAGE = {
   'string.empty': 'Password không được để trống',
   'string.pattern.base': 'Password phải đủ mạnh'
 }
+
+export const OTP_TOKEN_RULE = /^\d{6}$/
+export const OTP_TOKEN_RULE_MESSAGE = {
+  'string.empty': 'OTP không được để trống',
+  'any.required': 'OTP là bắt buộc',
+  'string.pattern.base': 'OTP phải gồm đúng 6 chữ số'
+}
 export const LIMIT_COMMON_FILE_SIZE = 10485760 // byte = 10 MB
 export const ALLOW_COMMON_FILE_TYPES = ['image/jpg', 'image/jpeg', 'image/png']
