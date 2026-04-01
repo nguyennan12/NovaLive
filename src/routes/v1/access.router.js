@@ -8,5 +8,6 @@ const Router = express.Router()
 
 Router.post('/signup', validate(authValidation.signUp), asyncHandler(accessController.signUp))
 Router.post('/verify', validate(authValidation.verify), asyncHandler(accessController.verify))
+Router.post('/login', validate(authValidation.login), asyncHandler(accessController.login))
 
 export const AccessRouter = Router

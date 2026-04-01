@@ -17,8 +17,16 @@ const verify = async (req, res, next) => {
     metadata: await accessService.verify(req.body)
   }).send(res)
 }
+const login = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Login successfully!',
+    metadata: await accessService.login(req.body)
+  }).send(res)
+}
 
 export default {
   signUp,
-  verify
+  verify,
+  login
 }

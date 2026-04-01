@@ -61,7 +61,29 @@ const verify = async ({ email, otpToken }) => {
   }
 }
 
+const login = async ({ email, password }) => {
+  const foundUser = await userRepo.findUserByEmail({ email })
+  if (!foundUser) throw new ApiError(StatusCodes.BAD_REQUEST, 'Account not found!')
+
+  const matchPassword = await bcrypt.compare(password, foundUser.user_password)
+  if (!matchPassword) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Authentication error')
+
+  const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+    modulusLength: 4096,
+    publicKeyEncoding: { type: 'pkcs1', format: 'pem' },
+    privateKeyEncoding: { type: 'pkcs1', format: 'pem' }
+  })
+
+  //tạo accessToken voi refreshToken
+  const tokens = await authHelper.createTokenPair({ userId: foundUser._id, email }, publicKey, privateKey)
+  return {
+    user: data.getInfo(['_id', 'user_name', 'user_email'], foundUser),
+    tokens
+  }
+}
+
 export default {
   SignUp,
-  verify
+  verify,
+  login
 }
