@@ -33,6 +33,6 @@ export const HEADER = {
   API_KEY: 'x-api-key',
   CLIENT_ID: 'x-client-id',
   AUTHORIZATION: 'authorization',
-  REFRESHTOKEN: 'x-rtoken-id'
 }
 
+export const REFRESHTOKEN_LIFE = 7 * 24 * 60 * 60 * 1000 // 7 day

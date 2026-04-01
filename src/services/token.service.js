@@ -8,6 +8,11 @@ const createToken = async ({ userId, publicKey, privateKey, refreshToken }) => {
   return await tokenModel.findOneAndUpdate(filter, update, options)
 }
 
+const getTokensByUserId = async ({ userId }) => {
+  return await tokenModel.findOne({ userId }).lean()
+}
+
 export default {
-  createToken
+  createToken,
+  getTokensByUserId
 }
