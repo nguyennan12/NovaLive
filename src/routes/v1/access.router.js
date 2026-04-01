@@ -13,4 +13,7 @@ Router.post('/login', validate(authValidation.login), asyncHandler(accessControl
 
 Router.use(authentication)
 
+Router.post('/logout', asyncHandler(accessController.logout))
+
+
 export const AccessRouter = Router

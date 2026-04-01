@@ -38,8 +38,17 @@ const login = async (req, res, next) => {
   }).send(res)
 }
 
+const logout = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Logout successfully!',
+    metadata: await accessService.logout({ keyStore: req.keyStore })
+  }).send(res)
+}
+
 export default {
   signUp,
   verify,
-  login
+  login,
+  logout
 }

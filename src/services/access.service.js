@@ -32,7 +32,7 @@ const SignUp = async ({ email, password }) => {
   //tạo accessToken voi refreshToken
   const tokens = await authHelper.createTokenPair({ userId: newUser._id, email }, publicKey, privateKey)
   //lưu token vào db
-  await tokenService.createToken({
+  await tokenService.createKeyStore({
     userId: newUser._id,
     publicKey,
     privateKey,
@@ -76,14 +76,27 @@ const login = async ({ email, password }) => {
 
   //tạo accessToken voi refreshToken
   const tokens = await authHelper.createTokenPair({ userId: foundUser._id, email }, publicKey, privateKey)
+  //lưu token vào db
+  await tokenService.createKeyStore({
+    userId: foundUser._id,
+    publicKey,
+    privateKey,
+    refreshToken: tokens.refreshToken
+  })
   return {
     user: data.getInfo(['_id', 'user_name', 'user_email'], foundUser),
     tokens
   }
 }
 
+const logout = async ({ keyStore }) => {
+  if (!keyStore?._id) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid keyStore')
+  return await tokenService.deleteKeyStoreById(keyStore._id)
+}
+
 export default {
   SignUp,
   verify,
-  login
+  login,
+  logout
 }
