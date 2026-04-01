@@ -52,7 +52,6 @@ const refreshtoken = async (req, res, next) => {
     user: req.user,
     keyStore: req.keyStore
   })
-  console.log('🚀 ~ refreshtoken ~ metadata:', metadata)
 
   //lưu refresh token vào cookie
   if (metadata.tokens && metadata.tokens.refreshToken) {

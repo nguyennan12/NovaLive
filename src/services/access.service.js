@@ -95,7 +95,6 @@ const logout = async ({ keyStore }) => {
 }
 
 const refreshtoken = async ({ refreshToken, user, keyStore }) => {
-  console.log('🚀 ~ refreshtoken ~ refreshToken:', refreshToken)
   if (!refreshToken) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid refresh token')
   if (keyStore.refreshToken !== refreshToken) throw new ApiError(StatusCodes.UNAUTHORIZED, 'User not registeted')
   const { userId, email, } = user
