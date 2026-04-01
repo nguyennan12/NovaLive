@@ -16,7 +16,6 @@ const authentication = asyncHandler(async (req, res, next) => {
   if (!keyStore) throw new ApiError(StatusCodes.NOT_FOUND, 'Not found keyStore')
 
   const refreshToken = req.cookies.refreshToken
-  console.log('🚀 ~ refreshToken:', refreshToken)
   if (refreshToken) {
     try {
       const decodeUser = authHelper.verifyJWT(refreshToken, keyStore.publicKey)
@@ -32,7 +31,7 @@ const authentication = asyncHandler(async (req, res, next) => {
   if (!accessToken) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid Request')
 
   //tương tự bước trên lưu thông tin lại vào req và gửi đến tầng tiếp theo
-  const decodeUser = verifyJWT(refreshToken, keyStore.publicKey)
+  const decodeUser = verifyJWT(accessToken, keyStore.publicKey)
   if (userId !== decodeUser.userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid user id')
   req.keyStore = keyStore
   req.user = decodeUser
