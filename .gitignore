@@ -1,3 +1,5 @@
 .env
 /node_modules
 total-knowledge.md
+/src/logs
+logs

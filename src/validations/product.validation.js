@@ -26,7 +26,7 @@ export const productValidation = {
       product_type: Joi.string().valid(...PRODUCT_TYPE_VALUES).required().messages(PRODUCT_TYPE_MESSAGE),
       product_shopId: Joi.string().pattern(OBJECT_ID_RULE).required().messages(OBJECT_ID_RULE_MESSAGE),
       product_attributes: Joi.object().min(PRODUCT_ATTRIBUTES_RULE.min).required().messages(PRODUCT_ATTRIBUTES_MESSAGE),
-    })
+    }).unknown(true)
   },
   paramsProductId: {
     params: {
