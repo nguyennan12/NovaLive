@@ -1,7 +1,7 @@
 import app from './src/app.js'
 import { env } from '#config/environment.config.js'
 
-const server = app.listen(env.PORT, env.HOST, () => {
+const server = app.listen(env.PORT, '0.0.0.0', () => {
   console.log(`Hello ${env.AUTHOR}, I am running at  http://${env.HOST}:${env.PORT}`)
 })
 

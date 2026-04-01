@@ -1,3 +1,4 @@
+import ms from 'ms'
 export const DOCUMENT_NAME = {
   PRODUCT: 'Product',
   ELECTRONIC: 'Electronic',
@@ -35,4 +36,4 @@ export const HEADER = {
   AUTHORIZATION: 'authorization',
 }
 
-export const REFRESHTOKEN_LIFE = 7 * 24 * 60 * 60 * 1000 // 7 day
+export const REFRESHTOKEN_LIFE = 14 * 24 * 60 * 60 * 1000
