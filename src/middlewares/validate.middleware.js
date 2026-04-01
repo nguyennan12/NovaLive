@@ -1,7 +1,7 @@
 import ApiError from '#core/error.response.js'
 import { StatusCodes } from 'http-status-codes'
 import Joi from 'joi'
-import _ from 'lodash' // Dùng để pick data cho gọn
+import _ from 'lodash'
 
 const validate = (schema) => (req, res, next) => {
   const validSchema = _.pick(schema, ['body', 'query', 'params'])

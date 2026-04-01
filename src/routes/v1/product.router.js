@@ -2,13 +2,20 @@ import productController from '#controllers/product.controller.js'
 import asyncHandler from '#helpers/asyncHandler.js'
 import express from 'express'
 
+import validate from '#middlewares/validate.middleware.js'
+import { productValidation } from '#validations/product.validation.js'
 const Router = express.Router()
 // === Shop ===
 Router.get('/search/', asyncHandler(productController.searchProduct))
+
 Router.post('', asyncHandler(productController.createProduct))
 Router.patch('/:productId', asyncHandler(productController.updateProduct))
 Router.patch('/:productId/publish', asyncHandler(productController.publishProduct))
 Router.patch('/:productId/unpublish', asyncHandler(productController.unPublishProduct))
+Router.post('', validate(productValidation.create), asyncHandler(productController.createProduct))
+Router.patch('/:productId', validate(productValidation.paramsProductId), asyncHandler(productController.updateProduct))
+Router.patch('/:productId/publish', validate(productValidation.paramsProductId), asyncHandler(productController.publishProduct))
+Router.patch('/:productId/unpublish', validate(productValidation.paramsProductId), asyncHandler(productController.unPublishProduct))
 Router.get('/public', asyncHandler(productController.getPublishedProduct))
 Router.get('/draft', asyncHandler(productController.getDraftProduct))
 
@@ -16,6 +23,7 @@ Router.get('/draft', asyncHandler(productController.getDraftProduct))
 Router.get('', asyncHandler(productController.getAllProducts))
 
 Router.get('/:productId', asyncHandler(productController.getProductDetail))
+Router.get('/:productId', validate(productValidation.paramsProductId), asyncHandler(productController.getProductDetail))
 
 
 export const ProductRouter = Router
