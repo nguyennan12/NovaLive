@@ -2,6 +2,7 @@
 import ApiSuccess from '#core/success.response.js'
 import { StatusCodes } from 'http-status-codes'
 import rbacService from '#services/rbac.service.js'
+import roleService from '#services/role.service.js'
 
 const createResource = async (req, res, next) => {
   new ApiSuccess({
@@ -33,9 +34,18 @@ const getListRole = async (req, res, next) => {
   }).send(res)
 }
 
+const changeRole = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Role updated, user will be forced to refresh soon!',
+    metadata: await roleService.changeRoleAdmin(req.params)
+  }).send(res)
+}
+
 export default {
   createResource,
   getListResource,
   createRole,
-  getListRole
+  getListRole,
+  changeRole
 }

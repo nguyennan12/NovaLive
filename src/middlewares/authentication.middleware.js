@@ -4,6 +4,7 @@ import authHelper from '#helpers/auth.helper.js'
 import tokenService from '#services/token.service.js'
 import { HEADER } from '#utils/constant.js'
 import ApiError from '#core/error.response.js'
+import { redisClient } from '#database/init.redis.js'
 import { StatusCodes } from 'http-status-codes'
 
 const authentication = asyncHandler(async (req, res, next) => {
@@ -15,27 +16,30 @@ const authentication = asyncHandler(async (req, res, next) => {
   const keyStore = await tokenService.getkeyStoreByUserId({ userId })
   if (!keyStore) throw new ApiError(StatusCodes.NOT_FOUND, 'Not found keyStore')
 
+  //lấy access và refresh ra xem nào dc sử dụng
   const refreshToken = req.cookies.refreshToken
-  if (refreshToken) {
-    try {
-      const decodeUser = authHelper.verifyJWT(refreshToken, keyStore.publicKey)
-      if (userId !== decodeUser.userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid user id')
-      //lưu vào req để tầng sau xử lý
-      req.keyStore = keyStore
-      req.user = decodeUser
-      req.refreshToken = refreshToken
-      return next()
-    } catch (error) { throw new ApiError(StatusCodes.UNAUTHORIZED, 'Refresh Token expired or invalid') }
-  }
   const accessToken = authHelper.parseBearerToken(req.headers[HEADER.AUTHORIZATION])
-  if (!accessToken) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid Request')
-
-  //tương tự bước trên lưu thông tin lại vào req và gửi đến tầng tiếp theo
-  const decodeUser = verifyJWT(accessToken, keyStore.publicKey)
-  if (userId !== decodeUser.userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid user id')
-  req.keyStore = keyStore
-  req.user = decodeUser
-  return next()
+  const tokenToVerify = refreshToken ? refreshToken : accessToken
+  if (!tokenToVerify) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid Request')
+  try {
+    const decodeUser = authHelper.verifyJWT(tokenToVerify, keyStore.publicKey)
+    console.log('🚀 ~ decodeUser:', decodeUser)
+    if (userId !== decodeUser.userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid user id')
+    //kiểm tra có bị thay đổi quyền chưa
+    console.log('chet')
+    const roleCache = await redisClient.get(`user:role:${userId}`)
+    console.log('🚀 ~ roleCache toi day:', roleCache)
+    if (roleCache && roleCache !== decodeUser.role) {
+      throw new ApiError(StatusCodes.FORBIDDEN, 'Role updated, user will be forced to refresh soon.')
+    }
+    //lưu lại vào req để tầng sau xử lý
+    req.keyStore = keyStore
+    req.user = decodeUser
+    if (refreshToken && tokenToVerify === refreshToken) {
+      req.refreshToken = refreshToken
+    }
+    return next()
+  } catch (error) { throw new ApiError(StatusCodes.UNAUTHORIZED, 'Authentication Error') }
 })
 
 export default authentication

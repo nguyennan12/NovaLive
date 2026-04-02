@@ -13,7 +13,7 @@ const userSchema = new Schema({
   user_sex: { type: String, default: '' },
   user_avatar: { type: String, default: '' },
   user_date_of_birth: { type: Date, default: null },
-  user_role: { type: Schema.Types.ObjectId, ref: 'Role' },
+  user_role: { type: String, ref: 'Role', default: 'user' },
   user_status: { type: String, default: 'pending', enum: ['pending', 'active', 'block'] },
 
   user_is_seller: { type: Boolean, default: false },
