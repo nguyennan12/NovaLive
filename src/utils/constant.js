@@ -1,4 +1,4 @@
-import ms from 'ms'
+
 export const DOCUMENT_NAME = {
   PRODUCT: 'Product',
   ELECTRONIC: 'Electronic',
