@@ -2,9 +2,9 @@ import productController from '#controllers/product.controller.js'
 import asyncHandler from '#helpers/asyncHandler.js'
 import authentication from '#middlewares/authentication.middleware.js'
 import express from 'express'
-
 import validate from '#middlewares/validate.middleware.js'
 import { productValidation } from '#validations/product.validation.js'
+
 const Router = express.Router()
 // === User ===
 Router.get('/search/', asyncHandler(productController.searchProduct))
@@ -14,6 +14,7 @@ Router.get('/detail/:productId', asyncHandler(productController.getProductDetail
 Router.use(authentication)
 // === Shop ===
 Router.post('', validate(productValidation.create), asyncHandler(productController.createProduct))
+Router.post('', asyncHandler(productController.createProduct))
 Router.patch('/:productId', asyncHandler(productController.updateProduct))
 Router.patch('/:productId/publish', asyncHandler(productController.publishProduct))
 Router.patch('/:productId/unpublish', asyncHandler(productController.unPublishProduct))

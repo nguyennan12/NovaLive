@@ -1,0 +1,2 @@
+2026-04-02 08:46:29 INFO  --- [Request] [ID:69cd2aa066d4d283574b9af3] : POST /v1/api/access/signup | Data: {"email":"dunguyenan2012@gmail.com","password":"12345678a"}
+2026-04-02 08:47:37 INFO  --- [Request] [ID:69cd2aa066d4d283574b9af3] : POST /v1/api/access/verify | Data: {"email":"dunguyenan2012@gmail.com","otpToken":"788818"}

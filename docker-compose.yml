@@ -2,37 +2,41 @@ version: '3.8'
 
 services:
   new-app:
-    # build: 
-    #   context: .
-    #   target: development
-    image: livestream-ecommerce-api-new-app:latest
+    build:
+      context: .
+      target: development
     ports:
       - "3031:3031"
     env_file:
       - .env
     volumes:
-      - .:/app            # Đồng bộ code từ máy vào Docker để nodemon chạy
+      - .:/app
       - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=dev
+    stdin_open: true
+    tty: true
+    command: yarn dev
     depends_on:
       - mongodb_db
     networks:
       - livestream-ecommerce-network
 
   mongodb_db:
-    image: mongo:8.0 
+    image: mongo:8.0
     networks:
       - livestream-ecommerce-network
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-
-  # redis:
-  #   image: redis:7-alpine
-  #   ports:
-  #     - "6379:6379"
-  #   networks:
-  #     - livestream-ecommerce-network
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - livestream-ecommerce-network
 
 networks:
   livestream-ecommerce-network:
@@ -40,3 +44,5 @@ networks:
 
 volumes:
   mongo_data:
+
+
