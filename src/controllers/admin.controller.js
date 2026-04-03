@@ -25,6 +25,13 @@ const createRole = async (req, res, next) => {
     metadata: await rbacService.createRole(req.body)
   }).send(res)
 }
+const addGrantstoRole = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Add role successfully!',
+    metadata: await rbacService.addGrantstoRole(req.body)
+  }).send(res)
+}
 
 const getListRole = async (req, res, next) => {
   new ApiSuccess({
@@ -47,5 +54,6 @@ export default {
   getListResource,
   createRole,
   getListRole,
-  changeRole
+  changeRole,
+  addGrantstoRole
 }
