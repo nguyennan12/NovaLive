@@ -3,6 +3,7 @@ import asyncHandler from '#helpers/asyncHandler.js'
 import authentication from '#middlewares/authentication.middleware.js'
 import express from 'express'
 // import validate from '#middlewares/validate.middleware.js'
+import grantAcess from '#middlewares/rbac.middleware.js'
 
 const Router = express.Router()
 // === User ===
@@ -12,9 +13,7 @@ Router.get('/detail/:productId', asyncHandler(productController.getProductDetail
 //  === Authentication ===
 Router.use(authentication)
 // === Shop ===
-Router.post('', asyncHandler(productController.createProduct))
-// Router.post('', validate(productValidation.create), asyncHandler(productController.createProduct))
-Router.post('', asyncHandler(productController.createProduct))
+Router.post('', grantAcess('createAny', 'product'), asyncHandler(productController.createProduct))
 Router.patch('/:productId', asyncHandler(productController.updateProduct))
 Router.patch('/:productId/publish', asyncHandler(productController.publishProduct))
 Router.patch('/:productId/unpublish', asyncHandler(productController.unPublishProduct))

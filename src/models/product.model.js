@@ -1,5 +1,6 @@
 import { Schema, Types, model } from 'mongoose'
 import { DOCUMENT_NAME, COLLECTION_NAME } from '#utils/constant.js'
+import slugify from 'slugify'
 
 const productSchema = new Schema({
   product_name: { type: String, required: true },

@@ -2,6 +2,8 @@ import ApiError from '#core/error.response.js'
 import resourceModel from '#models/resource.model.js'
 import roleModel from '#models/role.model.js'
 import { StatusCodes } from 'http-status-codes'
+import { redisClient } from '#database/init.redis.js'
+import { initAccessControl } from '#config/rbac.config.js'
 
 const createResource = async ({ name, description }) => {
   return await resourceModel.create({ src_name: name, src_description: description })
@@ -14,8 +16,10 @@ const getListResource = async ({ limit = 30, offset = 0 }) => {
 const createRole = async ({ name, description, grants }) => {
   const foundRole = await roleModel.findOne({ role_name: name })
   if (foundRole) throw new ApiError(StatusCodes.BAD_REQUEST, 'Role already exists!')
-  await redisClient.del('RBAC_GRANTS')
-  return await roleModel.create({ role_name: name, role_description: description, role_grants: grants })
+  redisClient.del('RBAC_GRANTS')
+  const result = await roleModel.create({ role_name: name, role_description: description, role_grants: grants })
+  await initAccessControl()
+  return result
 }
 
 const getListRole = async ({ limit = 30, offset = 0 }) => {
@@ -40,7 +44,7 @@ const getListRole = async ({ limit = 30, offset = 0 }) => {
     },
     { $unwind: '$action' },
     {
-      $project: { _id: 0, role: 1, resource: 1, acction: '$action', attributes: 1 }
+      $project: { _id: 0, role: 1, resource: 1, action: '$action', attributes: 1 }
     },
     { $skip: offset },
     { $limit: limit }
