@@ -38,7 +38,7 @@ export const HEADER = {
   AUTHORIZATION: 'authorization',
 }
 
-export const REFRESHTOKEN_LIFE = 14 * 24 * 60 * 60 * 1000
+export const REFRESHTOKEN_LIFE = 14 * 24 * 60 * 60
 
 export const ROLES = {
   ADMIN: 'admin',

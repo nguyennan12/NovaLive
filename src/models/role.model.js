@@ -9,6 +9,7 @@ const roleSchema = new Schema({
   role_slug: { type: String },
   role_status: { type: String, default: 'active', enum: ['pending', 'active', 'block'] },
   role_description: { type: String, default: '' },
+  role_parent: { type: String, default: '' },
   role_grants: [
     {
       resourceId: { type: Schema.Types.ObjectId, ref: 'Resource', required: true },

@@ -5,9 +5,21 @@ import { AccessControl } from 'accesscontrol'
 let ac = new AccessControl()
 
 const refreshGrants = async () => {
-  const grants = await rbacService.getListRole({ limit: 30, offset: 0 })
-  await redisClient.set('RBAC_GRANTS', JSON.stringify(grants))
-  ac.setGrants(grants)
+  const listGrants = await rbacService.getListRole({ limit: 100, offset: 0 })
+  const grantsObject = listGrants.reduce((acc, grant) => {
+    const { role, resource, action, attributes, parent } = grant
+    //lần đầu khởi tạo rỗng
+    if (!acc[role]) acc[role] = {}
+    if (parent) {
+      acc[role].$extend = [parent]
+    }
+    if (!acc[role][resource]) acc[role][resource] = {}
+    acc[role][resource][action] = attributes.split(',').map(a => a.trim())
+    return acc
+  }, {})
+
+  await redisClient.set('RBAC_GRANTS', JSON.stringify(grantsObject))
+  ac.setGrants(grantsObject)
 }
 
 export const initAccessControl = async () => {

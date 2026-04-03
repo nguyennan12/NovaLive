@@ -10,7 +10,7 @@ import emailService from './email.service.js'
 import OtpModel from '#models/otp.model.js'
 import converter from '#utils/converter.js'
 import otpService from './otp.service.js'
-import { ROLES } from '#utils/constant.js'
+import { REFRESHTOKEN_LIFE, ROLES } from '#utils/constant.js'
 import { redisClient } from '#database/init.redis.js'
 
 const SignUp = async ({ email, password }) => {
@@ -83,7 +83,7 @@ const login = async ({ email, password }) => {
     },
     publicKey, privateKey)
   //lưu role vào redis
-  await redisClient.set(`user:role:${foundUser._id}`, foundUser.user_role, { EX: 3600 })
+  await redisClient.set(`user:role:${foundUser._id}`, foundUser.user_role, { EX: REFRESHTOKEN_LIFE })
   //lưu token vào db
   await tokenService.createKeyStore({
     userId: foundUser._id,

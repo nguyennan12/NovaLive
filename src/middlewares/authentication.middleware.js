@@ -26,6 +26,7 @@ const authentication = asyncHandler(async (req, res, next) => {
     if (userId !== decodeUser.userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid user id')
     //kiểm tra có bị thay đổi quyền chưa
     const roleCache = await redisClient.get(`user:role:${userId}`)
+    console.log('🚀 ~ roleCache:', roleCache)
     if (roleCache && roleCache !== decodeUser.role) {
       throw new ApiError(StatusCodes.FORBIDDEN, 'Role updated, user will be forced to refresh soon.')
     }
