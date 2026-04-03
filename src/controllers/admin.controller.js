@@ -30,7 +30,7 @@ const getListRole = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.CREATED,
     message: 'Get roles successfully!',
-    metadata: await rbacService.getListRole(req.params)
+    metadata: await rbacService.getListRole(req.query)
   }).send(res)
 }
 

@@ -5,12 +5,12 @@ import { AccessControl } from 'accesscontrol'
 let ac = new AccessControl()
 
 const refreshGrants = async () => {
-  const grants = await rbacService.getListRole()
+  const grants = await rbacService.getListRole({ limit: 30, offset: 0 })
   await redisClient.set('RBAC_GRANTS', JSON.stringify(grants))
   ac.setGrants(grants)
 }
 
-const initAccessControl = async () => {
+export const initAccessControl = async () => {
   let grants = await redisClient.get('RBAC_GRANTS')
   if (!grants) {
     await refreshGrants()
