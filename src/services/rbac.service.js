@@ -14,12 +14,16 @@ const getListResource = async ({ limit = 30, offset = 0 }) => {
   return await resourceModel.find({}).limit(limit).skip(offset).lean()
 }
 
-const createRole = async ({ name, description, grants }) => {
+const createRole = async ({ name, description, grants, parent }) => {
   const foundRole = await roleModel.findOne({ role_name: name })
   if (foundRole) throw new ApiError(StatusCodes.BAD_REQUEST, 'Role already exists!')
   redisClient.del('RBAC_GRANTS')
-  const result = await roleModel.create({ role_name: name, role_description: description, role_grants: grants })
+  const result = await roleModel.create({ role_name: name, role_description: description, role_grants: grants, role_parent: parent })
+  //gọi đến channel update grants và update tât cả
+  await redisClient.del('RBAC_GRANTS')
   await initAccessControl()
+  await redisClient.publish('RBAC_CHANEL', 'UPDATE_GRANTS')
+
   return result
 }
 
@@ -29,8 +33,10 @@ const addGrantstoRole = async ({ name, grants }) => {
 
   role.role_grants = mergeGrants(role.role_grants, grants)
   await role.save()
+
   await redisClient.del('RBAC_GRANTS')
   await initAccessControl()
+  await redisClient.publish('RBAC_CHANEL', 'UPDATE_GRANTS')
 
   return role
 }
@@ -50,6 +56,7 @@ const getListRole = async ({ limit = 30, offset = 0 }) => {
     {
       $project: {
         role: '$role_name',
+        parent: '$role_parent',
         resource: '$resource.src_name',
         action: '$role_grants.actions',
         attributes: '$role_grants.attributes'
@@ -57,7 +64,7 @@ const getListRole = async ({ limit = 30, offset = 0 }) => {
     },
     { $unwind: '$action' },
     {
-      $project: { _id: 0, role: 1, resource: 1, action: '$action', attributes: 1 }
+      $project: { _id: 0, role: 1, parent: 1, resource: 1, action: '$action', attributes: 1 }
     },
     { $skip: offset },
     { $limit: limit }

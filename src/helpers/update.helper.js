@@ -66,16 +66,20 @@ export const updateSubModel = async ({
 export const mergeGrants = (current = [], incoming = []) => {
   const map = new Map()
 
-    ;[...current, ...incoming].forEach(({ resourceId, actions }) => {
-      if (!map.has(resourceId)) {
-        map.set(resourceId, new Set(actions))
+    ;[...current, ...incoming].forEach(({ resourceId, actions, attributes }) => {
+      const resIdStr = resourceId.toString()
+      if (!map.has(resIdStr)) {
+        map.set(resIdStr, { actions: new Set(actions), attributes: attributes || '*' })
       } else {
-        actions.forEach(a => map.get(resourceId).add(a))
+        const existing = map.get(resIdStr)
+        actions.forEach(a => existing.actions.add(a))
+        if (attributes) existing.attributes = attributes
       }
     })
 
-  return Array.from(map, ([resourceId, actions]) => ({
-    resourceId,
-    actions: [...actions]
+  return Array.from(map, ([resId, value]) => ({
+    resourceId: resId,
+    actions: Array.from(value.actions),
+    attributes: value.attributes
   }))
 }
