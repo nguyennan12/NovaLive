@@ -11,6 +11,7 @@ Router.post('/resource/', asyncHandler(adminController.createResource))
 Router.get('/resource/', asyncHandler(adminController.getListResource))
 Router.post('/role/', asyncHandler(adminController.createRole))
 Router.get('/role/', asyncHandler(adminController.getListRole))
+Router.patch('/role/:userId', asyncHandler(adminController.changeRole))
 
 
 export const AdminRouter = Router

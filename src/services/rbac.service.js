@@ -14,6 +14,7 @@ const getListResource = async ({ limit = 30, offset = 0 }) => {
 const createRole = async ({ name, description, grants }) => {
   const foundRole = await roleModel.findOne({ role_name: name })
   if (foundRole) throw new ApiError(StatusCodes.BAD_REQUEST, 'Role already exists!')
+  await redisClient.del('RBAC_GRANTS')
   return await roleModel.create({ role_name: name, role_description: description, role_grants: grants })
 }
 

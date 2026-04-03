@@ -23,9 +23,13 @@ const changeStatus = async ({ email, status = 'active' }) => {
   )
 }
 
+const changeRole = async ({ userId, role }) => {
+  return await UserModel.updateOne({ _id: userId }, { $set: { user_role: role } })
+}
 
 export default {
   findUserByEmail,
   createUser,
-  changeStatus
+  changeStatus,
+  changeRole
 }

@@ -10,6 +10,8 @@ import emailService from './email.service.js'
 import OtpModel from '#models/otp.model.js'
 import converter from '#utils/converter.js'
 import otpService from './otp.service.js'
+import { ROLES } from '#utils/constant.js'
+import { redisClient } from '#database/init.redis.js'
 
 const SignUp = async ({ email, password }) => {
   const foundUser = await userRepo.findUserByEmail({ email })
@@ -75,7 +77,13 @@ const login = async ({ email, password }) => {
   })
 
   //tạo accessToken voi refreshToken
-  const tokens = await authHelper.createTokenPair({ userId: foundUser._id, email }, publicKey, privateKey)
+  const tokens = await authHelper.createTokenPair(
+    {
+      userId: foundUser._id, email, role: foundUser.user_role
+    },
+    publicKey, privateKey)
+  //lưu role vào redis
+  await redisClient.set(`user:role:${foundUser._id}`, foundUser.user_role, { EX: 3600 })
   //lưu token vào db
   await tokenService.createKeyStore({
     userId: foundUser._id,
@@ -97,7 +105,7 @@ const logout = async ({ keyStore }) => {
 const refreshtoken = async ({ refreshToken, user, keyStore }) => {
   if (!refreshToken) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid refresh token')
   if (keyStore.refreshToken !== refreshToken) throw new ApiError(StatusCodes.UNAUTHORIZED, 'User not registeted')
-  const { userId, email, } = user
+  const { userId, email, role } = user
   //kiểm tra xem refresh token dc sử dụng chưa, nếu r thì xóa toàn bộ keyStore của user đó
   if (keyStore.refreshTokenUsed.includes(refreshToken)) {
     await tokenService.deleteKeyStoreByUserId(userId)
@@ -105,7 +113,7 @@ const refreshtoken = async ({ refreshToken, user, keyStore }) => {
   }
   //maybe có user r khỏi check có tồn tại k
   //tạo cặnp token mới
-  const tokens = await authHelper.createTokenPair({ userId, email }, keyStore.publicKey, keyStore.privateKey)
+  const tokens = await authHelper.createTokenPair({ userId, email, role }, keyStore.publicKey, keyStore.privateKey)
   await tokenService.updateRefreshToken({ oldRefreshToken: refreshToken, newRefreshToken: tokens.refreshToken })
   return {
     user: data.getInfo(['userId', 'email'], user),
