@@ -46,11 +46,6 @@ const shopSchema = new Schema({
   timestamps: true,
   collection: COLLECTION_NAME.SHOP
 })
-
-shopSchema.index({ shop_owner: 1 })
-shopSchema.index({ shop_slug: 1 })
-shopSchema.index({ shop_status: 1 })
-
 shopSchema.pre('save', async function () {
   if (this.isModified('shop_name') || !this.shop_slug) {
     this.shop_slug = await data.generateUniqueSlug(this.shop_name, mongoose.models.Shop)
