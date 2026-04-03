@@ -10,9 +10,10 @@ const grantAcess = (actions, resource) => {
     if (!userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'User not authenticated')
     try {
       const roleName = (await redisClient.get(`user:role:${userId}`)) || req.user?.role
+      //action có thể thêm nhiều nếu có nhiều role có quyền truy cập -> tạo list array
       const actionList = Array.isArray(actions) ? actions : [actions]
       let permission = null
-
+      //kiểm tra xem có permisson ko
       const hasPermission = actionList.some(action => {
         if (typeof ac.can(roleName)[action] === 'function') {
           const p = ac.can(roleName)[action](resource)

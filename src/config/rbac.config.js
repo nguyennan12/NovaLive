@@ -10,6 +10,7 @@ const refreshGrants = async () => {
     const { role, resource, action, attributes, parent } = grant
     //lần đầu khởi tạo rỗng
     if (!acc[role]) acc[role] = {}
+    //kiểm tra có phải là parent của role nào không
     if (parent) {
       acc[role].$extend = [parent]
     }
@@ -27,12 +28,13 @@ export const initAccessControl = async () => {
   if (!grants) {
     await refreshGrants()
   } else {
-    ac.setGrants(grants)
+    ac.setGrants(JSON.parse(grants))
   }
 
   //khi admin update 1 role
   const subscriber = redisClient.duplicate()
   await subscriber.connect()
+  //lắng nghe cái channel có push gì k, nếu push update thì set lại
   await subscriber.subscribe('RBAC_CHANEL', async (message) => {
     if (message === 'UPDATE_GRANTS') {
       const latestGrants = await redisClient.get('RBAC_GRANTS')
