@@ -2,6 +2,7 @@ import ApiError from '#core/error.response.js'
 import resourceModel from '#models/resource.model.js'
 import roleModel from '#models/role.model.js'
 import { StatusCodes } from 'http-status-codes'
+import { redisClient } from '#database/init.redis.js'
 
 const createResource = async ({ name, description }) => {
   return await resourceModel.create({ src_name: name, src_description: description })

@@ -23,12 +23,9 @@ const authentication = asyncHandler(async (req, res, next) => {
   if (!tokenToVerify) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid Request')
   try {
     const decodeUser = authHelper.verifyJWT(tokenToVerify, keyStore.publicKey)
-    console.log('🚀 ~ decodeUser:', decodeUser)
     if (userId !== decodeUser.userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid user id')
     //kiểm tra có bị thay đổi quyền chưa
-    console.log('chet')
     const roleCache = await redisClient.get(`user:role:${userId}`)
-    console.log('🚀 ~ roleCache toi day:', roleCache)
     if (roleCache && roleCache !== decodeUser.role) {
       throw new ApiError(StatusCodes.FORBIDDEN, 'Role updated, user will be forced to refresh soon.')
     }
