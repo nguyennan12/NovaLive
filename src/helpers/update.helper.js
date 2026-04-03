@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 export const removeUndefinedObject = obj => {
   if (typeof obj !== 'object' || obj === null) return obj
 
@@ -60,4 +61,21 @@ export const updateSubModel = async ({
     { $set: updateData },
     { returnDocument: 'after' }
   )
+}
+
+export const mergeGrants = (current = [], incoming = []) => {
+  const map = new Map()
+
+    ;[...current, ...incoming].forEach(({ resourceId, actions }) => {
+      if (!map.has(resourceId)) {
+        map.set(resourceId, new Set(actions))
+      } else {
+        actions.forEach(a => map.get(resourceId).add(a))
+      }
+    })
+
+  return Array.from(map, ([resourceId, actions]) => ({
+    resourceId,
+    actions: [...actions]
+  }))
 }

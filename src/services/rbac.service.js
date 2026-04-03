@@ -4,6 +4,7 @@ import roleModel from '#models/role.model.js'
 import { StatusCodes } from 'http-status-codes'
 import { redisClient } from '#database/init.redis.js'
 import { initAccessControl } from '#config/rbac.config.js'
+import { mergeGrants } from '#helpers/update.helper.js'
 
 
 const createResource = async ({ name, description }) => {
@@ -21,6 +22,18 @@ const createRole = async ({ name, description, grants }) => {
   const result = await roleModel.create({ role_name: name, role_description: description, role_grants: grants })
   await initAccessControl()
   return result
+}
+
+const addGrantstoRole = async ({ name, grants }) => {
+  const role = await roleModel.findOne({ role_name: name })
+  if (!role) throw new Error('Role not found')
+
+  role.role_grants = mergeGrants(role.role_grants, grants)
+  await role.save()
+  await redisClient.del('RBAC_GRANTS')
+  await initAccessControl()
+
+  return role
 }
 
 const getListRole = async ({ limit = 30, offset = 0 }) => {
@@ -57,5 +70,6 @@ export default {
   createResource,
   getListResource,
   createRole,
-  getListRole
+  getListRole,
+  addGrantstoRole
 }
