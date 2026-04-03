@@ -11,7 +11,8 @@ export const DOCUMENT_NAME = {
   ROLE: 'Role',
   RESOURCE: 'Resource',
   TOKEN: 'Token',
-  OTP: 'Otp'
+  OTP: 'Otp',
+  SHOP: 'Shop'
 }
 
 export const COLLECTION_NAME = {
@@ -26,7 +27,8 @@ export const COLLECTION_NAME = {
   ROLE: 'Roles',
   RESOURCE: 'Resources',
   TOKEN: 'Tokens',
-  OTP: 'Otp'
+  OTP: 'Otp',
+  SHOP: 'Shops'
 }
 
 

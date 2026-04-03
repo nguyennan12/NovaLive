@@ -6,6 +6,10 @@ const findUserByEmail = async ({ email }) => {
   return await UserModel.findOne({ user_email: email }).lean()
 }
 
+const findUserById = async (userId) => {
+  return await UserModel.findById(userId).lean()
+}
+
 const createUser = async ({ email, password }) => {
   const name = data.getNameFromEmail(email)
   const slug = converter.toSlug(name)
@@ -29,6 +33,7 @@ const changeRole = async ({ userId, role }) => {
 
 export default {
   findUserByEmail,
+  findUserById,
   createUser,
   changeStatus,
   changeRole

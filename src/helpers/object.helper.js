@@ -1,6 +1,6 @@
 import productRepo from '#models/repository/product.repo.js'
 
-const removeUndefinedObject = obj => {
+export const removeUndefinedObject = obj => {
   Object.keys(obj).forEach(key => {
     if (obj[key] === null || obj[key] === undefined) {
       delete obj[key]
@@ -9,7 +9,7 @@ const removeUndefinedObject = obj => {
   return obj
 }
 
-const flattenObject = obj => {
+export const flattenObject = obj => {
   const final = {}
   Object.keys(obj).forEach(key => {
     if (typeof obj[key] === 'object' && obj[key] !== null) {
