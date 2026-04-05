@@ -14,7 +14,8 @@ export const DOCUMENT_NAME = {
   OTP: 'Otp',
   SHOP: 'Shop',
   SPU: 'Spu',
-  SKU: 'Sku'
+  SKU: 'Sku',
+  CATEGORY: 'Category'
 }
 
 export const COLLECTION_NAME = {
@@ -32,7 +33,8 @@ export const COLLECTION_NAME = {
   OTP: 'Otp',
   SHOP: 'Shops',
   SPU: 'Spus',
-  SKU: 'Skus'
+  SKU: 'Skus',
+  CATEGORY: 'Categories'
 }
 
 

@@ -3,6 +3,7 @@ import ApiSuccess from '#core/success.response.js'
 import { StatusCodes } from 'http-status-codes'
 import rbacService from '#services/rbac.service.js'
 import roleService from '#services/role.service.js'
+import categoryService from '#services/category.service.js'
 
 const createResource = async (req, res, next) => {
   new ApiSuccess({
@@ -48,6 +49,13 @@ const changeRole = async (req, res, next) => {
     metadata: await roleService.changeRoleAdmin(req.params)
   }).send(res)
 }
+const createCategory = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Create category successfully!',
+    metadata: await categoryService.createCategory(req.body)
+  }).send(res)
+}
 
 export default {
   createResource,
@@ -55,5 +63,6 @@ export default {
   createRole,
   getListRole,
   changeRole,
-  addGrantstoRole
+  addGrantstoRole,
+  createCategory
 }
