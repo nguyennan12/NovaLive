@@ -5,6 +5,7 @@ import attributeRepo from '#models/repository/attribute.repo.js'
 import categoryRepo from '#models/repository/category.repo.js'
 import { generateCatId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
+import { getCategoryAttributeTemplate } from '#helpers/attribute.help.js'
 
 const createCategory = async ({ name, parentId = null }) => {
   let level = 1
@@ -73,34 +74,9 @@ const addAttributeToCategory = async ({ categoryId, attributeId, isRequired, dis
 }
 
 const getAttributeByCategorySlug = async (slug = []) => {
-  const categories = await categoryRepo.findCattegoryBySlugs(slug)
-  if (!categories) throw new ApiError(StatusCodes.BAD_REQUEST, 'Catelogy not found')
-
-  const attrIds = new Set()
-
-  const catAttrMeta = {}
-
-  for (const cat of categories) {
-    for (const attr of cat.cat_attributes) {
-      attrIds.add(attr.attr_id)
-      if (!catAttrMeta[attr.attr_id] || attr.isRequired) {
-        catAttrMeta[attr.attr_id] = {
-          isRequired: attr.isRequired,
-          displayOrder: attr.displayOrder,
-        }
-      }
-    }
-  }
-
-  const attributes = await attributeRepo.findAtributeByIds(attrIds)
-  return attributes.map(attr => ({
-    attr_id: attr.attr_id,
-    attr_name: attr.attr_name,
-    attr_type: attr.attr_type,
-    attr_options: attr.attr_options,
-    isRequired: catAttrMeta[attr.attr_id]?.isRequired ?? false,
-    displayOrder: catAttrMeta[attr.attr_id]?.displayOrder ?? 0
-  })).sort((a, b) => a.displayOrder - b.displayOrder)
+  const { sortedAttrs } = await getCategoryAttributeTemplate(slug)
+  if (!sortedAttrs.length) throw new ApiError(StatusCodes.BAD_REQUEST, 'Not found')
+  return sortedAttrs
 }
 
 

@@ -10,7 +10,7 @@ const findCattegoryById = async (categoryId) => {
 }
 
 const findCattegoryBySlugs = async (slug) => {
-  return await CategoryModel.find({ cat_slug: { $in: slug }, cat_isDeleted: false }).select('cat_attributes').lean()
+  return await CategoryModel.find({ cat_slug: { $in: slug }, cat_isDeleted: false }).lean()
 }
 
 export default {

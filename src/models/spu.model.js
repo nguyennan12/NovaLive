@@ -20,9 +20,9 @@ const spuSchema = new Schema({
   spu_shopId: { type: Types.ObjectId, ref: 'Shop' },
   spu_attributes: [
     {
-      attr_id: { type: Types.ObjectId, ref: 'Attribute' },
+      attr_id: { type: String, ref: 'Attribute' },
       attr_name: String,
-      attr_values: [Types.ObjectId]
+      attr_value: [String]
     }
   ],
   spu_variations: { type: Array, default: [] },

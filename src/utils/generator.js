@@ -1,5 +1,6 @@
 // utils/id.generator.js — tập trung 1 chỗ
 import { nanoid } from 'nanoid'
+import { customAlphabet } from 'nanoid'
 
 const generate = (prefix) => `${prefix}-${nanoid(8).toUpperCase()}`
 
