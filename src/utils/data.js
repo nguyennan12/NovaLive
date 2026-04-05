@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import slugify from 'slugify'
-import { customAlphabet } from 'nanoid'
 
 const getInfo = (fields = [], object = {}) => {
   return _.pick(object, fields)
@@ -28,18 +27,6 @@ const getInfoNested = (fields = [], object = {}) => {
     }
   })
   return result
-}
-
-export const generateSpuId = () => {
-  const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  const nanoid = customAlphabet(alphabet, 8)
-  return `SPU-${nanoid()}`
-}
-
-export const generateSkuId = (spuId, tierIdx = []) => {
-  const spuCore = spuId.split('-')[1] || spuId
-  const tierPart = tierIdx.length > 0 ? tierIdx.join('') : '00'
-  return `SKU-${spuCore}-${tierPart}`
 }
 
 export default {

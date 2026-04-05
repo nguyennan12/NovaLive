@@ -1,21 +1,18 @@
 import ApiError from '#core/error.response.js'
 import shopRepo from '#models/repository/shop.repo.js'
 import { spuModel } from '#models/spu.model.js'
-import { generateSpuId } from '#utils/data.js'
+import { generateSpuId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import skuService from './sku.service.js'
 
 
 const createSpu = async ({ reqBody, ownId }) => {
-  console.log('🚀 ~ createSpu ~ reqBody:', reqBody)
   const { spu_id,
     spu_shopId,
     spu_attributes,
     spu_variations,
     sku_list,
     ...spuData } = reqBody
-  console.log('🚀 ~ createSpu ~ sku_list:', sku_list)
-  console.log('🚀 ~ createSpu ~ spuData:', spuData)
 
   const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId: spu_shopId, ownId: ownId })
   if (!foundShop) throw new ApiError(StatusCodes.BAD_REQUEST, 'Shop does not exists!')

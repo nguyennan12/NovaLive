@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars */
 import ApiError from '#core/error.response.js'
 import { redisClient } from '#database/init.redis.js'
-import productRepo from '#models/repository/product.repo.js'
 import spuRepo from '#models/repository/spu.repo.js'
 import { skuModel } from '#models/sku.model.js'
-import { generateSkuId } from '#utils/data.js'
+import { generateSkuId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import _ from 'lodash'
 

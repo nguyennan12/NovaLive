@@ -10,7 +10,7 @@ const spuSchema = new Schema({
   spu_slug: { type: String },
   spu_price: { type: Number, required: true, min: [0, 'price invalid'] },
   spu_quantity: { type: Number, required: true, min: [1, 'price invalid'] },
-  spu_category: { type: Array, default: [] },
+  spu_category: [{ type: String, ref: 'Category' }],
   spu_ratingsAvg: {
     type: Number,
     min: [1, 'Rating must be above 1.0'],
@@ -18,13 +18,13 @@ const spuSchema = new Schema({
     set: (val) => Math.round(val * 10) / 10
   },
   spu_shopId: { type: Types.ObjectId, ref: 'Shop' },
-  spu_attributes: { type: Array, required: true },
-  /*
+  spu_attributes: [
     {
-      attr_id,
-      attr_value; [value_id]
-  }
-  */
+      attr_id: { type: Types.ObjectId, ref: 'Attribute' },
+      attr_name: String,
+      attr_values: [Types.ObjectId]
+    }
+  ],
   spu_variations: { type: Array, default: [] },
   /*
     tire_variations: [

@@ -15,7 +15,8 @@ export const DOCUMENT_NAME = {
   SHOP: 'Shop',
   SPU: 'Spu',
   SKU: 'Sku',
-  CATEGORY: 'Category'
+  CATEGORY: 'Category',
+  ATTRIBUTE: 'Attribute'
 }
 
 export const COLLECTION_NAME = {
@@ -34,7 +35,8 @@ export const COLLECTION_NAME = {
   SHOP: 'Shops',
   SPU: 'Spus',
   SKU: 'Skus',
-  CATEGORY: 'Categories'
+  CATEGORY: 'Categories',
+  ATTRIBUTE: 'Attributes'
 }
 
 

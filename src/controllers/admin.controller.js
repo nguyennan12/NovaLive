@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes'
 import rbacService from '#services/rbac.service.js'
 import roleService from '#services/role.service.js'
 import categoryService from '#services/category.service.js'
+import attributeService from '#services/attribute.service.js'
 
 const createResource = async (req, res, next) => {
   new ApiSuccess({
@@ -56,6 +57,34 @@ const createCategory = async (req, res, next) => {
     metadata: await categoryService.createCategory(req.body)
   }).send(res)
 }
+const createCategoryBulk = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Create category successfully!',
+    metadata: await categoryService.createCategoryBulk(req.body)
+  }).send(res)
+}
+const createAttribute = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Create category successfully!',
+    metadata: await attributeService.createAttribute(req.body)
+  }).send(res)
+}
+const createAttributeBulk = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Create category successfully!',
+    metadata: await attributeService.createAttributeBulk(req.body)
+  }).send(res)
+}
+const addAttributeToCategory = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'Create category successfully!',
+    metadata: await categoryService.addAttributeToCategory(req.body)
+  }).send(res)
+}
 
 export default {
   createResource,
@@ -64,5 +93,9 @@ export default {
   getListRole,
   changeRole,
   addGrantstoRole,
-  createCategory
+  createCategory,
+  createAttribute,
+  createAttributeBulk,
+  createCategoryBulk,
+  addAttributeToCategory
 }
