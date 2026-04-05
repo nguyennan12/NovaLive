@@ -29,9 +29,9 @@ const addAttributeToCategory = async (req, res, next) => {
 }
 
 const getAttributeByCategorySlug = async (req, res, next) => {
-  const { slugs } = req.query
+  const { slug } = req.query
 
-  const slugArr = slugs?.split(',') || []
+  const slugArr = slug?.split(',') || []
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'get attribute successfully!',

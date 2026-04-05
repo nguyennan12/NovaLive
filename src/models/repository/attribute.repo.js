@@ -5,7 +5,7 @@ const findAttributeById = async (attributeId) => {
 }
 
 const findAtributeByIds = async (attrIds) => {
-  await attributeModel
+  return await attributeModel
     .find({ attr_id: { $in: [...attrIds] }, isDeleted: false })
     .lean()
 }

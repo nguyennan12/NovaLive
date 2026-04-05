@@ -77,6 +77,7 @@ const getAttributeByCategorySlug = async (slug = []) => {
   if (!categories) throw new ApiError(StatusCodes.BAD_REQUEST, 'Catelogy not found')
 
   const attrIds = new Set()
+
   const catAttrMeta = {}
 
   for (const cat of categories) {
@@ -91,7 +92,7 @@ const getAttributeByCategorySlug = async (slug = []) => {
     }
   }
 
-  const attributes = attributeRepo.findAtributeByIds(attrIds)
+  const attributes = await attributeRepo.findAtributeByIds(attrIds)
   return attributes.map(attr => ({
     attr_id: attr.attr_id,
     attr_name: attr.attr_name,
