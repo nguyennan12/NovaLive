@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
+import ApiError from '#core/error.response.js'
 import CategoryModel from '#models/category.model.js'
 import attributeRepo from '#models/repository/attribute.repo.js'
 import categoryRepo from '#models/repository/category.repo.js'
 import { generateCatId } from '#utils/generator.js'
-import ApiError from '#core/error.response.js'
 import { StatusCodes } from 'http-status-codes'
 
 const createCategory = async ({ name, parentId = null }) => {
@@ -71,34 +71,41 @@ const addAttributeToCategory = async ({ categoryId, attributeId, isRequired, dis
   }
   return updatedCategory
 }
-const addAttributeToCategoryBulk = async ({ categoryId, attributeId, isRequired, displayOrder }) => {
-  const foundAttr = await attributeRepo.findAttributeById(attributeId)
-  if (!foundAttr) throw new ApiError(StatusCodes.BAD_REQUEST, 'Attribute not found')
-  const updatedCategory = await categoryModel.findOneAndUpdate(
-    {
-      _id: categoryId,
-      'cat_attributes.attr_id': { $ne: attributeId }
-    },
-    {
-      $push: {
-        cat_attributes: {
-          attr_id: attributeId,
-          isRequired,
-          displayOrder
+
+const getAttributeByCategorySlug = async (slug = []) => {
+  const categories = await categoryRepo.findCattegoryBySlugs(slug)
+  if (!categories) throw new ApiError(StatusCodes.BAD_REQUEST, 'Catelogy not found')
+
+  const attrIds = new Set()
+  const catAttrMeta = {}
+
+  for (const cat of categories) {
+    for (const attr of cat.cat_attributes) {
+      attrIds.add(attr.attr_id)
+      if (!catAttrMeta[attr.attr_id] || attr.isRequired) {
+        catAttrMeta[attr.attr_id] = {
+          isRequired: attr.isRequired,
+          displayOrder: attr.displayOrder,
         }
       }
-    },
-    { new: true, runValidators: true }
-  ).populate('cat_attributes.attr_id')
-  if (!updatedCategory) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Category not found or Attribute already exists in this category')
+    }
   }
-  return updatedCategory
+
+  const attributes = attributeRepo.findAtributeByIds(attrIds)
+  return attributes.map(attr => ({
+    attr_id: attr.attr_id,
+    attr_name: attr.attr_name,
+    attr_type: attr.attr_type,
+    attr_options: attr.attr_options,
+    isRequired: catAttrMeta[attr.attr_id]?.isRequired ?? false,
+    displayOrder: catAttrMeta[attr.attr_id]?.displayOrder ?? 0
+  })).sort((a, b) => a.displayOrder - b.displayOrder)
 }
+
 
 export default {
   createCategory,
   createCategoryBulk,
   addAttributeToCategory,
-  addAttributeToCategoryBulk
+  getAttributeByCategorySlug
 }

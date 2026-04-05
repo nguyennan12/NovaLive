@@ -1,4 +1,7 @@
+import ApiError from '#core/error.response.js'
 import attributeModel from '#models/attribute.model.js'
+import { StatusCodes } from 'http-status-codes'
+
 
 const createAttribute = async (payload) => {
   const { attr_name, attr_type, attr_options } = payload
@@ -29,8 +32,7 @@ const createAttributeBulk = async (attrArray) => {
 }
 
 
-
 export default {
   createAttribute,
-  createAttributeBulk
+  createAttributeBulk,
 }

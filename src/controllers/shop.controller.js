@@ -31,6 +31,8 @@ const deleteShop = async (req, res, next) => {
     metadata: await shopService.deleteShop({ userId: req.user.userId, shopId: req.params.shopId })
   }).send(res)
 }
+
+
 export default {
   registerShop,
   getShopByUser,
