@@ -4,12 +4,16 @@ import converter from '#utils/converter.js'
 const findShopByUserId = async (userId) => {
   return await shopModel.findOne({ shop_owner: userId, shop_status: 'active' }).lean()
 }
-const findShopByIdAndOwnId = async ({ shopId, userId }) => {
+const findShopByIdAndOwnId = async ({ shopId, ownId }) => {
   return await shopModel.findOne({
     _id: converter.toObjectId(shopId),
-    shop_owner: userId,
+    shop_owner: ownId,
     shop_status: 'active'
   }).lean()
+}
+
+const findShopById = async (shopId) => {
+  return await shopModel.findOne({ _id: converter.toObjectId(shopId) }).lean()
 }
 
 const changeStatus = async (shopId, status) => {
@@ -22,5 +26,6 @@ const changeStatus = async (shopId, status) => {
 export default {
   findShopByUserId,
   findShopByIdAndOwnId,
-  changeStatus
+  changeStatus,
+  findShopById
 }

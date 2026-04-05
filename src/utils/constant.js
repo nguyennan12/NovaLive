@@ -12,7 +12,9 @@ export const DOCUMENT_NAME = {
   RESOURCE: 'Resource',
   TOKEN: 'Token',
   OTP: 'Otp',
-  SHOP: 'Shop'
+  SHOP: 'Shop',
+  SPU: 'Spu',
+  SKU: 'Sku'
 }
 
 export const COLLECTION_NAME = {
@@ -28,7 +30,9 @@ export const COLLECTION_NAME = {
   RESOURCE: 'Resources',
   TOKEN: 'Tokens',
   OTP: 'Otp',
-  SHOP: 'Shops'
+  SHOP: 'Shops',
+  SPU: 'Spus',
+  SKU: 'Skus'
 }
 
 

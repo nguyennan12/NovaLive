@@ -3,6 +3,7 @@ import ApiSuccess from '#core/success.response.js'
 import ProductFactory from '#services/product.service.js'
 import { StatusCodes } from 'http-status-codes'
 
+
 const createProduct = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.CREATED,

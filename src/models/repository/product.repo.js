@@ -50,11 +50,16 @@ const searchProducts = async ({ keySearch }) => {
   return results
 }
 
+const findProductById = async (productId) => {
+  return await ProductModel.findById(productId).lean()
+}
+
 export default {
   updateProductById,
   findByIdAndShopid,
   changePublishStatus,
   findAllProducts,
   getProductDetail,
-  searchProducts
+  searchProducts,
+  findProductById
 }
