@@ -1,0 +1,167 @@
+[
+  {
+    "cat": "CAT-OR306VYW"
+  },
+  {
+    "attributeId": "ATTR-XMNDJJ3Y",
+    "isRequired": true,
+    "displayOrder": 1
+  },
+  {
+    "attributeId": "ATTR-PKLGO3TH",
+    "isRequired": true,
+    "displayOrder": 2
+  },
+  {
+    "attributeId": "ATTR-U2RBE_6H",
+    "isRequired": true,
+    "displayOrder": 3
+  },
+  {
+    "attributeId": "ATTR-FRS6N5JT",
+    "isRequired": true,
+    "displayOrder": 4
+  },
+  {
+    "attributeId": "ATTR-YVLUSSUP",
+    "isRequired": false,
+    "displayOrder": 5
+  },
+  {
+    "attributeId": "ATTR-FFIJVH0N",
+    "isRequired": false,
+    "displayOrder": 6
+  },
+  {
+    "cat": "CAT-ZDQ6Y6G-"
+  },
+  {
+    "attributeId": "ATTR-XMNDJJ3Y",
+    "isRequired": true,
+    "displayOrder": 1
+  },
+  {
+    "attributeId": "ATTR-PKLGO3TH",
+    "isRequired": true,
+    "displayOrder": 2
+  },
+  {
+    "attributeId": "ATTR-_WKNXJAB",
+    "isRequired": true,
+    "displayOrder": 3
+  },
+  {
+    "attributeId": "ATTR-FFIJVH0N",
+    "isRequired": true,
+    "displayOrder": 4
+  },
+  {
+    "attributeId": "ATTR-PONRARRE",
+    "isRequired": false,
+    "displayOrder": 5
+  },
+  {
+    "attributeId": "ATTR-AOHT-BVD",
+    "isRequired": false,
+    "displayOrder": 6
+  },
+  {
+    "cat": "CAT-KTNA9ITF"
+  },
+  {
+    "attributeId": "ATTR-PONRARRE",
+    "isRequired": true,
+    "displayOrder": 1
+  },
+  {
+    "attributeId": "ATTR-FFIJVH0N",
+    "isRequired": true,
+    "displayOrder": 2
+  },
+  {
+    "attributeId": "ATTR-UPH-XCIG",
+    "isRequired": true,
+    "displayOrder": 3
+  },
+  {
+    "attributeId": "ATTR-NZH41ROJ",
+    "isRequired": true,
+    "displayOrder": 4
+  },
+  {
+    "attributeId": "ATTR-WKEB32NI",
+    "isRequired": false,
+    "displayOrder": 5
+  },
+  {
+    "attributeId": "ATTR-Q70FYXE1",
+    "isRequired": false,
+    "displayOrder": 6
+  },
+  {
+    "cat": "CAT-BNFILUFO"
+  },
+  {
+    "attributeId": "ATTR-PONRARRE",
+    "isRequired": true,
+    "displayOrder": 1
+  },
+  {
+    "attributeId": "ATTR-FFIJVH0N",
+    "isRequired": true,
+    "displayOrder": 2
+  },
+  {
+    "attributeId": "ATTR-UE7FFWIL",
+    "isRequired": true,
+    "displayOrder": 3
+  },
+  {
+    "attributeId": "ATTR-QW6-80CG",
+    "isRequired": true,
+    "displayOrder": 4
+  },
+  {
+    "attributeId": "ATTR-AUDWLUAI",
+    "isRequired": false,
+    "displayOrder": 5
+  },
+  {
+    "attributeId": "ATTR-D4A7MKSN",
+    "isRequired": false,
+    "displayOrder": 6
+  },
+  {
+    "cat": "CAT-TQPWCX__"
+  },
+  {
+    "attributeId": "ATTR-PONRARRE",
+    "isRequired": true,
+    "displayOrder": 1
+  },
+  {
+    "attributeId": "ATTR-B_GSXICZ",
+    "isRequired": true,
+    "displayOrder": 2
+  },
+  {
+    "attributeId": "ATTR-UE7FFWIL",
+    "isRequired": true,
+    "displayOrder": 3
+  },
+  {
+    "attributeId": "ATTR-_WKNXJAB",
+    "isRequired": true,
+    "displayOrder": 4
+  },
+  {
+    "attributeId": "ATTR-_M-2413G",
+    "isRequired": false,
+    "displayOrder": 5
+  },
+  {
+    "attributeId": "ATTR-QPAD54D1",
+    "isRequired": false,
+    "displayOrder": 6
+  }
+]

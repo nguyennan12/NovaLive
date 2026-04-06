@@ -7,8 +7,9 @@ const Router = express.Router()
 
 Router.use(authentication)
 Router.post('', asyncHandler(categoryController.createCategory))
+Router.get('', asyncHandler(categoryController.getAllCategory))
 Router.post('/bulk', asyncHandler(categoryController.createCategoryBulk))
-Router.post('/attribute', asyncHandler(categoryController.addAttributeToCategory))
+Router.post('/:categoryId/attribute', asyncHandler(categoryController.addAttributeToCategory))
 Router.get('/attribute', asyncHandler(categoryController.getAttributeByCategorySlug))
 
 export const categoryRouter = Router

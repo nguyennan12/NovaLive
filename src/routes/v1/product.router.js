@@ -18,7 +18,7 @@ Router.get('/detail/:productId', asyncHandler(productController.getProductDetail
 Router.use(authentication)
 // === Shop ===
 //Router.post('', validate(productValidation.create), grantAcess('createAny', 'product'), asyncHandler(productController.createProduct))
-Router.post('', validate(createSpuSchema), asyncHandler(productController.createProduct))
+Router.post('', asyncHandler(productController.createProduct))
 Router.patch('/:productId', asyncHandler(productController.updateProduct))
 Router.patch('/:productId/sku/:skuId', asyncHandler(productController.updateSingleSku))
 Router.patch('/:productId/publish', asyncHandler(productController.publishProduct))

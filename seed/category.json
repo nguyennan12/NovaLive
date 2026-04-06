@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Điện tử",
+    "parentId": null
+  },
+  {
+    "name": "Thời trang Nam",
+    "parentId": null
+  },
+  {
+    "name": "Mỹ phẩm",
+    "parentId": null
+  },
+  {
+    "name": "Gia dụng",
+    "parentId": null
+  },
+  {
+    "name": "Dồ chơi",
+    "parentId": null
+  },
+  {
+    "name": "Điện thoại",
+    "parentId": "CAT-OR306VYW"
+  },
+  {
+    "name": "Laptop",
+    "parentId": "CAT-OR306VYW"
+  },
+  {
+    "name": "Áo thun",
+    "parentId": "CAT-ZDQ6Y6G-"
+  },
+  {
+    "name": "Quần Jean",
+    "parentId": "CAT-ZDQ6Y6G-"
+  },
+  {
+    "name": "Chăm sóc da",
+    "parentId": "CAT-KTNA9ITF"
+  },
+  {
+    "name": "Trang điểm",
+    "parentId": "CAT-KTNA9ITF"
+  },
+  {
+    "name": "Nồi cơm Diện",
+    "parentId": "CAT-BNFILUFO"
+  },
+  {
+    "name": "Máy hút bụi",
+    "parentId": "CAT-BNFILUFO"
+  },
+  {
+    "name": "Lego",
+    "parentId": "CAT-TQPWCX__"
+  },
+  {
+    "name": "Búp bê",
+    "parentId": "CAT-TQPWCX__"
+  }
+]
