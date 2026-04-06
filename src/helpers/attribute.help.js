@@ -71,7 +71,7 @@ export const validateAndNormalizeAttributes = async ({ spu_attributes = [], spu_
     if (!dataAttr) throw new ApiError(StatusCodes.BAD_REQUEST, `Attribute ${attr.attr_id} not found`)
 
     //kiểm tra xem attribute có phải là select k? và nếu là select thì cái option của
-    //spu_attribute truyền vàocos nằm trong option của dataAttr không?
+    //spu_attribute truyền vào cos nằm trong option của dataAttr không?
     if (dataAttr.attr_type === 'select' && !dataAttr.attr_options.includes(attr.attr_value)) {
       throw new ApiError(StatusCodes.BAD_REQUEST, `Value invalid for ${dataAttr.attr_name}`)
     }

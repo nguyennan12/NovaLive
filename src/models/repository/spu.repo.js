@@ -1,9 +1,58 @@
 import { spuModel } from '#models/spu.model.js'
+import converter from '#utils/converter.js'
 
 const findBySpuId = async (spuId) => {
   return await spuModel.findOne({ spu_id: spuId }).lean()
 }
 
+const changePublishStatus = async ({ productId, shopId, isPublished }) => {
+  return await spuModel.findOneAndUpdate(
+    { spu_id: productId, spu_shopId: converter.toObjectId(shopId) },
+    { $set: { isDraft: !isPublished, isPublished: isPublished } },
+    { returnDocument: 'after' }
+  ).lean()
+}
+
+const findAllProducts = async ({ limit, sort, page, filter, select }) => {
+  const skip = (page - 1) * limit
+  const sortBy = sort === 'ctime' ? { _id: -1 } : { _id: 1 }
+  return await spuModel.find(filter)
+    .sort(sortBy)
+    .skip(skip)
+    .limit(limit)
+    .select(select)
+    .lean()
+}
+
+const findProductDetail = async (productId) => {
+  return await spuModel.findOne({ spu_id: productId }).lean()
+}
+
+const deleteProduct = async (productId) => {
+  return await spuModel.findOneAndUpdate({ spu_id: productId }, { isDeleted: true }).lean()
+}
+
+const searchProducts = async ({ keySearch }) => {
+  const results = await spuModel.find(
+    {
+      $text: { $search: keySearch },
+      isDraft: false
+    },
+    {
+      score: { $meta: 'textScore' }
+    }
+  )
+    .sort({ score: { $meta: 'textScore' } })
+    .lean()
+
+  return results
+}
+
 export default {
-  findBySpuId
+  findBySpuId,
+  changePublishStatus,
+  findAllProducts,
+  findProductDetail,
+  deleteProduct,
+  searchProducts
 }

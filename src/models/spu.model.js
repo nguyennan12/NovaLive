@@ -26,16 +26,6 @@ const spuSchema = new Schema({
     }
   ],
   spu_variations: { type: Array, default: [] },
-  /*
-    tire_variations: [
-      {
-        image: [], name: 'color, options: ['red'. 'green]
-      },
-      {
-        image: [], name: 'size, options: ['S'. 'M']
-      }
-    ]
-  */
   isDraft: { type: Boolean, default: true, index: true, select: false },
   isPublished: { type: Boolean, default: false, index: true, select: false },
   isDeleted: { type: Boolean, default: false }
