@@ -1,12 +1,5 @@
 
 export const DOCUMENT_NAME = {
-  PRODUCT: 'Product',
-  ELECTRONIC: 'Electronic',
-  CLOTHING: 'Clothing',
-  FURNITURE: 'Furniture',
-  COSMETICS: 'Cosmetics',
-  FOOD: 'Food',
-  BOOK: 'Book',
   USER: 'User',
   ROLE: 'Role',
   RESOURCE: 'Resource',
@@ -20,13 +13,6 @@ export const DOCUMENT_NAME = {
 }
 
 export const COLLECTION_NAME = {
-  PRODUCT: 'Products',
-  ELECTRONIC: 'Electronics',
-  CLOTHING: 'Clothes',
-  FURNITURE: 'Furniture',
-  COSMETICS: 'Cosmetics',
-  FOOD: 'Food',
-  BOOK: 'Books',
   USER: 'Users',
   ROLE: 'Roles',
   RESOURCE: 'Resources',
