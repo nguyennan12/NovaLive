@@ -24,7 +24,7 @@ const addAttributeToCategory = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.CREATED,
     message: 'Create category successfully!',
-    metadata: await categoryService.addAttributeToCategory(req.body)
+    metadata: await categoryService.addAttributeToCategory({ categoryId: req.params.categoryId, reqBody: req.body })
   }).send(res)
 }
 
@@ -39,9 +39,21 @@ const getAttributeByCategorySlug = async (req, res, next) => {
   }).send(res)
 }
 
+const getAllCategory = async (req, res, next) => {
+  const { slug } = req.query
+
+  const slugArr = slug?.split(',') || []
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'get categories successfully!',
+    metadata: await categoryService.getAllCategory(slugArr)
+  }).send(res)
+}
+
 export default {
   createCategory,
   createCategoryBulk,
   addAttributeToCategory,
-  getAttributeByCategorySlug
+  getAttributeByCategorySlug,
+  getAllCategory
 }

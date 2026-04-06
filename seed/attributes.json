@@ -1,0 +1,105 @@
+[
+  {
+    "attr_name": "Thương hiệu",
+    "attr_type": "text",
+    "isRequired": true
+  },
+  {
+    "attr_name": "Kết nối",
+    "attr_type": "text",
+    "isRequired": true
+  },
+  {
+    "attr_name": "Pin / Thời lượng",
+    "attr_type": "text",
+    "isRequired": true
+  },
+  {
+    "attr_name": "Màn hình / Loại",
+    "attr_type": "text",
+    "isRequired": true
+  },
+  {
+    "attr_name": "Chip / CPU",
+    "attr_type": "text",
+    "isRequired": false
+  },
+  {
+    "attr_name": "Xuất xứ",
+    "attr_type": "text",
+    "isRequired": false
+  },
+  {
+    "attr_name": "Kiểu dáng",
+    "attr_type": "select",
+    "attr_options": [
+      "Slim fit",
+      "Regular fit",
+      "Oversize"
+    ],
+    "isRequired": true
+  },
+  {
+    "attr_name": "Màu sắc chính",
+    "attr_type": "text",
+    "isRequired": true
+  },
+  {
+    "attr_name": "Chất liệu",
+    "attr_type": "text",
+    "isRequired": true
+  },
+  {
+    "attr_name": "Xuất xứ",
+    "attr_type": "text",
+    "isRequired": true
+  },
+  {
+    "attr_name": "Thương hiệu",
+    "attr_type": "text",
+    "isRequired": false
+  },
+  {
+    "attr_name": "Hướng dẫn giặt",
+    "attr_type": "text",
+    "isRequired": false
+  },
+      {
+    "attr_name": "Thương hiệu",
+    "attr_type": "text",
+    "isRequired": true
+  },
+  {
+    "attr_name": "Xuất xứ",
+    "attr_type": "text",
+    "isRequired": true
+  },
+  {
+    "attr_name": "Thành phần chính",
+    "attr_type": "text",
+    "isRequired": true
+  },
+  {
+    "attr_name": "Loại da phù hợp",
+    "attr_type": "select",
+    "attr_options": [
+      "Da dầu",
+      "Da khô",
+      "Da thường",
+      "Da hỗn hợp",
+      "Mọi loại da"
+    ],
+    "isRequired": true
+  },
+  {
+    "attr_name": "Hạn sử dụng",
+    "attr_type": "text",
+    "attr_unit": "tháng",
+    "isRequired": false
+  },
+  {
+    "attr_name": "Hương thơm",
+    "attr_type": "text",
+    "isRequired": false
+  }
+]

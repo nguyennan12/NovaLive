@@ -38,9 +38,9 @@ const createCategoryBulk = async (categoryArray) => {
       }
     }
     const newCat = await CategoryModel.create({
-      cat_name: name,
+      cat_name: item.name,
       cat_id: catId,
-      cat_parentId: parentId,
+      cat_parentId: item.parentId,
       cat_level: level
     })
     results.push(newCat)
@@ -48,7 +48,9 @@ const createCategoryBulk = async (categoryArray) => {
   return results
 }
 
-const addAttributeToCategory = async ({ categoryId, attributeId, isRequired, displayOrder }) => {
+const addAttributeToCategory = async ({ categoryId, reqBody }) => {
+  const { attributeId, isRequired, displayOrder } = reqBody
+  console.log('🚀 ~ addAttributeToCategory ~ attributeId:', attributeId)
   const foundAttr = await attributeRepo.findAttributeById(attributeId)
   if (!foundAttr) throw new ApiError(StatusCodes.BAD_REQUEST, 'Attribute not found')
   const updatedCategory = await CategoryModel.findOneAndUpdate(
@@ -79,10 +81,14 @@ const getAttributeByCategorySlug = async (slug = []) => {
   return sortedAttrs
 }
 
+const getAllCategory = async () => {
+  return await CategoryModel.find({}).lean()
+}
 
 export default {
   createCategory,
   createCategoryBulk,
   addAttributeToCategory,
-  getAttributeByCategorySlug
+  getAttributeByCategorySlug,
+  getAllCategory
 }
