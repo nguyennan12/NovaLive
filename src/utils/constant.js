@@ -9,7 +9,8 @@ export const DOCUMENT_NAME = {
   SPU: 'Spu',
   SKU: 'Sku',
   CATEGORY: 'Category',
-  ATTRIBUTE: 'Attribute'
+  ATTRIBUTE: 'Attribute',
+  DISCOUNT: 'Discount'
 }
 
 export const COLLECTION_NAME = {
@@ -22,7 +23,8 @@ export const COLLECTION_NAME = {
   SPU: 'Spus',
   SKU: 'Skus',
   CATEGORY: 'Categories',
-  ATTRIBUTE: 'Attributes'
+  ATTRIBUTE: 'Attributes',
+  DISCOUNT: 'Discounts'
 }
 
 
