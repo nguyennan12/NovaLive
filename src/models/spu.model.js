@@ -25,17 +25,28 @@ const spuSchema = new Schema({
       attr_value: [String]
     }
   ],
+
+  live: {
+    is_live: { type: Boolean, default: false, index: true },
+    live_price: Number,
+    start_time: Date,
+    end_time: Date,
+    sort_order: { type: Number, default: 0 },
+    is_pin: { type: Boolean, default: false },
+    sold_count: { type: Number, default: 0 },
+    view_count: { type: Number, default: 0 }
+  },
+
   spu_variations: { type: Array, default: [] },
-  isDraft: { type: Boolean, default: true, index: true, select: false },
-  isPublished: { type: Boolean, default: false, index: true, select: false },
+  isDraft: { type: Boolean, default: true, index: true },
+  isPublished: { type: Boolean, default: false, index: true },
   isDeleted: { type: Boolean, default: false }
 }, {
   collection: COLLECTION_NAME.SPU,
   timestamps: true
 })
 
-//create index for search
-spuSchema.index({ spu_name: 'text', spu_description: 'text' })
+
 //document middleware (before save and create)
 spuSchema.pre('save', async function () {
   this.spu_slug = slugify(this.spu_name, { lower: true })

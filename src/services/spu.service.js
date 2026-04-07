@@ -1,14 +1,16 @@
 import ApiError from '#core/error.response.js'
+import { ElasticClient } from '#database/init.elasticsearch.js'
+import { validateAndNormalizeAttributes } from '#helpers/attribute.help.js'
+import { syncProdcutToEs, transformSPUtoES } from '#helpers/SpuToEs.js'
+import { updateSubModel } from '#helpers/update.helper.js'
 import shopRepo from '#models/repository/shop.repo.js'
+import spuRepo from '#models/repository/spu.repo.js'
 import { spuModel } from '#models/spu.model.js'
+import converter from '#utils/converter.js'
 import { generateSpuId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import skuService from './sku.service.js'
-import spuRepo from '#models/repository/spu.repo.js'
-import { validateAndNormalizeAttributes } from '#helpers/attribute.help.js'
-import { updateSubModel } from '#helpers/update.helper.js'
-import converter from '#utils/converter.js'
-
+import { ELASTIC_INDEX } from '#utils/constant.js'
 
 const createSpu = async ({ reqBody, ownId }) => {
   const { spu_id,
@@ -40,6 +42,8 @@ const createSpu = async ({ reqBody, ownId }) => {
   if (newSpu && sku_list.length) {
     await skuService.createSku({ spu_id: newSpu.spu_id, sku_list })
   }
+
+  await syncProdcutToEs(newSpu._id)
   return newSpu
 }
 
@@ -62,11 +66,18 @@ const updateProduct = async ({ productId, reqBody, userId }) => {
   }
 
   if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission to update this product!')
-  return await updateSubModel({ model: spuModel, id: foundProduct._id, payload: reqBody, allowedFields })
+  const updatedProduct = await updateSubModel({ model: spuModel, id: foundProduct._id, payload: reqBody, allowedFields })
+
+  await syncProdcutToEs(updatedProduct._id)
+
+  return updatedProduct
 }
 
 
 const unPublishProduct = async ({ productId, userId }) => {
+  const foundProduct = await spuRepo.findProductDetail(productId)
+  if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product not found!')
+
   const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId: foundProduct.spu_shopId, ownId: userId })
   if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission to update this product!')
 
@@ -77,10 +88,14 @@ const unPublishProduct = async ({ productId, userId }) => {
     isDeleted: false
   })
   if (!result) throw new ApiError(StatusCodes.BAD_REQUEST, 'Operation failed')
+  await syncProdcutToEs(result._id)
   return result
 }
 
 const publishProduct = async ({ productId, userId }) => {
+  const foundProduct = await spuRepo.findProductDetail(productId)
+  if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product not found!')
+
   const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId: foundProduct.spu_shopId, ownId: userId })
   if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission to update this product!')
 
@@ -91,6 +106,7 @@ const publishProduct = async ({ productId, userId }) => {
     isDeleted: false
   })
   if (!result) throw new ApiError(StatusCodes.BAD_REQUEST, 'Operation failed')
+  await syncProdcutToEs(result._id)
   return result
 }
 
@@ -127,16 +143,57 @@ const getProductDetail = async ({ productId }) => {
 }
 
 const deleteProduct = async ({ productId, userId }) => {
+  const foundProduct = await spuRepo.findProductDetail(productId)
+  if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product not found!')
+
   const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId: foundProduct.spu_shopId, ownId: userId })
   if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission to detele this product!')
 
   const result = await spuRepo.deleteProduct(productId)
   if (!result) throw new ApiError(StatusCodes.BAD_REQUEST, 'Operation failed')
+  await ElasticClient.delete({
+    index: ELASTIC_INDEX.PRODUCT,
+    id: result._id.toString()
+  })
   return result
 }
 
-const searchProduct = async ({ keySearch }) => {
-  return await spuRepo.searchProducts({ keySearch })
+const searchProduct = async ({ keyword, category, minPrice, maxPrice, page = 1, limit = 20 }) => {
+  const must = []
+  const filter = []
+  if (keyword) {
+    must.push({
+      multi_match: {
+        query: keyword,
+        fields: ['spu_name^2', 'spu_description'],
+        fuzziness: 'AUTO'
+      }
+    })
+  }
+
+  if (category) filter.push({ term: { spu_category: category } })
+  if (minPrice || maxPrice) {
+    const rangeQuery = { range: { spu_price: {} } }
+    if (minPrice) rangeQuery.range.spu_price.gte = minPrice
+    if (maxPrice) rangeQuery.range.spu_price.lte = maxPrice
+    filter.push(rangeQuery)
+  }
+  filter.push({ term: { isPublished: true } })
+  filter.push({ term: { isDeleted: false } })
+
+  const result = await ElasticClient.search({
+    index: ELASTIC_INDEX.PRODUCT,
+    query: { bool: { must, filter } },
+    from: (page - 1) * limit,
+    size: limit,
+    sort: { createdAt: 'desc' }, _source: ['mongo_id', 'spu_name', 'spu_price', 'spu_thumb', 'spu_ratingsAvg', 'spu_category']
+  })
+  return {
+    total: result.hits.total.valueOf,
+    page,
+    limit,
+    products: result.hits.hits.map(hit => hit._source)
+  }
 }
 
 export default {
@@ -151,3 +208,5 @@ export default {
   deleteProduct,
   searchProduct
 }
+
+
