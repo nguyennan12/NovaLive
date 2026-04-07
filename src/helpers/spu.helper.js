@@ -1,6 +1,8 @@
 import { ElasticClient } from '#database/init.elasticsearch.js'
 import { spuModel } from '#models/spu.model.js'
 import { ELASTIC_INDEX } from '#utils/constant.js'
+import spuRepo from '#models/repository/spu.repo.js'
+import shopRepo from '#models/repository/shop.repo.js'
 
 export const transformSPUtoES = (doc) => {
   return {
@@ -52,5 +54,16 @@ export const syncProdcutToEs = async (productId) => {
     return result
   }
 
+}
+
+export const validateProductOwnership = async ({ productId, userId }) => {
+  const foundProduct = await spuRepo.findProductDetail(productId)
+  if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product does not exist!')
+  const foundShop = await shopRepo.findShopByIdAndOwnId({
+    shopId: foundProduct.spu_shopId,
+    ownId: userId
+  })
+  if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'No permission to access this product!')
+  return { foundProduct, foundShop }
 }
 

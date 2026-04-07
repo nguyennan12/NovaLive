@@ -5,6 +5,7 @@ import shopRepo from '#models/repository/shop.repo.js'
 import spuRepo from '#models/repository/spu.repo.js'
 import { skuModel } from '#models/sku.model.js'
 import { spuModel } from '#models/spu.model.js'
+import { getMinPriceFromSkus } from '#utils/data.js'
 import { generateSkuId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import _ from 'lodash'
@@ -15,6 +16,7 @@ const createSku = async ({ spu_id, sku_list }) => {
     const skuList = sku_list.map(sku => {
       return { ...sku, sku_spuId: spu_id, sku_id: generateSkuId(spu_id, sku.sku_tier_idx) }
     })
+    //create 1 mảng array cái sku
     const newSku = await skuModel.create(skuList)
     return newSku
   } catch (error) {
@@ -40,37 +42,38 @@ const getAllSkuBySpuId = async (spuId) => {
 
 //này up date toàn bộ sku list tương ứng với variation
 const updateSkuBySpuId = async ({ spuId, skuList }) => {
-  const oldSkus = await skuModel.find({ sku_spuId: spuId })
+  //tạo danh sách sku mới từ sku list truyền vào
+  const newSkuIds = skuList.map(sku => generateSkuId(spuId, sku.sku_tier_idx))
 
-  await Promise.all(
-    skuList.map((newSku) => {
-      const skuId = generateSkuId(spuId, newSku.sku_tier_idx)
-      skuModel.findOneAndUpdate(
-        { sku_id: skuId },
-        { ...newSku, sku_id: skuId },
-        { upsert: true, new: true }
-      )
-    })
-  )
-  //xoa sku cũ còn tồn tại trong list mới
-  const newSkuIds = new Set(skuList.map((s) => generateSkuId(spuId, s.sku_tier_idx)))
-  await Promise.all(
-    oldSkus
-      .filter((old) => !newSkuIds.has(old.sku_id))
-      .map((old) => skuModel.deleteOne({ _id: old._id }))
-  )
+  //tạo mảng bulk option updateOne tất cả cái sku mới
+  const bulkOps = skuList.map((newSku, idx) => ({
+    updateOne: {
+      filter: { sku_id: newSkuIds[idx] },
+      update: { $set: { ...newSku, sku_id: newSkuIds[idx], sku_spuId: spuId } },
+      upsert: true
+    }
+  }))
+
+  if (bulkOps.length > 0) await skuModel.bulkWrite(bulkOps)
+
+  //xóa tất cả sku cũ không có trong sku list mới
+  skuModel.deleteMany({
+    sku_spuId: spuId,
+    sku_id: { $nin: newSkuIds }
+  })
+
+  return await skuModel.find({ sku_spuId: spuId }).lean()
 }
 
+//update field bên trong sku không làm thay đổi tier idx của nó
 const updateSingleSku = async ({ spuId, skuId, payload, userId }) => {
+  //check trước khi update
   const foundProduct = await spuRepo.findProductDetail(spuId)
   if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product does not exist!')
-
-  const foundShop = await shopRepo.findShopByIdAndOwnId({
-    shopId: foundProduct.spu_shopId,
-    ownId: userId
-  })
+  const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId: foundProduct.spu_shopId, ownId: userId })
   if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'No permission!')
 
+  //các field được update
   const allowedData = _.pick(payload, ['sku_price', 'sku_stock', 'sku_thumb', 'sku_name'])
 
   const updatedSku = await skuModel.findOneAndUpdate(
@@ -84,7 +87,7 @@ const updateSingleSku = async ({ spuId, skuId, payload, userId }) => {
   if (payload.sku_price) {
     const allSkus = await skuModel.find({ sku_spuId: spuId })
     await spuModel.findOneAndUpdate({ spu_id: spuId }, {
-      spu_price: Math.min(...allSkus.map((s) => s.sku_price))
+      spu_price: getMinPriceFromSkus(allSkus)
     })
   }
 

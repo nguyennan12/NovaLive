@@ -7,22 +7,25 @@ import express from 'express'
 
 const Router = express.Router()
 // === User ===
-Router.get('/search/', asyncHandler(productController.searchProduct))
-Router.get('/variation/', asyncHandler(productController.getOneSku))
+Router.get('/search', asyncHandler(productController.searchProduct))
+Router.get('/variation', asyncHandler(productController.getOneSku))
 Router.get('/variations/:spuId', asyncHandler(productController.getAllSkuBySpuId))
-Router.get('', asyncHandler(productController.getAllProducts))
-Router.get('/detail/:productId', asyncHandler(productController.getProductDetail))
+Router.get('/', asyncHandler(productController.getAllProducts))
+Router.get('/:productId', asyncHandler(productController.getProductDetail))
 //  === Authentication ===
 Router.use(authentication)
 // === Shop ===
+Router.get('/me/public', asyncHandler(productController.getPublishedProduct))
+Router.get('/me/draft', asyncHandler(productController.getDraftProduct))
+
 //Router.post('', validate(productValidation.create), grantAcess('createAny', 'product'), asyncHandler(productController.createProduct))
-Router.post('', asyncHandler(productController.createProduct))
+Router.post('/', asyncHandler(productController.createProduct))
+
 Router.patch('/:productId', asyncHandler(productController.updateProduct))
 Router.patch('/:productId/sku/:skuId', asyncHandler(productController.updateSingleSku))
 Router.patch('/:productId/publish', asyncHandler(productController.publishProduct))
 Router.patch('/:productId/unpublish', asyncHandler(productController.unPublishProduct))
-Router.get('/public', asyncHandler(productController.getPublishedProduct))
-Router.get('/draft', asyncHandler(productController.getDraftProduct))
+
 Router.delete('/:productId', asyncHandler(productController.deleteProduct))
 
 export const ProductRouter = Router

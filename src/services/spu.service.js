@@ -1,18 +1,20 @@
 import ApiError from '#core/error.response.js'
 import { ElasticClient } from '#database/init.elasticsearch.js'
 import { validateAndNormalizeAttributes } from '#helpers/attribute.help.js'
-import { syncProdcutToEs, transformSPUtoES } from '#helpers/SpuToEs.js'
+import { syncProdcutToEs } from '#helpers/spu.helper.js'
 import { updateSubModel } from '#helpers/update.helper.js'
 import shopRepo from '#models/repository/shop.repo.js'
 import spuRepo from '#models/repository/spu.repo.js'
 import { spuModel } from '#models/spu.model.js'
+import { ELASTIC_INDEX } from '#utils/constant.js'
 import converter from '#utils/converter.js'
 import { generateSpuId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import skuService from './sku.service.js'
-import { ELASTIC_INDEX } from '#utils/constant.js'
+import { getMinPriceFromSkus, getTotalStockFromSkus } from '#utils/data.js'
+import { validateProductOwnership } from '#helpers/spu.helper.js'
 
-const createSpu = async ({ reqBody, ownId }) => {
+const createSpu = async ({ reqBody, userId }) => {
   const { spu_id,
     spu_shopId,
     spu_attributes,
@@ -21,13 +23,15 @@ const createSpu = async ({ reqBody, ownId }) => {
     sku_list,
     ...spuData } = reqBody
 
+  //xử lý đồng thời tìm shop và lấy attribute đã xử lý ra (gồm id, name, value)
   const [foundShop, normalizedAttrs] = await Promise.all([
-    shopRepo.findShopByIdAndOwnId({ shopId: spu_shopId, ownId }),
+    shopRepo.findShopByIdAndOwnId({ shopId: spu_shopId, userId }),
     validateAndNormalizeAttributes({ spu_attributes, spu_category })
   ])
 
   if (!foundShop) throw new ApiError(StatusCodes.BAD_REQUEST, 'Shop does not exists!')
 
+  //tạo 1 spu
   const newSpu = await spuModel.create({
     spu_id: generateSpuId(spu_id),
     ...spuData,
@@ -35,39 +39,41 @@ const createSpu = async ({ reqBody, ownId }) => {
     spu_attributes: normalizedAttrs,
     spu_variations,
     spu_category: spu_category,
-    spu_price: Math.min(...sku_list.map(s => s.sku_price)),
-    spu_quantity: sku_list.reduce((sum, s) => sum + s.sku_stock, 0),
+    spu_price: getMinPriceFromSkus(sku_list),
+    spu_quantity: getTotalStockFromSkus(sku_list),
   })
 
+  //nếu có sku_list thì xử lý tạo sku
   if (newSpu && sku_list.length) {
     await skuService.createSku({ spu_id: newSpu.spu_id, sku_list })
   }
-
+  //lưu vào elastic
   await syncProdcutToEs(newSpu._id)
   return newSpu
 }
 
 const updateProduct = async ({ productId, reqBody, userId }) => {
+  //các fields dc cho phép update
   const allowedFields = [
     'spu_name', 'spu_thumb', 'spu_description',
     'spu_price', 'spu_category', 'spu_attributes',
     'spu_variations', 'sku_list'
   ]
-  const foundProduct = await spuRepo.findProductDetail(productId)
-  if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product does not exist!')
-
-  const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId: foundProduct.spu_shopId, ownId: userId })
-
+  //các bước check business
+  const { foundProduct } = await validateProductOwnership({ productId, userId })
+  //nếu có gửi sku_list để update thì update sku trước
   if (reqBody.sku_list && reqBody.sku_list.length > 0) {
-    await skuService.updateSkuBySpuId({ spuId: productId, skuList: reqBody.sku_list })
-
-    reqBody.spu_price = Math.min(...reqBody.sku_list.map(s => s.sku_price))
-    reqBody.spu_quantity = reqBody.sku_list.reduce((sum, s) => sum + s.sku_stock, 0)
+    const updatedSkus = await skuService.updateSkuBySpuId({
+      spuId: productId,
+      skuList: reqBody.sku_list
+    })
+    //set lại giá khi đã update sku
+    reqBody.spu_price = getMinPriceFromSkus(updatedSkus)
+    reqBody.spu_quantity = getTotalStockFromSkus(updatedSkus)
   }
-
-  if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission to update this product!')
+  //xử lý xong hết rồi thì update product
   const updatedProduct = await updateSubModel({ model: spuModel, id: foundProduct._id, payload: reqBody, allowedFields })
-
+  //lưu vào elastic
   await syncProdcutToEs(updatedProduct._id)
 
   return updatedProduct
@@ -75,44 +81,32 @@ const updateProduct = async ({ productId, reqBody, userId }) => {
 
 
 const unPublishProduct = async ({ productId, userId }) => {
-  const foundProduct = await spuRepo.findProductDetail(productId)
-  if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product not found!')
-
-  const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId: foundProduct.spu_shopId, ownId: userId })
-  if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission to update this product!')
-
+  const { foundShop } = await validateProductOwnership({ productId, userId })
   const result = await spuRepo.changePublishStatus({
     productId,
     shopId: foundShop._id,
     isPublished: false,
     isDeleted: false
   })
-  if (!result) throw new ApiError(StatusCodes.BAD_REQUEST, 'Operation failed')
   await syncProdcutToEs(result._id)
   return result
 }
 
 const publishProduct = async ({ productId, userId }) => {
-  const foundProduct = await spuRepo.findProductDetail(productId)
-  if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product not found!')
-
-  const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId: foundProduct.spu_shopId, ownId: userId })
-  if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission to update this product!')
-
+  const { foundShop } = await validateProductOwnership({ productId, userId })
   const result = await spuRepo.changePublishStatus({
     productId,
     shopId: foundShop._id,
     isPublished: true,
     isDeleted: false
   })
-  if (!result) throw new ApiError(StatusCodes.BAD_REQUEST, 'Operation failed')
   await syncProdcutToEs(result._id)
   return result
 }
 
 const getPublishedProduct = async ({ userId, limit = 50, page = 1 }) => {
   const foundShop = await shopRepo.findShopByUserId(userId)
-  if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission to update this product!')
+  if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'Not permission to update this product!')
   const filter = {
     spu_shopId: converter.toObjectId(foundShop._id),
     isPublished: true,
@@ -123,7 +117,7 @@ const getPublishedProduct = async ({ userId, limit = 50, page = 1 }) => {
 
 const getDraftProduct = async ({ userId, limit = 50, page = 1 }) => {
   const foundShop = await shopRepo.findShopByUserId(userId)
-  if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission to update this product!')
+  if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'Not permission to update this product!')
   const filter = {
     product_shopId: converter.toObjectId(foundShop._id),
     isDraft: true,
@@ -143,13 +137,8 @@ const getProductDetail = async ({ productId }) => {
 }
 
 const deleteProduct = async ({ productId, userId }) => {
-  const foundProduct = await spuRepo.findProductDetail(productId)
-  if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product not found!')
-
-  const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId: foundProduct.spu_shopId, ownId: userId })
-  if (!foundShop) throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission to detele this product!')
-
-  const result = await spuRepo.deleteProduct(productId)
+  const { foundProduct } = await validateProductOwnership({ productId, userId })
+  const result = await spuRepo.deleteProduct(foundProduct.spu_id)
   if (!result) throw new ApiError(StatusCodes.BAD_REQUEST, 'Operation failed')
   await ElasticClient.delete({
     index: ELASTIC_INDEX.PRODUCT,

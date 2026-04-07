@@ -28,6 +28,15 @@ const getInfoNested = (fields = [], object = {}) => {
   })
   return result
 }
+export const getMinPriceFromSkus = (skuList = []) => {
+  if (!skuList.length) return 0
+  return Math.min(...skuList.map(s => s.sku_price))
+}
+
+export const getTotalStockFromSkus = (skuList = []) => {
+  if (!skuList.length) return 0
+  return skuList.reduce((sum, s) => sum + s.sku_stock, 0)
+}
 
 export default {
   getInfo,
