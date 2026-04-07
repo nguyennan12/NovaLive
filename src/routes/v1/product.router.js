@@ -1,11 +1,9 @@
 import productController from '#controllers/product.controller.js'
 import asyncHandler from '#helpers/asyncHandler.js'
 import authentication from '#middlewares/authentication.middleware.js'
-import validate from '#middlewares/validate.middleware.js'
 import express from 'express'
 // import { productValidation } from '#validations/product.validation.js'
 // import grantAcess from '#middlewares/rbac.middleware.js'
-import { createSpuSchema } from '#models/dtos/spu.dto.js'
 
 const Router = express.Router()
 // === User ===
@@ -25,5 +23,6 @@ Router.patch('/:productId/publish', asyncHandler(productController.publishProduc
 Router.patch('/:productId/unpublish', asyncHandler(productController.unPublishProduct))
 Router.get('/public', asyncHandler(productController.getPublishedProduct))
 Router.get('/draft', asyncHandler(productController.getDraftProduct))
+Router.delete('/:productId', asyncHandler(productController.deleteProduct))
 
 export const ProductRouter = Router

@@ -39,3 +39,7 @@ export const ROLES = {
   SHOP: 'shop',
   USER: 'user'
 }
+
+export const ELASTIC_INDEX = {
+  PRODUCT: 'products'
+}

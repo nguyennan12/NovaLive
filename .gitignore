@@ -6,3 +6,4 @@ logs
 *.log
 /seed
 seed
+scripts
