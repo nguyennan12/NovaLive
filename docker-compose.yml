@@ -20,7 +20,7 @@ services:
     command: yarn dev
     depends_on:
       - mongodb_db
-      - elasticsearch 
+      - elasticsearch
     networks:
       - livestream-ecommerce-network
 
@@ -47,9 +47,10 @@ services:
       - node.name=elasticsearch
       - cluster.name=es-docker-cluster
       - discovery.type=single-node
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD} 
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - xpack.security.enabled=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" 
+      - xpack.security.http.ssl.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
     volumes:
@@ -63,7 +64,7 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=kibana_system
-      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD} 
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
     ports:
       - "5601:5601"
     depends_on:
@@ -77,4 +78,4 @@ networks:
 
 volumes:
   mongo_data:
-  es_data: 
+  es_data:

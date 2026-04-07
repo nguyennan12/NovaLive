@@ -96,7 +96,7 @@ const deleteProduct = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Get product successfully!',
-    metadata: await spuService.deleteProduct({ productId: req.params.productId })
+    metadata: await spuService.deleteProduct({ productId: req.params.productId, userId: req.user.userId })
   }).send(res)
 }
 

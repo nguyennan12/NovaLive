@@ -18,5 +18,11 @@ export const env = {
   BREVO_SMTP_PORT: process.env.BREVO_SMTP_PORT,
   BREVO_SMTP_USER: process.env.BREVO_SMTP_USER,
   BREVO_SMTP_PASS: process.env.BREVO_SMTP_PASS,
-  EMAIL_FROM: process.env.EMAIL_FROM
+  EMAIL_FROM: process.env.EMAIL_FROM,
+
+  ELASTIC_PASSWORD: process.env.ELASTIC_PASSWORD,
+  ELASTIC_PORT: process.env.ELASTIC_PORT,
+  ELASTIC_USER_NAME: process.env.ELASTIC_USER_NAME,
+  ELASTIC_HOST: process.env.ELASTIC_HOST
+
 }
