@@ -11,7 +11,9 @@ export const DOCUMENT_NAME = {
   CATEGORY: 'Category',
   ATTRIBUTE: 'Attribute',
   DISCOUNT: 'Discount',
-  CART: 'Cart'
+  CART: 'Cart',
+  INVENTORY: 'Inventory'
+
 }
 
 export const COLLECTION_NAME = {
@@ -26,7 +28,11 @@ export const COLLECTION_NAME = {
   CATEGORY: 'Categories',
   ATTRIBUTE: 'Attributes',
   DISCOUNT: 'Discounts',
+<<<<<<< HEAD
   CART: 'Carts'
+=======
+  INVENTORY: 'Inventory'
+>>>>>>> 878168d (fix add shopId into user_shop and add to stock inventory)
 }
 
 

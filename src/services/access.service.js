@@ -79,7 +79,7 @@ const login = async ({ email, password }) => {
   //tạo accessToken voi refreshToken
   const tokens = await authHelper.createTokenPair(
     {
-      userId: foundUser._id, email, role: foundUser.user_role
+      userId: foundUser._id, email, role: foundUser.user_role, shopId: foundUser.user_shop ? foundUser.user_shop : null
     },
     publicKey, privateKey)
   //lưu role vào redis
