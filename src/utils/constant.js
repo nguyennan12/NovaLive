@@ -10,7 +10,8 @@ export const DOCUMENT_NAME = {
   SKU: 'Sku',
   CATEGORY: 'Category',
   ATTRIBUTE: 'Attribute',
-  DISCOUNT: 'Discount'
+  DISCOUNT: 'Discount',
+  CART: 'Cart'
 }
 
 export const COLLECTION_NAME = {
@@ -24,7 +25,8 @@ export const COLLECTION_NAME = {
   SKU: 'Skus',
   CATEGORY: 'Categories',
   ATTRIBUTE: 'Attributes',
-  DISCOUNT: 'Discounts'
+  DISCOUNT: 'Discounts',
+  CART: 'Carts'
 }
 
 
