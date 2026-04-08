@@ -50,7 +50,7 @@ export const ELASTIC_INDEX = {
 
 export const PREFIX = {
   USER_RULE: 'user:role',
-  INVENTORY_STOCK: 'inventory:stock',
+  INVENTORY_SKU: 'inventory:sku',
   SKU: 'sku',
   DISCOUNT: 'discount'
 }
