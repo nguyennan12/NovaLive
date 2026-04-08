@@ -4,7 +4,7 @@ import discountRepo from '#models/repository/discount.repo.js'
 import { generateDisId } from '#utils/generator.js'
 import { DiscountValidate } from '#validations/discount.vallidation.js'
 import converter from '#utils/converter.js'
-import { spuModel } from '#models/spu.model.js'
+import { PREFIX } from '#utils/constant.js'
 import spuRepo from '#models/repository/spu.repo.js'
 
 
@@ -20,7 +20,7 @@ const craeteDiscount = async (reqBody) => {
     })
   const ttl = Math.round((new Date(discount_end_date) - new Date()) / 1000)
   if (ttl > 0 && checkDiscount.isHot()) {
-    const prefix = `discount:${discount_scope}:${discountCode}`
+    const prefix = `${PREFIX.DISCOUNT}:${discount_scope}:${discountCode}`
     await Promise.all([
       //lưu thông tin chung
       redisClient.hSet(`${prefix}:meta`, {
