@@ -21,6 +21,7 @@ services:
     depends_on:
       - mongodb_db
       - elasticsearch
+      - rabbitmq
     networks:
       - livestream-ecommerce-network
 
@@ -71,6 +72,19 @@ services:
       - elasticsearch
     networks:
       - livestream-ecommerce-network
+  rabbitmq:
+    image: rabbitmq:3-management-alpine 
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=123456
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - livestream-ecommerce-network
 
 networks:
   livestream-ecommerce-network:
@@ -79,3 +93,4 @@ networks:
 volumes:
   mongo_data:
   es_data:
+  rabbitmq_data:
