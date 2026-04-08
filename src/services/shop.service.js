@@ -19,8 +19,9 @@ const registerShop = async ({ name, userId, address, contact }) => {
       }, shop_contact: contact
     }
   )
-  await roleService.changeRoleShop({ userId })
-  return data.getInfoNested(['shop_owner', 'shop_name', 'shop_logo', 'shop_address.full_address', 'contact'], newShop)
+  await roleService.changeRoleShop({ userId, shopId: newShop.id })
+
+  return data.getInfoNested(['shop_owner', 'shop_name', 'shop_logo', 'shop_address.full_address', 'shop_contact', 'id'], newShop)
 }
 
 const getShopByUser = async ({ userId }) => {

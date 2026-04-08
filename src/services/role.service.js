@@ -9,8 +9,8 @@ const changeRoleAdmin = async ({ userId }) => {
   await tokenService.deleteKeyStoreById(userId)
 }
 
-const changeRoleShop = async ({ userId }) => {
-  await userRepo.changeRole({ userId, role: ROLES.SHOP })
+const changeRoleShop = async ({ userId, shopId }) => {
+  await userRepo.changeRole({ userId, role: ROLES.SHOP, shopId })
   await redisClient.set(`user:role:${userId}`, ROLES.SHOP, { EX: REFRESHTOKEN_LIFE })
   await tokenService.deleteKeyStoreById(userId)
 }
