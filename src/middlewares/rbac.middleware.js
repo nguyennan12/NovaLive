@@ -2,6 +2,7 @@ import ac from '#config/rbac.config.js'
 import ApiError from '#core/error.response.js'
 import { StatusCodes } from 'http-status-codes'
 import { redisClient } from '#database/init.redis.js'
+import { PREFIX } from '#utils/constant.js'
 
 const grantAcess = (actions, resource) => {
   return async (req, res, next) => {
@@ -9,7 +10,7 @@ const grantAcess = (actions, resource) => {
 
     if (!userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'User not authenticated')
     try {
-      const roleName = (await redisClient.get(`user:role:${userId}`)) || req.user?.role
+      const roleName = (await redisClient.get(`${PREFIX.USER_RULE}:${userId}`)) || req.user?.role
       //action có thể thêm nhiều nếu có nhiều role có quyền truy cập -> tạo list array
       const actionList = Array.isArray(actions) ? actions : [actions]
       let permission = null

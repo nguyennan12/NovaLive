@@ -53,3 +53,10 @@ export const ROLES = {
 export const ELASTIC_INDEX = {
   PRODUCT: 'products'
 }
+
+export const PREFIX = {
+  USER_RULE: 'user:role',
+  INVENTORY_STOCK: 'inventory:stock',
+  SKU: 'sku',
+  DISCOUNT: 'discount'
+}

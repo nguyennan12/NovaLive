@@ -1,17 +1,18 @@
 import ApiError from '#core/error.response.js'
+import { redisClient } from '#database/init.redis.js'
+import authHelper from '#helpers/auth.helper.js'
+import OtpModel from '#models/otp.model.js'
 import userRepo from '#models/repository/user.repo.js'
-import { StatusCodes } from 'http-status-codes'
+import { REFRESHTOKEN_LIFE } from '#utils/constant.js'
+import converter from '#utils/converter.js'
+import data from '#utils/data.js'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
-import authHelper from '#helpers/auth.helper.js'
-import tokenService from './token.service.js'
-import data from '#utils/data.js'
+import { StatusCodes } from 'http-status-codes'
 import emailService from './email.service.js'
-import OtpModel from '#models/otp.model.js'
-import converter from '#utils/converter.js'
 import otpService from './otp.service.js'
-import { REFRESHTOKEN_LIFE, ROLES } from '#utils/constant.js'
-import { redisClient } from '#database/init.redis.js'
+import tokenService from './token.service.js'
+import { PREFIX } from '#utils/constant.js'
 
 const SignUp = async ({ email, password }) => {
   const foundUser = await userRepo.findUserByEmail({ email })
@@ -83,7 +84,7 @@ const login = async ({ email, password }) => {
     },
     publicKey, privateKey)
   //lưu role vào redis
-  await redisClient.set(`user:role:${foundUser._id}`, foundUser.user_role, { EX: REFRESHTOKEN_LIFE })
+  await redisClient.set(`${PREFIX.USER_RULE}:${foundUser._id}`, foundUser.user_role, { EX: REFRESHTOKEN_LIFE })
   //lưu token vào db
   await tokenService.createKeyStore({
     userId: foundUser._id,

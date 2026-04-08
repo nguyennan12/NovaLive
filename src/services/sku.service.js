@@ -9,6 +9,7 @@ import { getMinPriceFromSkus } from '#utils/data.js'
 import { generateSkuId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import _ from 'lodash'
+import { PREFIX } from '#utils/constant.js'
 
 
 const createSku = async ({ spu_id, sku_list }) => {
@@ -25,7 +26,7 @@ const createSku = async ({ spu_id, sku_list }) => {
 }
 
 const getOneSku = async ({ skuId, spuId }) => {
-  const cacheKey = `sku:${spuId}:${skuId}`
+  const cacheKey = `${PREFIX.SKU}:${spuId}:${skuId}`
   const cacheData = await redisClient.get(cacheKey)
   if (cacheData) return JSON.parse(cacheData)
 

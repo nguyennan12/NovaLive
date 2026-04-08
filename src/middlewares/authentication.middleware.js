@@ -6,6 +6,7 @@ import { HEADER } from '#utils/constant.js'
 import ApiError from '#core/error.response.js'
 import { redisClient } from '#database/init.redis.js'
 import { StatusCodes } from 'http-status-codes'
+import { PREFIX } from '#utils/constant.js'
 
 const authentication = asyncHandler(async (req, res, next) => {
   //kiểm tra thông tin người gửi request
@@ -25,7 +26,7 @@ const authentication = asyncHandler(async (req, res, next) => {
     const decodeUser = authHelper.verifyJWT(tokenToVerify, keyStore.publicKey)
     if (userId !== decodeUser.userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid user id')
     //kiểm tra có bị thay đổi quyền chưa
-    const roleCache = await redisClient.get(`user:role:${userId}`)
+    const roleCache = await redisClient.get(`${PREFIX.USER_RULE}:${userId}`)
     if (roleCache && roleCache !== decodeUser.role) {
       throw new ApiError(StatusCodes.FORBIDDEN, 'Role updated, user will be forced to refresh soon.')
     }
