@@ -6,16 +6,17 @@ const { model, Schema } = mongoose
 const cartSchema = new Schema({
   cart_userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
   cart_state: { type: String, enum: ['active', 'pending', 'completed', 'failed'], default: 'active' },
+  cart_id: String,
   cart_products: [
     {
       shopId: { type: Schema.Types.ObjectId, ref: 'Shop', required: true },
-      spuId: { type: Schema.Types.ObjectId, ref: 'Spu', required: true },
-      skuId: { type: Schema.Types.ObjectId, ref: 'Sku', required: true },
+      productId: { type: String, required: true },
+      skuId: { type: String, ref: 'Sku', required: true },
       name: String,
       thumb: String,
       price: Number,
       quantity: { type: Number, required: true, min: 1 },
-      //liveId: { type: Schema.Types.ObjectId, ref: 'LiveSession', default: null },
+      liveId: { type: Schema.Types.ObjectId, ref: 'LiveSession', default: null },
       is_gift: { type: Boolean, default: false },
     }
   ],

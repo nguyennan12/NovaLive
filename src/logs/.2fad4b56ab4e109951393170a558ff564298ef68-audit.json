@@ -31,9 +31,15 @@
             "hash": "c53b655340021905716b528493189ca74b45c0b0f908ea9382f379906c9009dc"
         },
         {
+<<<<<<< HEAD
             "date": 1775740630542,
             "name": "src/logs/application-2026-04-09.log",
             "hash": "e62360f27283ef8b0dc99c216b21af6d0d2e82ec483de1074b7ebfa9d86884e4"
+=======
+            "date": 1775739678727,
+            "name": "src/logs/application-2026-04-09.log",
+            "hash": "b555e47d43396f1fed76e0100245928aa661340c6c7a8e49d0c0e9ae08c2d2b5"
+>>>>>>> 230e00a (add to cart)
         }
     ],
     "hashType": "sha256"
