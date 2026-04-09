@@ -10,7 +10,7 @@ const inventorySchema = new Schema(
     inven_skuId: String,
 
     inven_stock: Number,
-    inven_reserved: Number,
+    inven_reserved: { type: Number, default: 0 },
 
     inven_reservations: [
       {

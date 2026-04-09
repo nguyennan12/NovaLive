@@ -40,6 +40,7 @@ const addStockToInventory = async ({ shopId, reqBody }) => {
   const prefix = `${PREFIX.INVENTORY_SKU}:${skuId}:stock`
   const ivenExistsCache = await redisClient.exists(prefix)
 
+
   //kiểm tra xem product hiện tại có hot không, nếu có thì lưu cache
   const isHot = foundProduct.live?.is_live || newInven.inven_stock < 10
   if (isHot || ivenExistsCache) {
@@ -59,8 +60,6 @@ const checkAvailableStock = async ({ skuId, quantity }) => {
   if (!foundStock) return false
   //stock hợp lệ bằng stock trong kho có trừ đi stock đang đc tạm giữ (có thể đang order)
   const availableStock = foundStock.inven_stock - foundStock.inven_reserved
-
-  //hợp lệ thì lưu vào cache
   if (availableStock) {
     const ttl = 60 * 60
     await redisClient.set(prefix, availableStock, 'EX', ttl)

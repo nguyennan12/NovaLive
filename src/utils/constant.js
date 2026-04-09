@@ -11,6 +11,7 @@ export const DOCUMENT_NAME = {
   CATEGORY: 'Category',
   ATTRIBUTE: 'Attribute',
   DISCOUNT: 'Discount',
+  CART: 'Cart',
   INVENTORY: 'Inventory'
 }
 
@@ -26,6 +27,7 @@ export const COLLECTION_NAME = {
   CATEGORY: 'Categories',
   ATTRIBUTE: 'Attributes',
   DISCOUNT: 'Discounts',
+  CART: 'Carts',
   INVENTORY: 'Inventory'
 }
 
