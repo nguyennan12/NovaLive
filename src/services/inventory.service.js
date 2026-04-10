@@ -1,14 +1,13 @@
 import ApiError from '#core/error.response.js'
+import { RabbitMQClient } from '#database/init.rabbitMQ.js'
 import { redisClient } from '#database/init.redis.js'
+import fileHelper from '#helpers/file.helper.js'
 import inventoryModel from '#models/inventory.model.js'
-import spuRepo from '#models/repository/spu.repo.js'
 import { skuModel } from '#models/sku.model.js'
+import { spuModel } from '#models/spu.model.js'
+import { PREFIX } from '#utils/constant.js'
 import converter from '#utils/converter.js'
 import { StatusCodes } from 'http-status-codes'
-import { PREFIX } from '#utils/constant.js'
-import fileHelper from '#helpers/file.helper.js'
-import { RabbitMQClient } from '#database/init.rabbitMQ.js'
-import { spuModel } from '#models/spu.model.js'
 
 //lua script
 const reserveStockScript = fileHelper.loadLuaScript('lua/reserveStock.lua')
