@@ -4,7 +4,7 @@ import slugify from 'slugify'
 
 const spuSchema = new Schema({
   spu_name: { type: String, required: true },
-  spu_id: { type: String, default: '' },
+  spu_code: { type: String, default: '' },
   spu_thumb: { type: String, required: true },
   spu_description: { type: String },
   spu_slug: { type: String },

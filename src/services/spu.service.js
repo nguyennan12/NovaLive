@@ -15,7 +15,7 @@ import { getMinPriceFromSkus, getTotalStockFromSkus } from '#utils/data.js'
 import { validateProductOwnership } from '#helpers/spu.helper.js'
 
 const createSpu = async ({ reqBody, userId }) => {
-  const { spu_id,
+  const {
     spu_shopId,
     spu_attributes,
     spu_variations,
@@ -25,7 +25,7 @@ const createSpu = async ({ reqBody, userId }) => {
 
   //xử lý đồng thời tìm shop và lấy attribute đã xử lý ra (gồm id, name, value)
   const [foundShop, normalizedAttrs] = await Promise.all([
-    shopRepo.findShopByIdAndOwnId({ shopId: spu_shopId, userId }),
+    shopRepo.findShopByIdAndOwnId({ shopId: spu_shopId, ownId: userId }),
     validateAndNormalizeAttributes({ spu_attributes, spu_category })
   ])
 
@@ -33,7 +33,7 @@ const createSpu = async ({ reqBody, userId }) => {
 
   //tạo 1 spu
   const newSpu = await spuModel.create({
-    spu_id: generateSpuId(spu_id),
+    spu_code: generateSpuId(),
     ...spuData,
     spu_shopId: converter.toObjectId(spu_shopId),
     spu_attributes: normalizedAttrs,
@@ -45,7 +45,7 @@ const createSpu = async ({ reqBody, userId }) => {
 
   //nếu có sku_list thì xử lý tạo sku
   if (newSpu && sku_list.length) {
-    await skuService.createSku({ spu_id: newSpu.spu_id, sku_list })
+    await skuService.createSku({ spu_id: newSpu._id, sku_list, spu_code: newSpu.spu_code })
   }
   //lưu vào elastic
   await syncProdcutToEs(newSpu._id)
@@ -64,7 +64,8 @@ const updateProduct = async ({ productId, reqBody, userId }) => {
   //nếu có gửi sku_list để update thì update sku trước
   if (reqBody.sku_list && reqBody.sku_list.length > 0) {
     const updatedSkus = await skuService.updateSkuBySpuId({
-      spuId: productId,
+      spuId: foundProduct._id,
+      spuCode: foundProduct.spu_code,
       skuList: reqBody.sku_list
     })
     //set lại giá khi đã update sku
@@ -138,7 +139,7 @@ const getProductDetail = async ({ productId }) => {
 
 const deleteProduct = async ({ productId, userId }) => {
   const { foundProduct } = await validateProductOwnership({ productId, userId })
-  const result = await spuRepo.deleteProduct(foundProduct.spu_id)
+  const result = await spuRepo.deleteProduct(foundProduct.spu_code)
   if (!result) throw new ApiError(StatusCodes.BAD_REQUEST, 'Operation failed')
   await ElasticClient.delete({
     index: ELASTIC_INDEX.PRODUCT,

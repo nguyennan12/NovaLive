@@ -1,6 +1,6 @@
 
 import { COLLECTION_NAME, DOCUMENT_NAME } from '#utils/constant.js'
-import mongoose from 'mongoose'
+import mongoose, { Types } from 'mongoose'
 const { model, Schema } = mongoose
 
 const cartSchema = new Schema({
@@ -9,9 +9,9 @@ const cartSchema = new Schema({
   cart_id: String,
   cart_products: [
     {
-      shopId: { type: Schema.Types.ObjectId, ref: 'Shop', required: true },
-      productId: { type: String, required: true },
-      skuId: { type: String, ref: 'Sku', required: true },
+      shopId: { type: Types.ObjectId, ref: 'Shop', required: true },
+      productId: { type: Types.ObjectId, ref: 'Spu', required: true },
+      skuId: { type: Types.ObjectId, ref: 'Sku', required: true },
       name: String,
       thumb: String,
       price: Number,

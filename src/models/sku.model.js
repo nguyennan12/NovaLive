@@ -1,5 +1,5 @@
 import { COLLECTION_NAME, DOCUMENT_NAME } from '#utils/constant.js'
-import { Schema, model } from 'mongoose'
+import { Schema, Types, model } from 'mongoose'
 import slugify from 'slugify'
 
 
@@ -11,7 +11,7 @@ const skuSchema = new Schema({
   sku_sort: { type: Number, default: 0 },
   sku_price: { type: String, required: true },
   sku_stock: { type: Number, default: 0 },
-  sku_spuId: { type: String, required: true, ref: 'Spu' },
+  sku_spuId: { type: Types.ObjectId, required: true, ref: 'Spu' },
 
   isDraft: { type: Boolean, default: true, index: true, select: false },
   isPublished: { type: Boolean, default: false, index: true, select: false },

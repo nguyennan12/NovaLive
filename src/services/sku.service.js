@@ -10,12 +10,13 @@ import { generateSkuId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import _ from 'lodash'
 import { PREFIX } from '#utils/constant.js'
+import converter from '#utils/converter.js'
 
 
-const createSku = async ({ spu_id, sku_list }) => {
+const createSku = async ({ spu_id, sku_list, spu_code }) => {
   try {
     const skuList = sku_list.map(sku => {
-      return { ...sku, sku_spuId: spu_id, sku_id: generateSkuId(spu_id, sku.sku_tier_idx) }
+      return { ...sku, sku_spuId: spu_id, sku_id: generateSkuId(spu_code, sku.sku_tier_idx) }
     })
     //create 1 mảng array cái sku
     const newSku = await skuModel.create(skuList)
@@ -26,11 +27,15 @@ const createSku = async ({ spu_id, sku_list }) => {
 }
 
 const getOneSku = async ({ skuId, spuId }) => {
-  const cacheKey = `${PREFIX.SKU}:${spuId}:${skuId}`
+  let spuObjectId = spuId
+  const foundProduct = await spuRepo.findBySpuId(spuId)
+  if (foundProduct) spuObjectId = foundProduct._id
+
+  const cacheKey = `${PREFIX.SKU}:${spuObjectId}:${skuId}`
   const cacheData = await redisClient.get(cacheKey)
   if (cacheData) return JSON.parse(cacheData)
 
-  const sku = await skuModel.findOne({ sku_id: skuId, sku_spuId: spuId, isDeleted: false }).lean()
+  const sku = await skuModel.findOne({ sku_id: skuId, sku_spuId: spuObjectId, isDeleted: false }).lean()
   if (sku) await redisClient.setEx(cacheKey, 3600, JSON.stringify(sku))
   return _.omit(sku, ['__v', 'updatedAt', 'createdAt', 'isDeleted'])
 }
@@ -38,13 +43,13 @@ const getOneSku = async ({ skuId, spuId }) => {
 const getAllSkuBySpuId = async (spuId) => {
   const foundProduct = await spuRepo.findBySpuId(spuId)
   if (!foundProduct) throw new ApiError(StatusCodes.BAD_REQUEST, 'Product does not exists!')
-  return await skuModel.find({ sku_spuId: foundProduct.spu_id }).lean()
+  return await skuModel.find({ sku_spuId: foundProduct._id }).lean()
 }
 
 //này up date toàn bộ sku list tương ứng với variation
-const updateSkuBySpuId = async ({ spuId, skuList }) => {
+const updateSkuBySpuId = async ({ spuId, spuCode, skuList }) => {
   //tạo danh sách sku mới từ sku list truyền vào
-  const newSkuIds = skuList.map(sku => generateSkuId(spuId, sku.sku_tier_idx))
+  const newSkuIds = skuList.map(sku => generateSkuId(spuCode, sku.sku_tier_idx))
 
   //tạo mảng bulk option updateOne tất cả cái sku mới
   const bulkOps = skuList.map((newSku, idx) => ({
@@ -78,7 +83,7 @@ const updateSingleSku = async ({ spuId, skuId, payload, userId }) => {
   const allowedData = _.pick(payload, ['sku_price', 'sku_stock', 'sku_thumb', 'sku_name'])
 
   const updatedSku = await skuModel.findOneAndUpdate(
-    { sku_id: skuId, sku_spuId: spuId },
+    { sku_id: skuId, sku_spuId: foundProduct._id },
     allowedData,
     { new: true }
   )
@@ -86,8 +91,8 @@ const updateSingleSku = async ({ spuId, skuId, payload, userId }) => {
 
   //update giá
   if (payload.sku_price) {
-    const allSkus = await skuModel.find({ sku_spuId: spuId })
-    await spuModel.findOneAndUpdate({ spu_id: spuId }, {
+    const allSkus = await skuModel.find({ sku_spuId: foundProduct._id })
+    await spuModel.findOneAndUpdate({ _id: foundProduct._id }, {
       spu_price: getMinPriceFromSkus(allSkus)
     })
   }
@@ -95,10 +100,45 @@ const updateSingleSku = async ({ spuId, skuId, payload, userId }) => {
   return updatedSku
 }
 
+
+//lấy danh sách sku chi tiết
+const getSkusDetails = async (skuIds) => {
+  //mảng lưu các sku ids
+  const objectIds = skuIds.map(id => converter.toObjectId(id))
+  //tìm những sku có trong skuIds
+  const skus = await skuModel.find({ _id: { $in: objectIds } })
+    .populate({
+      path: 'sku_spuId',//liên kết tới Spu schema
+      select: 'spu_name spu_thumb spu_shopId', // lấy ra name thumb và shopId
+      populate: {
+        path: 'spu_shopId',//liên kết từ spu tới shop
+        select: 'shop_name' //lấy shop name
+      }
+    })
+    .lean()
+
+  //trả về 1 mảng object theo format
+  const formattedData = skus.map(sku => {
+    return {
+      sku_id: sku._id.toString(),
+      sku_price: sku.sku_price,
+      sku_image: sku.sku_image || sku.sku_spuId.spu_thumb,
+      sku_attributes: sku.sku_attributes,
+      product_id: sku.sku_spuId._id.toString(),
+      product_name: sku.sku_spuId.spu_name,
+      shopId: sku.sku_spuId.spu_shopId._id.toString(),
+      shop_name: sku.sku_spuId.spu_shopId.shop_name
+    }
+  })
+
+  return formattedData
+}
+
 export default {
   createSku,
   getOneSku,
   getAllSkuBySpuId,
   updateSkuBySpuId,
-  updateSingleSku
+  updateSingleSku,
+  getSkusDetails
 }
