@@ -11,6 +11,7 @@ const skuSchema = new Schema({
   sku_sort: { type: Number, default: 0 },
   sku_price: { type: String, required: true },
   sku_stock: { type: Number, default: 0 },
+  sku_weight: { type: Number, default: 0 },
   sku_spuId: { type: Types.ObjectId, required: true, ref: 'Spu' },
 
   isDraft: { type: Boolean, default: true, index: true, select: false },

@@ -16,7 +16,7 @@ const addToCart = async ({ userId, reqBody }) => {
   if (!foundCart) {
     return await cartModel.create({
       cart_userId: userId,
-      cart_id: generateCatId(),
+      cart_code: generateCatId(),
       cart_products: [reqBody],
       cart_count_product: 1
     })

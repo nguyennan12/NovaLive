@@ -95,11 +95,9 @@ const cancelDiscountCode = async (discountCode, userId) => {
 }
 
 const getDiscountAmout = async ({ userId, reqBody }) => {
-  const { code, shopId, products } = reqBody
+  const { code, shopId, totalOrder } = reqBody
   const foundDiscount = await discountRepo.findDiscoutByCode(code)
   if (!foundDiscount) throw (new ApiError(StatusCodes.BAD_REQUEST, 'Discount does not exists'))
-
-  const totalOrder = products.reduce((acc, { price, quantity }) => acc + (quantity * price), 0)
 
   new DiscountValidate(foundDiscount)
     .checkShopOwnership(shopId)
@@ -115,7 +113,7 @@ const getDiscountAmout = async ({ userId, reqBody }) => {
   return {
     totalOrder,
     discountAmout: amount,
-    totalPrice: totalOrder - amount
+    priceApplyDiscount: totalOrder - amount
   }
 }
 

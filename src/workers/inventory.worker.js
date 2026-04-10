@@ -11,13 +11,17 @@ const runWorker = async () => {
 
   channel.prefetch(1)
 
+  //comsume nhận message, và payload
   channel.consume(queueName, async (msg) => {
     if (msg !== null) {
+      //chuyển data về json
       const data = JSON.parse(msg.content.toString())
       console.log(`[Worker] Writing DB for order: ${data.orderId}`)
 
       try {
+        //kiểm tra nếu message có action là Reserve_DB
         if (data.action === 'RESERVE_DB') {
+          //bulk oper để update inven
           const operations = data.items.map(item => ({
             updateOne: {
               filter: { inven_skuId: item.skuId },

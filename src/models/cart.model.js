@@ -6,7 +6,7 @@ const { model, Schema } = mongoose
 const cartSchema = new Schema({
   cart_userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
   cart_state: { type: String, enum: ['active', 'pending', 'completed', 'failed'], default: 'active' },
-  cart_id: String,
+  cart_code: String,
   cart_products: [
     {
       shopId: { type: Types.ObjectId, ref: 'Shop', required: true },

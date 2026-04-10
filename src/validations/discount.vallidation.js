@@ -46,7 +46,7 @@ export class DiscountValidate {
     return this
   }
   checkShopOwnership(shopId) {
-    if (shopId) {
+    if (shopId && this.discount_scope === 'shop') {
       const discountShopId = converter.toObjectId(this.discount.discount_shopId)
       const targetShopId = converter.toObjectId(shopId)
       if (!discountShopId.equals(targetShopId)) {

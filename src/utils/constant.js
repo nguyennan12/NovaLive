@@ -12,7 +12,8 @@ export const DOCUMENT_NAME = {
   ATTRIBUTE: 'Attribute',
   DISCOUNT: 'Discount',
   CART: 'Cart',
-  INVENTORY: 'Inventory'
+  INVENTORY: 'Inventory',
+  ORDER: 'Order'
 }
 
 export const COLLECTION_NAME = {
@@ -28,7 +29,8 @@ export const COLLECTION_NAME = {
   ATTRIBUTE: 'Attributes',
   DISCOUNT: 'Discounts',
   CART: 'Carts',
-  INVENTORY: 'Inventory'
+  INVENTORY: 'Inventory',
+  ORDER: 'Orders'
 }
 
 
