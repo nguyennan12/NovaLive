@@ -8,6 +8,7 @@ import { StatusCodes } from 'http-status-codes'
 import { PREFIX } from '#utils/constant.js'
 import fileHelper from '#helpers/file.helper.js'
 import { RabbitMQClient } from '#database/init.rabbitMQ.js'
+import { spuModel } from '#models/spu.model.js'
 
 const reserveStockScript = fileHelper.loadLuaScript('lua/reserveStock.lua')
 
@@ -15,8 +16,8 @@ const addStockToInventory = async ({ shopId, reqBody }) => {
   const { productId, skuId, stock } = reqBody
   if (!stock || stock < 0) throw new ApiError(StatusCodes.BAD_REQUEST, 'Stock invalid')
   const [foundSku, foundProduct] = await Promise.all([
-    skuModel.findOne({ sku_spuId: productId, sku_id: skuId }).lean(),
-    spuRepo.findProductDetail(productId)
+    skuModel.findOne({ sku_spuId: productId, _id: skuId }).lean(),
+    spuModel.findById(productId)
   ])
   if (!foundSku || !foundProduct) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'Product does not exists')

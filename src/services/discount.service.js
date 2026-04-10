@@ -57,7 +57,7 @@ const getProductsByDiscount = async (discountCode, limit = 50, page = 1) => {
   const { discount_applies_to, discount_product_ids } = foundDiscount
   const filter = {
     isPublished: true,
-    ...(discount_applies_to === 'specific' && { spu_id: { $in: discount_product_ids } })
+    ...(discount_applies_to === 'specific' && { spu_code: { $in: discount_product_ids } })
   }
   return await spuRepo.findAllProducts({ filter, limit, page })
 }

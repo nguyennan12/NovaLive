@@ -7,7 +7,8 @@ const Router = express.Router()
 
 Router.use(authentication)
 Router.post('', asyncHandler(cartController.addToCart))
-
-
+Router.patch('', asyncHandler(cartController.updateCartItemQuantity))
+Router.delete('', asyncHandler(cartController.removeFromCart))
+Router.get('', asyncHandler(cartController.getCart))
 
 export const cartRouter = Router

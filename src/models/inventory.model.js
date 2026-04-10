@@ -6,9 +6,9 @@ import { DOCUMENT_NAME, COLLECTION_NAME } from '#utils/constant.js'
 const inventorySchema = new Schema(
   {
     inven_shopId: { type: Schema.Types.ObjectId, ref: 'Shop' },
-    inven_productId: String,
-    inven_skuId: String,
-
+    inven_productId: { type: Schema.Types.ObjectId, ref: 'Spu' },
+    inven_skuId: { type: Schema.Types.ObjectId, ref: 'Sku' },
+    inven_location: { type: String, default: '' },
     inven_stock: Number,
     inven_reserved: { type: Number, default: 0 },
 
