@@ -15,6 +15,7 @@ const calculateFee = async ({ shopId, toAddress, weight }) => {
 
   // =========================================
   // Gọi API Giao Hàng Nhanh thật
+  //có thể lưu cache feeship để lần sau khỏi gọi api
   // =========================================
 }
 

@@ -61,10 +61,13 @@ const updateCartItemQuantity = async ({ userId, reqBody }) => {
 
 
 const removeFromCart = async ({ userId, reqBody }) => {
-  const { skuId } = reqBody
+  const { skuIds } = reqBody
   return await cartModel.findOneAndUpdate(
     { cart_userId: userId, cart_state: 'active' },
-    { $pull: { cart_products: { skuId: { $in: skuId } } } },
+    {
+      $pull: { cart_products: { skuId: { $in: skuIds } } },
+      $inc: { cart_count_product: -skuIds.length }
+    },
     { returnDocument: 'after' }
   )
 }

@@ -7,5 +7,6 @@ const Router = express.Router()
 
 Router.use(authentication)
 Router.post('/checkout', asyncHandler(orderController.checkoutReview))
+Router.post('/', asyncHandler(orderController.orderByUser))
 
 export const orderRouter = Router

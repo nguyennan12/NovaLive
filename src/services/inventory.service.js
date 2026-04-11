@@ -38,15 +38,11 @@ const addStockToInventory = async ({ shopId, reqBody }) => {
     { upsert: true, new: true }
   )
   const prefix = `${PREFIX.INVENTORY_SKU}:${skuId}:stock`
-  const ivenExistsCache = await redisClient.exists(prefix)
-
+  const availableStock = newInven.inven_stock - newInven.inven_reserved
 
   //kiểm tra xem product hiện tại có hot không, nếu có thì lưu cache
-  const isHot = foundProduct.live?.is_live || newInven.inven_stock < 10
-  if (isHot || ivenExistsCache) {
-    const ttl = 60 * 60
-    await redisClient.set(prefix, newInven.inven_stock - newInven.inven_reserved, 'EX', ttl)
-  }
+  const ttl = (foundProduct.live?.is_live) ? 86400 : 3600
+  await redisClient.set(prefix, availableStock, 'EX', ttl)
   return newInven
 }
 
@@ -68,17 +64,26 @@ const checkAvailableStock = async ({ skuId, quantity }) => {
 }
 
 const reserveStock = async ({ userId, orderId, items }) => {
-  if (!items || items.lenght === 0) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cart is blank!')
+  if (!items || items.length === 0) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cart is blank!')
   const keys = [], args = []
 
-  items.forEach(item => {
-    keys.push(`${PREFIX.INVENTORY_SKU}:${item.skuId}:stock`)
-    args.push(items.quantity.toString())
-  })
-
+  for (const item of items) {
+    const key = `${PREFIX.INVENTORY_SKU}:${item.skuId}:stock`
+    const exists = await redisClient.exists(key)
+    if (!exists) {
+      // Nếu Redis trống, chọc xuống DB lấy
+      const foundInven = await inventoryModel.findOne({ inven_skuId: item.skuId }).lean()
+      if (foundInven) {
+        const stockToCache = foundInven.inven_stock - foundInven.inven_reserved
+        await redisClient.set(key, stockToCache, 'EX', 3600)
+      }
+    }
+    keys.push(key)
+    args.push(item.quantity.toString())
+  }
   //tạp 1 transactions để đảm bảo tính trọn vẹn của stock khi đang trong quá trình order
   //và trừ đi số lượng trong kho nếu stock hợp lệ
-  const result = await redisClient.eval(reserveStockScript, keys.length, ...keys, ...args)
+  const result = await redisClient.eval(reserveStockScript, { keys, arguments: args })
   if (result === 0) throw new ApiError(StatusCodes.BAD_REQUEST, 'Have a product is sold out! please check again')
 
   //gửi message vào hàng đợi message_queue để nó xử lý order
@@ -95,7 +100,7 @@ const releaseStock = async (orderId, items) => {
       updateOne: {
         filter: {
           inven_skuId: item.skuId,
-          'inven_reservations.orderId': orderId
+          'inven_reservations.  ': orderId
         },
         update: {
           $inc: { inven_reserved: -item.quantity },
@@ -107,7 +112,7 @@ const releaseStock = async (orderId, items) => {
   const result = await inventoryModel.bulkWrite(bulkOperations)
   //hhi nhã xong cập nhật là redis  stock dc nhã ra cho product
   await Promise.all(items.map(async (item) => {
-    const prefix = `${PREFIX.INVENTORY_SKU}:${skuId}:stock`
+    const prefix = `${PREFIX.INVENTORY_SKU}:${item.skuId}:stock`
     const exists = await redisClient.exists(prefix)
     if (exists) await redisClient.incrBy(prefix, item.quantity)
   }))

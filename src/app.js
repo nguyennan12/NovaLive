@@ -1,11 +1,11 @@
-import express from 'express'
-import connectDB from './database/init.mongodb.js'
-import Router from '#routes/v1/index.js'
-import errorMiddleware from '#middlewares/error.middleware.js'
 import ApiError from '#core/error.response.js'
-import { StatusCodes } from 'http-status-codes'
-import cookieParser from 'cookie-parser'
+import errorMiddleware from '#middlewares/error.middleware.js'
 import requestLogger from '#middlewares/log.middleware.js'
+import Router from '#routes/v1/index.js'
+import cookieParser from 'cookie-parser'
+import express from 'express'
+import { StatusCodes } from 'http-status-codes'
+import connectDB from './database/init.mongodb.js'
 
 const app = express()
 

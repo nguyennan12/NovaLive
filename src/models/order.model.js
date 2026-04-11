@@ -6,10 +6,9 @@ import { DOCUMENT_NAME, COLLECTION_NAME } from '#utils/constant.js'
 const orderSchema = new Schema(
   {
     order_userId: { type: Types.ObjectId, required: true, ref: 'User' },
-    order_code: String,
     order_checkout: {
-      totalPrice: { Type: Number, default: 0 },
-      totalApplyDiscount: { type: Number, default: 0 },
+      totalPrice: { type: Number, default: 0 },
+      totalDiscount: { type: Number, default: 0 },
       feeShip: { type: Number, default: 0 },
       finalCheckoutL: { type: Number, default: 0 }
     },

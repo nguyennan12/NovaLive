@@ -1,12 +1,12 @@
-// utils/id.generator.js — tập trung 1 chỗ
-import { nanoid } from 'nanoid'
 import { customAlphabet } from 'nanoid'
 
-const generate = (prefix) => `${prefix}-${nanoid(8).toUpperCase()}`
+const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+const nanoid = customAlphabet(alphabet, 8)
+
+const generate = (prefix) =>
+  `${prefix}-${nanoid().toUpperCase()}`
 
 export const generateSpuId = () => {
-  const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  const nanoid = customAlphabet(alphabet, 8)
   return `SPU-${nanoid()}`
 }
 
@@ -16,8 +16,12 @@ export const generateSkuId = (spuId, tierIdx = []) => {
   return `SKU-${spuCore}-${tierPart}`
 }
 
+export const generateOrderCode = () => {
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+  return `ORD-${date}-${nanoid()}`
+}
+
 export const generateAttrId = () => generate('ATTR')
 export const generateShopId = () => generate('SHOP')
-export const generateOrderId = () => generate('ORD')
 export const generateCatId = () => generate('CAT')
 export const generateDisId = () => generate('DISC')

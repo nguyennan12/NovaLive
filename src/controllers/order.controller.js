@@ -10,8 +10,16 @@ const checkoutReview = async (req, res, next) => {
     metadata: await orderService.checkoutReview({ userId: req.user.userId, reqBody: req.body })
   }).send(res)
 }
+const orderByUser = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get checkout successfully!',
+    metadata: await orderService.orderByUser({ userId: req.user.userId, reqBody: req.body })
+  }).send(res)
+}
 
 
 export default {
-  checkoutReview
+  checkoutReview,
+  orderByUser
 }
