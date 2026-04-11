@@ -9,6 +9,8 @@ import { discountRouter } from './discount.router.js'
 import { inventoryRouter } from './inventory.route.js'
 import { cartRouter } from './cart.router.js'
 import { orderRouter } from './order.router.js'
+import { paymentRouter } from './payment.router.js'
+
 const Router = express.Router()
 
 Router.use('/v1/api/product', ProductRouter)
@@ -21,6 +23,7 @@ Router.use('/v1/api/discount', discountRouter)
 Router.use('/v1/api/inventory', inventoryRouter)
 Router.use('/v1/api/cart', cartRouter)
 Router.use('/v1/api/order', orderRouter)
+Router.use('/v1/api/payment', paymentRouter)
 
 
 export default Router

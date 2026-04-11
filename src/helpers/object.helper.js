@@ -64,7 +64,7 @@ export const updateSubModel = async ({
 }
 
 export const mergeGrants = (current = [], incoming = []) => {
-  const map = new Map()
+  const map = new Map();
 
   [...current, ...incoming].forEach(({ resourceId, actions, attributes }) => {
     const resIdStr = resourceId.toString()
@@ -95,7 +95,7 @@ export const sortObject = (obj) => {
   }
   str.sort()
   for (key = 0; key < str.length; key++) {
-    sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+")
+    sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, '+')
   }
   return sorted
 }
