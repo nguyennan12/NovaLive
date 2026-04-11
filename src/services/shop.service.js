@@ -5,7 +5,7 @@ import { StatusCodes } from 'http-status-codes'
 import roleService from './role.service.js'
 import data from '#utils/data.js'
 import shopRepo from '#models/repository/shop.repo.js'
-import { updateSubModel } from '#helpers/update.helper.js'
+import { updateSubModel } from '#helpers/object.helper.js'
 
 const registerShop = async ({ name, userId, address, contact }) => {
   const foundUser = await userRepo.findUserById(userId)

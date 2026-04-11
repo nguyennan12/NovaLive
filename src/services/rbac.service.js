@@ -4,7 +4,7 @@ import roleModel from '#models/role.model.js'
 import { StatusCodes } from 'http-status-codes'
 import { redisClient } from '#database/init.redis.js'
 import { initAccessControl } from '#config/rbac.config.js'
-import { mergeGrants } from '#helpers/update.helper.js'
+import { mergeGrants } from '#helpers/object.helper.js'
 
 
 const createResource = async ({ name, description }) => {

@@ -66,20 +66,36 @@ export const updateSubModel = async ({
 export const mergeGrants = (current = [], incoming = []) => {
   const map = new Map()
 
-    ;[...current, ...incoming].forEach(({ resourceId, actions, attributes }) => {
-      const resIdStr = resourceId.toString()
-      if (!map.has(resIdStr)) {
-        map.set(resIdStr, { actions: new Set(actions), attributes: attributes || '*' })
-      } else {
-        const existing = map.get(resIdStr)
-        actions.forEach(a => existing.actions.add(a))
-        if (attributes) existing.attributes = attributes
-      }
-    })
+  [...current, ...incoming].forEach(({ resourceId, actions, attributes }) => {
+    const resIdStr = resourceId.toString()
+    if (!map.has(resIdStr)) {
+      map.set(resIdStr, { actions: new Set(actions), attributes: attributes || '*' })
+    } else {
+      const existing = map.get(resIdStr)
+      actions.forEach(a => existing.actions.add(a))
+      if (attributes) existing.attributes = attributes
+    }
+  })
 
   return Array.from(map, ([resId, value]) => ({
     resourceId: resId,
     actions: Array.from(value.actions),
     attributes: value.attributes
   }))
+}
+
+export const sortObject = (obj) => {
+  let sorted = {}
+  let str = []
+  let key
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      str.push(encodeURIComponent(key))
+    }
+  }
+  str.sort()
+  for (key = 0; key < str.length; key++) {
+    sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+")
+  }
+  return sorted
 }
