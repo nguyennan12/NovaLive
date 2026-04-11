@@ -56,7 +56,6 @@ const createPaymentUrl = async ({ reqBody, ipAddr }) => {
 }
 
 const vnpayIpn = async (vnp_Params) => {
-  console.log('🚀 ~ vnpayIpn ~ vnp_Params :', vnp_Params)
   const secureHash = vnp_Params['vnp_SecureHash']
   delete vnp_Params['vnp_SecureHash']
   delete vnp_Params['vnp_SecureHashType']

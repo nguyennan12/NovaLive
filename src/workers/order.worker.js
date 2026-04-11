@@ -12,7 +12,8 @@ const listenToCancelOrderQueue = async (channel) => {
         console.log(`[DLX] Except request cancel order: ${orderId}`)
         //tìm cái order đó thong qua orderId
         const order = await orderModel.findOne({ order_trackingNumber: orderId })
-        if (!order) {
+        if (!order || order.order_status !== 'pending') {
+          console.log(`[DLX] Order ${data.orderId} is processed before, skip cancel`)
           return channel.ack(msg) //nếu kh có ordeer đó thì xóa message
         }
         //nếu sau 15p mà status của order vẫn là pending thì xóa
