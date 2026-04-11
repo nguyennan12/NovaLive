@@ -14,7 +14,6 @@ const ListenToReserveInventory = async (channel) => {
     if (msg !== null) {
       //chuyển data về json
       const data = JSON.parse(msg.content.toString())
-      console.log('🚀 ~ ListenToReserveInventory ~ data:', data)
       console.log(`[Worker] Writing DB for order: ${data.orderId}`)
 
       try {

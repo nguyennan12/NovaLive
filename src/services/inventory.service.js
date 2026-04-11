@@ -99,8 +99,8 @@ const releaseStock = async (orderId, items) => {
     return {
       updateOne: {
         filter: {
-          inven_skuId: item.skuId,
-          'inven_reservations.  ': orderId
+          inven_skuId: converter.toObjectId(item.skuId),
+          'inven_reservations.orderId': orderId
         },
         update: {
           $inc: { inven_reserved: -item.quantity },

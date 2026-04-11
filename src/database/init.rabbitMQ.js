@@ -49,7 +49,7 @@ const setupDelayQueue = async (channel) => {
     arguments: {
       'x-dead-letter-exchange': DELAY_EX,
       'x-dead-letter-routing-key': 'cancel_order',
-      'x-message-ttl': 15 * 60 * 1000 // 15 phút
+      'x-message-ttl': 1 * 60 * 1000 // 15 phút
     }
   })
 }
