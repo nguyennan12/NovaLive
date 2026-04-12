@@ -11,6 +11,7 @@ import inventoryService from './inventory.service.js'
 import shippingService from './shipping.service.js'
 import { RabbitMQClient } from '#database/init.rabbitMQ.js'
 import orderRepo from '#models/repository/order.repo.js'
+import socketService from './socket.service.js'
 
 const checkoutReview = async ({ userId, reqBody }) => {
   const { cartId, shopOrderIds, userAddress } = reqBody
@@ -224,7 +225,18 @@ const updateOrderStatusAdmin = async ({ orderId, newStatus }) => {
   }
   const allowedNextStatuses = validTransitions[currentStatus] || []
   if (!allowedNextStatuses.includes(newStatus)) throw new BadRequestError(`Do not change status from '${currentStatus}' to '${newStatus}'`)
-  return await orderRepo.changeStatusOrder({ orderId: orderId, statusOrder: newStatus })
+  const result = await orderRepo.changeStatusOrder({ orderId: orderId, statusOrder: newStatus })
+  if (result) {
+    const userId = result.order_userId.toString()
+    const message =
+      newStatus === 'shipped'
+        ? `Your order ${orderId} is on the way!`
+        : newStatus === 'delivered'
+          ? `Your order ${orderId} has been delivered successfully!`
+          : `Your order ${orderId} status has been updated to: ${newStatus}`
+    socketService.sendNotificationToUser(userId, { message, orderId, newStatus })
+  }
+  return result
 }
 export default {
   checkoutReview,
