@@ -22,7 +22,13 @@ const orderSchema = new Schema(
       method: { type: String, enum: ['cod', 'vnpay', 'stripe', 'momo'], default: 'cod' },
       paymentStatus: { type: String, enum: ['pending', 'paid', 'failed'], default: 'pending' }
     },
-    order_products: { type: Array, required: true },
+    order_products: [
+      {
+        productId: { type: Types.ObjectId, ref: 'Spu' },
+        skuId: { type: Types.ObjectId, ref: 'Sku' },
+        quantity: Number
+      }
+    ],
     order_trackingNumber: { type: String },
     order_status: {
       type: String, enum: ['pending', 'processing', 'confirmed', 'shipped', 'cancelled', 'delivered'], default: 'pending'

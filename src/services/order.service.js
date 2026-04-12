@@ -10,6 +10,8 @@ import discountService from './discount.service.js'
 import inventoryService from './inventory.service.js'
 import shippingService from './shipping.service.js'
 import { RabbitMQClient } from '#database/init.rabbitMQ.js'
+import orderRepo from '#models/repository/order.repo.js'
+
 const checkoutReview = async ({ userId, reqBody }) => {
   const { cartId, shopOrderIds, userAddress } = reqBody
   const isBuyNow = !cartId
@@ -188,7 +190,46 @@ const orderByUser = async ({ userId, reqBody }) => {
   return newOrder
 }
 
+const getAllOrderByUser = async ({ userId, status, limit = 20, page = 1 }) => {
+  const query = { order_userId: userId }
+  if (status) {
+    query.order_status = status
+  }
+
+  const skip = (page - 1) * limit
+  return await orderModel.find(query)
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .skip(skip)
+    .lean()
+}
+
+const getOrderDetail = async ({ orderId, userId }) => {
+  const order = await orderRepo.getOrderDetail({ orderId, userId })
+  if (!order) throw new ApiError(StatusCodes.BAD_REQUEST, 'Order not found')
+  return order
+}
+
+const updateOrderStatusAdmin = async ({ orderId, newStatus }) => {
+  const order = await orderModel.findOne({ order_trackingNumber: orderId }).lean()
+  if (!order) throw new ApiError(StatusCodes.BAD_REQUEST, 'Order not found')
+
+  const currentStatus = order.order_status
+
+  if (['delivered', 'cancelled'].includes(currentStatus)) throw new ApiError(StatusCodes.BAD_REQUEST, `Order is '${currentStatus}', Do not change!`)
+  const validTransitions = {
+    'pending': [],
+    'processing': ['shipped', 'cancelled'],
+    'shipped': ['delivered', 'cancelled']
+  }
+  const allowedNextStatuses = validTransitions[currentStatus] || []
+  if (!allowedNextStatuses.includes(newStatus)) throw new BadRequestError(`Do not change status from '${currentStatus}' to '${newStatus}'`)
+  return await orderRepo.changeStatusOrder({ orderId: orderId, statusOrder: newStatus })
+}
 export default {
   checkoutReview,
-  orderByUser
+  orderByUser,
+  getAllOrderByUser,
+  getOrderDetail,
+  updateOrderStatusAdmin
 }

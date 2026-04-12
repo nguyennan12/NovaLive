@@ -13,13 +13,38 @@ const checkoutReview = async (req, res, next) => {
 const orderByUser = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
-    message: 'Get checkout successfully!',
+    message: 'Order successfully!',
     metadata: await orderService.orderByUser({ userId: req.user.userId, reqBody: req.body })
+  }).send(res)
+}
+const getAllOrderByUser = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get orders successfully!',
+    metadata: await orderService.getAllOrderByUser({ userId: req.user.userId, status: req.query.status })
+  }).send(res)
+}
+
+const getOrderDetail = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get orders successfully!',
+    metadata: await orderService.getOrderDetail({ userId: req.user.userId, orderId: req.params.orderId })
+  }).send(res)
+}
+const updateOrderStatusAdmin = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Update order successfully!',
+    metadata: await orderService.updateOrderStatusAdmin({ orderId: req.params.orderId, newStatus: req.body.status })
   }).send(res)
 }
 
 
 export default {
   checkoutReview,
-  orderByUser
+  orderByUser,
+  getAllOrderByUser,
+  getOrderDetail,
+  updateOrderStatusAdmin
 }

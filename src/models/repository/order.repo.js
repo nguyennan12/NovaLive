@@ -1,8 +1,6 @@
 import orderModel from '#models/order.model.js'
 
 const changeStatusOrder = async ({ orderId, statusOrder = '', statusPayment = '' }) => {
-  console.log('🚀 ~ changeStatusOrder ~ statusOrder:', statusOrder)
-  console.log('🚀 ~ changeStatusOrder ~ orderId:', orderId)
   return await orderModel.updateOne(
     { order_trackingNumber: orderId },
     {
@@ -12,6 +10,19 @@ const changeStatusOrder = async ({ orderId, statusOrder = '', statusPayment = ''
   )
 }
 
+const getOrderDetail = async ({ orderId, userId }) => {
+  return await orderModel.findOne({
+    order_trackingNumber: orderId,
+    order_userId: userId
+  })
+    .populate({
+      path: 'order_products.productId',
+      select: 'spu_name spu_thumb spu_price'
+    })
+    .lean()
+}
+
 export default {
-  changeStatusOrder
+  changeStatusOrder,
+  getOrderDetail
 }
