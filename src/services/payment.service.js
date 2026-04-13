@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import crypto from 'crypto'
 import qs from 'qs'
 import moment from 'moment'
