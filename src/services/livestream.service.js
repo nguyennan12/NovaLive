@@ -6,6 +6,7 @@ import converter from '#utils/converter.js'
 import { generateLiveId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import skuService from './sku.service.js'
+import socketService from './socket.service.js'
 
 const createLiveSession = async ({ userId, reqBody }) => {
   const { title, description, products } = reqBody
@@ -83,8 +84,39 @@ const endLive = async ({ userId, liveId }) => {
   return finalLive
 }
 
+const pinProduct = async ({ userId, liveId, productId }) => {
+  const foundLive = await livestreamModel.findById(liveId).lean()
+  if (!foundLive || foundLive.live_streamerId.toString() !== userId.toString()) throw new ApiError(StatusCodes.BAD_REQUEST, 'live session invalid')
+  await livestreamModel.findOneAndUpdate(
+    { _id: liveId },
+    { $set: { 'live_products.$[].is_featured': false, } },
+    { new: true }
+  )
+  const finalUpdate = await livestreamModel.findOneAndUpdate(
+    { _id: liveId, 'live_products.productId': productId },
+    { $set: { 'live_products.$.is_featured': true } },
+    { new: true }
+  ).lean()
+
+  const pinnedProduct = finalUpdate.live_products.find(item => item.productId.toString() === productId)
+  socketService.pinnedProductPopup(pinnedProduct, foundLive.live_code)
+  return pinnedProduct
+}
+
+const unpinProduct = async ({ userId, liveId }) => {
+  const foundLive = await livestreamModel.findById(liveId).lean()
+  if (!foundLive || foundLive.live_streamerId.toString() !== userId.toString()) throw new ApiError(StatusCodes.BAD_REQUEST, 'live session invalid')
+  await livestreamModel.findOneAndUpdate(
+    { _id: liveId },
+    { $set: { 'live_products.$[].is_featured': false, } },
+    { new: true }
+  )
+}
+
 export default {
   createLiveSession,
   startLive,
-  endLive
+  endLive,
+  pinProduct,
+  unpinProduct
 }

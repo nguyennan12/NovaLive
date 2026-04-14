@@ -1,3 +1,4 @@
+import MyLogger from '#loggers/MyLogger.js'
 import socketService from '#services/socket.service.js'
 import { Server } from 'socket.io'
 
@@ -11,7 +12,7 @@ const initSocket = (server) => {
     }
   })
   io.on('connection', (socket) => {
-    console.log('A device has connected:', socket.id)
+    MyLogger.info(`A device has connected: ${socket.id}`, 'SOCKET')
 
     socket.on('join-room', (userId) => {
       socket.join(userId)
@@ -21,7 +22,7 @@ const initSocket = (server) => {
     socketService.handleLiveEvents(io, socket)
 
     socket.on('disconnect', () => {
-      console.log('A device has disconnected')
+      MyLogger.info(`A device has disconnected: ${socket.id}`, 'SOCKET')
     })
   })
 

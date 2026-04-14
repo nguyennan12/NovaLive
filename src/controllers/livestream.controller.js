@@ -13,20 +13,36 @@ const createLiveSession = async (req, res, next) => {
 const startLive = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
-    message: 'Creatue live session successfully!',
+    message: 'Start live session successfully!',
     metadata: await livestreamService.startLive({ userId: req.user.userId, liveId: req.params.liveId })
   }).send(res)
 }
 const endLive = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
-    message: 'Creatue live session successfully!',
+    message: 'End live session successfully!',
     metadata: await livestreamService.endLive({ userId: req.user.userId, liveId: req.params.liveId })
+  }).send(res)
+}
+const pinProduct = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'pin product successfully!',
+    metadata: await livestreamService.pinProduct({ userId: req.user.userId, liveId: req.params.liveId, productId: req.body })
+  }).send(res)
+}
+const unpinProduct = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'unpun product successfully!',
+    metadata: await livestreamService.unpinProduct({ userId: req.user.userId, liveId: req.params.liveId })
   }).send(res)
 }
 
 export default {
   createLiveSession,
   startLive,
-  endLive
+  endLive,
+  pinProduct,
+  unpinProduct
 }
