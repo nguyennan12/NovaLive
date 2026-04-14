@@ -22,17 +22,6 @@ export const transformSPUtoES = (doc) => {
       attr_value: attr.attr_value
     })),
 
-    live: doc.live?.is_live ? {
-      is_live: doc.live.is_live,
-      live_price: doc.live.live_price,
-      start_time: doc.live.start_time,
-      end_time: doc.live.end_time,
-      sort_order: doc.live.sort_order,
-      is_pin: doc.live.is_pin,
-      sold_count: doc.live.sold_count,
-      view_count: doc.live.view_count
-    } : { is_live: false },
-
     isPublished: doc.isPublished,
     isDeleted: doc.isDeleted,
     createdAt: doc.createdAt,

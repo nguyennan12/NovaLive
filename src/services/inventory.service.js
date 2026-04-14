@@ -40,8 +40,7 @@ const addStockToInventory = async ({ shopId, reqBody }) => {
   const prefix = `${PREFIX.INVENTORY_SKU}:${skuId}:stock`
   const availableStock = newInven.inven_stock - newInven.inven_reserved
 
-  //kiểm tra xem product hiện tại có hot không, nếu có thì lưu cache
-  const ttl = (foundProduct.live?.is_live) ? 86400 : 3600
+  const ttl = 3600
   await redisClient.set(prefix, availableStock, 'EX', ttl)
   return newInven
 }

@@ -26,17 +26,6 @@ const spuSchema = new Schema({
     }
   ],
 
-  live: {
-    is_live: { type: Boolean, default: false, index: true },
-    live_price: Number,
-    start_time: Date,
-    end_time: Date,
-    sort_order: { type: Number, default: 0 },
-    is_pin: { type: Boolean, default: false },
-    sold_count: { type: Number, default: 0 },
-    view_count: { type: Number, default: 0 }
-  },
-
   spu_variations: { type: Array, default: [] },
   isDraft: { type: Boolean, default: true, index: true },
   isPublished: { type: Boolean, default: false, index: true },

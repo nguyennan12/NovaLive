@@ -27,11 +27,17 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
 }
 
 const findProductDetail = async (productId) => {
-  return await spuModel.findOne({ spu_code: productId }).lean()
+  return await spuModel.findOne({ spu_code: productId, isDeleted: false, isPublished: true }).lean()
 }
 
 const deleteProduct = async (productId) => {
   return await spuModel.findOneAndUpdate({ spu_code: productId }, { isDeleted: true }).lean()
+}
+
+const findProductByIds = async (productIds) => {
+  const objectIds = productIds.map(id => converter.toObjectId(id))
+  return await spuModel.find({ _id: { $in: objectIds }, isDeleted: false, isPublished: true }).lean()
+
 }
 
 const searchProducts = async ({ keySearch }) => {
@@ -57,5 +63,6 @@ export default {
   findAllProducts,
   findProductDetail,
   deleteProduct,
-  searchProducts
+  searchProducts,
+  findProductByIds
 }

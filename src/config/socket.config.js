@@ -1,3 +1,4 @@
+import socketService from '#services/socket.service.js'
 import { Server } from 'socket.io'
 
 let io
@@ -14,8 +15,10 @@ const initSocket = (server) => {
 
     socket.on('join-room', (userId) => {
       socket.join(userId)
-      console.log(`User ${userId} joined their private room`)
+      MyLogger.info(`User ${userId} joined their private room`, 'SOCKET')
     })
+
+    socketService.handleLiveEvents(io, socket)
 
     socket.on('disconnect', () => {
       console.log('A device has disconnected')
