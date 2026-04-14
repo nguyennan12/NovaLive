@@ -99,11 +99,11 @@ const pinProduct = async ({ userId, liveId, productId }) => {
   ).lean()
 
   const pinnedProduct = finalUpdate.live_products.find(item => item.productId.toString() === productId)
-  socketService.pinnedProductPopup(pinnedProduct)
+  socketService.pinnedProductPopup(pinnedProduct, foundLive.live_code)
   return pinnedProduct
 }
 
-const unpinProduct = async ({ userId, liveId, productId }) => {
+const unpinProduct = async ({ userId, liveId }) => {
   const foundLive = await livestreamModel.findById(liveId).lean()
   if (!foundLive || foundLive.live_streamerId.toString() !== userId.toString()) throw new ApiError(StatusCodes.BAD_REQUEST, 'live session invalid')
   await livestreamModel.findOneAndUpdate(

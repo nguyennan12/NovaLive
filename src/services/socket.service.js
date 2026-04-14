@@ -2,6 +2,7 @@ import { getIO } from '#config/socket.config.js'
 import { redisClient } from '#database/init.redis.js'
 import MyLogger from '#loggers/MyLogger.js'
 import { PREFIX } from '#utils/constant.js'
+import { generateCommentId } from '#utils/generator.js'
 
 const sendNotificationToUser = (userId, payload) => {
   const io = getIO()
@@ -45,6 +46,33 @@ const handleLiveEvents = (io, socket) => {
     }
   })
 
+  socket.on('send-comment', async (payload) => {
+    try {
+      const { liveCode, userName, userId, avatar, message } = payload
+
+      const spamKey = `${PREFIX.LIVE_SPAM}:${liveCode}:${userId}`
+      const isSpamming = await redisClient.get(spamKey)
+      if (isSpamming) {
+        return socket.emit('COMMENT_ERROR', 'Bạn chat quá nhanh, vui lòng đợi 2 giây!')
+      }
+      await redisClient.set(spamKey, '1', { EX: 2 })
+
+      if (!message || message.trim() === '') return
+      const contentComment = {
+        id: generateCommentId(),
+        userName: userName || 'unknow',
+        avatar: avatar || 'default_avatar.png',
+        message: message.trim(),
+        timestamp: Date.now(),
+        isStreamer: false
+      }
+      io.to(liveCode).emit('NEW_COMMENT', contentComment)
+      MyLogger.info(`[Live ${liveCode}] ${userName}: ${message}`, 'LIVE_CHAT')
+    } catch (error) {
+      MyLogger.error(`Error comment: ${error.message}`, 'LIVE_SOCKET')
+    }
+  })
+
   socket.on('leave-live', async (liveCode) => {
     try {
       socket.leave(liveCode)
@@ -63,13 +91,13 @@ const handleLiveEvents = (io, socket) => {
   })
 }
 
-const pinnedProductPopup = (product) => {
+const pinnedProductPopup = (product, liveCode) => {
   const io = getIO()
   io.to(liveCode).emit('PRODUCT_PINNED', {
-    productId: pinnedProduct.productId,
-    name: pinnedProduct.name,
-    thumb: pinnedProduct.thumb,
-    live_price: pinnedProduct.skus[0]?.live_price || 0,
+    productId: product.productId,
+    name: product.name,
+    thumb: product.thumb,
+    live_price: product.skus[0]?.live_price || 0,
     message: 'This is hot product'
   })
 }
