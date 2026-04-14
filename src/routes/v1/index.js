@@ -11,6 +11,7 @@ import { cartRouter } from './cart.router.js'
 import { orderRouter } from './order.router.js'
 import { paymentRouter } from './payment.router.js'
 import { livestreamRouter } from './livestream.router.js'
+import { uploadRouter } from './upload.router.js'
 
 const Router = express.Router()
 
@@ -26,6 +27,7 @@ Router.use('/v1/api/cart', cartRouter)
 Router.use('/v1/api/order', orderRouter)
 Router.use('/v1/api/payment', paymentRouter)
 Router.use('/v1/api/livestream', livestreamRouter)
+Router.use('/v1/api/upload', uploadRouter)
 
 
 export default Router

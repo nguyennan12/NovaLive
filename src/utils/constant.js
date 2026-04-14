@@ -54,6 +54,8 @@ export const ELASTIC_INDEX = {
   PRODUCT: 'products'
 }
 
+export const CLOUDINARY_ROOT_FOLDER = 'Livestream-ecommerce'
+
 export const PREFIX = {
   USER_RULE: 'user:role',
   INVENTORY_SKU: 'inventory:sku',

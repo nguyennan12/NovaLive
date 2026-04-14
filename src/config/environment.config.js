@@ -34,4 +34,8 @@ export const env = {
   VNP_HASH_SECRET: process.env.VNP_HASH_SECRET,
   VNP_URL: process.env.VNP_URL,
   VNP_RETURN_URL: process.env.VNP_RETURN_URL,
+
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+  CLOUDINAY_NAME: process.env.CLOUDINAY_NAME
 }
