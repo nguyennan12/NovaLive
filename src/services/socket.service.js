@@ -63,7 +63,19 @@ const handleLiveEvents = (io, socket) => {
   })
 }
 
+const pinnedProductPopup = (product) => {
+  const io = getIO()
+  io.to(liveCode).emit('PRODUCT_PINNED', {
+    productId: pinnedProduct.productId,
+    name: pinnedProduct.name,
+    thumb: pinnedProduct.thumb,
+    live_price: pinnedProduct.skus[0]?.live_price || 0,
+    message: 'This is hot product'
+  })
+}
+
 export default {
   sendNotificationToUser,
-  handleLiveEvents
+  handleLiveEvents,
+  pinnedProductPopup
 }
