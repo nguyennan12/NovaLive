@@ -14,7 +14,7 @@ import orderRepo from '#models/repository/order.repo.js'
 import socketService from './socket.service.js'
 
 const checkoutReview = async ({ userId, reqBody }) => {
-  const { cartId, shopOrderIds, userAddress } = reqBody
+  const { cartId, shopOrderIds, userAddressId } = reqBody
   const isBuyNow = !cartId
   //kiểm tra user mua hàng trong cart hay mua trực tiếp (mua ngay)
   if (!isBuyNow) {
@@ -61,7 +61,7 @@ const checkoutReview = async ({ userId, reqBody }) => {
         acc.totalWeight += (product.quantity * sku.sku_weight)
         return acc
       }, { rawPrice: 0, totalWeight: 0 })
-      const feeShip = await shippingService.calculateFee({ shopId, toAddress: userAddress, weight: totalWeight })
+      const { feeShip } = await shippingService.calculateFee({ shopId, toAddress: userAddressId, weight: totalWeight })
       //thông tin của 1 checkout (one shop)
       const itemCheckout = {
         shopId,
@@ -137,8 +137,9 @@ const checkoutReview = async ({ userId, reqBody }) => {
 }
 
 const orderByUser = async ({ userId, reqBody }) => {
-  const { cartId, shopOrderIds, userAddress, userPayment, client_totalCheckout } = reqBody
-  const { checkoutOrder } = await checkoutReview({ userId, reqBody: { cartId, shopOrderIds, userAddress } })
+  const { cartId, shopOrderIds, userAddressId, userPayment, client_totalCheckout } = reqBody
+  const { checkoutOrder } = await checkoutReview({ userId, reqBody: { cartId, shopOrderIds, userAddressId } })
+  const userAddress = await addressModel.findOne({ _id: converter.toObjectId(toAddress), owner_type: 'user' })
   //mếu số tiền client gửi về khác với số tiền checkout thì throw lỗi
   if (checkoutOrder.finalCheckout !== client_totalCheckout) throw new ApiError(StatusCodes.BAD_REQUEST, 'Price product is change, please check again!')
 

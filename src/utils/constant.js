@@ -67,5 +67,6 @@ export const PREFIX = {
   LIVE_VIEWERS: 'live:viewers',
   LIVE_LIKES: 'live:likes',
   LIVE_PEAK_VIEWERS: 'live:peak_viewers',
-  LIVE_SPAM: 'live_spam'
+  LIVE_SPAM: 'live_spam',
+  SHIPPING_FEE: 'shipping_fee'
 }

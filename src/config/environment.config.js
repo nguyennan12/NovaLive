@@ -37,5 +37,10 @@ export const env = {
 
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
-  CLOUDINAY_NAME: process.env.CLOUDINAY_NAME
+  CLOUDINAY_NAME: process.env.CLOUDINAY_NAME,
+
+
+  GHN_API_TOKEN: process.env.GHN_API_TOKEN,
+  GHN_API_URL: process.env.GHN_API_URL,
+  GHN_SHOP_ID: process.env.GHN_SHOP_ID
 }
