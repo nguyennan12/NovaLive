@@ -14,7 +14,9 @@ export const DOCUMENT_NAME = {
   CART: 'Cart',
   INVENTORY: 'Inventory',
   ORDER: 'Order',
-  LIVESTREAM: 'livestream'
+  LIVESTREAM: 'livestream',
+  ADDRESS: 'Address'
+
 }
 
 export const COLLECTION_NAME = {
@@ -32,7 +34,8 @@ export const COLLECTION_NAME = {
   CART: 'Carts',
   INVENTORY: 'Inventory',
   ORDER: 'Orders',
-  LIVESTREAM: 'livestream'
+  LIVESTREAM: 'livestream',
+  ADDRESS: 'Address'
 }
 
 

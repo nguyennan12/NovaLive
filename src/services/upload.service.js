@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
-import { ApiError } from '#core/error.response.js'
+import ApiError from '#core/error.response.js'
 import uploadCloud from '#config/cloudinary.config.js'
 
 const uploadImageFromLocal = async ({ path, folderName }) => {

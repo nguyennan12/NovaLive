@@ -11,6 +11,8 @@ const userSchema = new Schema({
   user_email: { type: String, required: true },
   user_phone: { type: String, default: '' },
   user_sex: { type: String, default: '' },
+  user_addresses: [{ type: Schema.Types.ObjectId, ref: 'Address' }],
+  default_address_id: { type: Schema.Types.ObjectId, ref: 'Address', default: null },
   user_avatar: { type: String, default: '' },
   user_date_of_birth: { type: Date, default: null },
   user_role: { type: String, ref: 'Role', default: 'user' },

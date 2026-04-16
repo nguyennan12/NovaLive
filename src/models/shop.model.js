@@ -20,9 +20,10 @@ const shopSchema = new Schema({
   //co the cho field ccnd để xác thực, và tài khoản bank
   shop_slug: { type: String, unique: true, index: true },
   shop_logo: { type: String, default: '' },
-  current_live_session: { type: Schema.Types.ObjectId, ref: 'LiveSession', default: null },
+  current_live_session: { type: Schema.Types.ObjectId, ref: 'Livetream', default: null },
 
-  shop_address: shopAddressSchema,
+  shop_addresses: [{ type: Schema.Types.ObjectId, ref: 'Address' }],
+  default_address_id: { type: Schema.Types.ObjectId, ref: 'Address', default: null },
 
   shop_status: { type: String, enum: ['active', 'inactive', 'banned', 'warning'], default: 'active', index: true },
   shop_contact: { phone: String, email: String },
