@@ -1,10 +1,33 @@
 version: '3.8'
 
 services:
-  new-app:
+  frontend:
+      build:
+        context: .
+        dockerfile: apps/frontend/Dockerfile
+        target: development
+      working_dir: /app/apps/frontend
+      ports:
+        - "5173:5173"
+      volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/frontend/node_modules
+      environment:
+      - CHOKIDAR_USEPOLLING=true
+      stdin_open: true
+      tty: true
+      command: yarn dev --host
+      depends_on:
+        - backend
+      networks:
+        - livestream-ecommerce-network
+  backend:
     build:
       context: .
+      dockerfile: apps/backend/Dockerfile
       target: development
+    working_dir: /app/apps/backend
     ports:
       - "3031:3031"
     env_file:
@@ -12,6 +35,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/apps/backend/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
       - NODE_ENV=dev
