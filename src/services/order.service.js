@@ -12,6 +12,7 @@ import shippingService from './shipping.service.js'
 import { RabbitMQClient } from '#database/init.rabbitMQ.js'
 import orderRepo from '#models/repository/order.repo.js'
 import socketService from './socket.service.js'
+import { addressModel } from '#models/address.model.js'
 
 const checkoutReview = async ({ userId, reqBody }) => {
   const { cartId, shopOrderIds, userAddressId } = reqBody
@@ -139,7 +140,7 @@ const checkoutReview = async ({ userId, reqBody }) => {
 const orderByUser = async ({ userId, reqBody }) => {
   const { cartId, shopOrderIds, userAddressId, userPayment, client_totalCheckout } = reqBody
   const { checkoutOrder } = await checkoutReview({ userId, reqBody: { cartId, shopOrderIds, userAddressId } })
-  const userAddress = await addressModel.findOne({ _id: converter.toObjectId(toAddress), owner_type: 'user' })
+  const userAddress = await addressModel.findOne({ _id: converter.toObjectId(userAddressId), owner_type: 'user' })
   //mếu số tiền client gửi về khác với số tiền checkout thì throw lỗi
   if (checkoutOrder.finalCheckout !== client_totalCheckout) throw new ApiError(StatusCodes.BAD_REQUEST, 'Price product is change, please check again!')
 

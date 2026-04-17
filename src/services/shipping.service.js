@@ -5,18 +5,20 @@ import axios from 'axios'
 import { env } from '#config/environment.config.js'
 import { PREFIX } from '#utils/constant.js'
 import { redisClient } from '#database/init.redis.js'
+import { addressModel } from '#models/address.model.js'
 
 const calculateFee = async ({ shopId, toAddress, weight }) => {
   try {
     const [shopAdrress, userAddress] = await Promise.all([
-      addressModel.findOne({ owner_id: shopId, owner_type: 'shop', is_default: true }),
+      addressModel.findOne({ owner_id: converter.toObjectId(shopId), owner_type: 'shop' }),
       addressModel.findOne({ _id: converter.toObjectId(toAddress), owner_type: 'user' })
     ])
+
     if (!userAddress) throw new ApiError(StatusCodes.BAD_REQUEST, 'please register address before order')
 
     const prefix = `${PREFIX.SHIPPING_FEE}:${shopAdrress.district_id}_${userAddress.district_id}_${userAddress.ward_code}_${weight}`
-    cacheFee = await redisClient.get(prefix)
-    if (cacheFee) return parseInt(cachedFee, 10)
+    const cacheFee = await redisClient.get(prefix)
+    if (cacheFee) return { feeShip: parseInt(cacheFee, 10) }
 
     const payload = {
       'from_district_id': shopAdrress.district_id,
