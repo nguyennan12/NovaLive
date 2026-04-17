@@ -7,9 +7,11 @@ import { generateLiveId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import skuService from './sku.service.js'
 import socketService from './socket.service.js'
+import agoraHelper from '#helpers/agora.helper.js'
+import livestreamRepo from '#models/repository/livestream.repo.js'
 
 const createLiveSession = async ({ userId, reqBody }) => {
-  const { title, description, products } = reqBody
+  const { title, description, products, shopId } = reqBody
   const skuIds = products.flatMap(p => p.skus.map(s => s.sku_id))
   const foundSkus = await skuService.getSkusDetails(skuIds)
 
@@ -41,19 +43,40 @@ const createLiveSession = async ({ userId, reqBody }) => {
     live_description: description,
     live_products: liveProducts,
     live_streamerId: userId,
-    live_code: generateLiveId()
+    live_code: generateLiveId(),
+    live_shopId: shopId
   })
   return newLive
 }
 
 const startLive = async ({ userId, liveId }) => {
-  const foundLive = await livestreamModel.findById(liveId).lean()
+  const foundLive = await livestreamRepo.findLiveByIdAndType(liveId, 'scheduled')
   if (!foundLive || foundLive.live_streamerId.toString() !== userId.toString()) throw new ApiError(StatusCodes.BAD_REQUEST, 'live session invalid')
   await Promise.all([
     livestreamModel.findOneAndUpdate({ _id: liveId }, { live_status: 'active', live_actual_start: Date.now() }, { returnDocument: 'after' }),
     redisClient.set(`${PREFIX.LIVE_VIEWERS}:${foundLive.live_code}`, 0)
   ])
-  return { ...foundLive }
+  const token = agoraHelper.generateToken({
+    channelName: liveId.toString(),
+    account: userId.toString(),
+    roleType: 'HOST'
+  })
+  return { ...foundLive, token }
+}
+
+const joinLive = async ({ liveId, userId }) => {
+  const foundLive = await livestreamRepo.findLiveByIdAndType(liveId, 'active')
+  if (!foundLive) throw new ApiError(StatusCodes.NOT_FOUND, 'live is end')
+  const token = agoraHelper.generateToken({
+    channelName: liveId.toString(),
+    account: userId.toString(),
+    roleType: 'AUDIENCE'
+  })
+  return {
+    token,
+    shopId: foundLive.shopId,
+    channelName: liveId.toString()
+  }
 }
 
 const endLive = async ({ userId, liveId }) => {
@@ -82,6 +105,23 @@ const endLive = async ({ userId, liveId }) => {
   ])
 
   return finalLive
+}
+
+const getActiveSessions = async ({ limit = 5, cursor }) => {
+  let query = { status: 'active' }
+  if (cursor) query.startedAt = { $lt: new Date(cursor) }
+  const lives = await livestreamModel.find(query)
+    .populate('live_shopId', 'shop_name shop_logo')
+    .sort({ 'live_actual_start': -1 })
+    .limit(limit)
+    .lean()
+
+  const nextCursor = lives.length > 0 ? lives[lives.length - 1].startedAt : null
+  return {
+    lives,
+    nextCursor,
+    hasMore: lives.length === limit
+  }
 }
 
 const pinProduct = async ({ userId, liveId, productId }) => {
@@ -116,7 +156,9 @@ const unpinProduct = async ({ userId, liveId }) => {
 export default {
   createLiveSession,
   startLive,
+  joinLive,
   endLive,
   pinProduct,
-  unpinProduct
+  unpinProduct,
+  getActiveSessions
 }

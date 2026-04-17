@@ -42,5 +42,8 @@ export const env = {
 
   GHN_API_TOKEN: process.env.GHN_API_TOKEN,
   GHN_API_URL: process.env.GHN_API_URL,
-  GHN_SHOP_ID: process.env.GHN_SHOP_ID
+  GHN_SHOP_ID: process.env.GHN_SHOP_ID,
+
+  AGORA_APP_ID: process.env.AGORA_APP_ID,
+  AGORA_APP_CERTIFICATE: process.env.AGORA_APP_CERTIFICATE
 }
