@@ -8,7 +8,7 @@ const Router = express.Router()
 Router.use(authentication)
 
 Router.post('/', asyncHandler(livestreamController.createLiveSession))
-Router.get('/', asyncHandler(livestreamController.getActiveSessions))
+Router.get('/active', asyncHandler(livestreamController.getActiveSessions))
 Router.post('/:liveId/start', asyncHandler(livestreamController.startLive))
 Router.post('/:liveId/join', asyncHandler(livestreamController.joinLive))
 Router.post('/:liveId/end', asyncHandler(livestreamController.endLive))

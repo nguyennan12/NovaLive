@@ -108,7 +108,7 @@ const endLive = async ({ userId, liveId }) => {
 }
 
 const getActiveSessions = async ({ limit = 5, cursor }) => {
-  let query = { status: 'active' }
+  let query = { live_status: 'active' }
   if (cursor) query.startedAt = { $lt: new Date(cursor) }
   const lives = await livestreamModel.find(query)
     .populate('live_shopId', 'shop_name shop_logo')

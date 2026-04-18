@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { refreshTokenAPI } from '../services/user.service'
+import { refreshTokenAPI } from '../services/userService'
 import { logoutUserAPI } from '~/redux/user/userSlice'
 
 let axiosReduxStore

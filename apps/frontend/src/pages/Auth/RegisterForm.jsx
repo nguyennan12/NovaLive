@@ -9,7 +9,7 @@ import { useColorScheme } from '@mui/material/styles'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { registerUserAPI } from '~/apis/services/user.service'
+import { registerUserAPI } from '~/apis/services/userService'
 import FieldErrorAlert from '~/components/common/Form/FieldErrorAlert'
 import {
   EMAIL_RULE,

@@ -1,18 +1,13 @@
-.env
-/node_modules
-total-knowledge.md
-/src/logs
-logs
-*.log
-/seed
-seed
-scripts
-
+# Dependencies
 node_modules/
-.env
-.env.*
-*.local
 
+# Environment
+**/.env
+**/.env.*
+**/*.local
+!**/.env.example
+
+# Logs
 logs/
 *.log
 npm-debug.log*
@@ -21,6 +16,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dev tools
 .DS_Store
 .idea/
 .vscode/*
@@ -31,6 +27,8 @@ lerna-debug.log*
 *.sln
 *.sw?
 
-total-knowledge.md
+# Project specific
+src/logs/
 seed/
 scripts/
+total-knowledge.md

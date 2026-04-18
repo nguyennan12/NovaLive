@@ -8,8 +8,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { useColorScheme } from '@mui/material/styles'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { verifyUserAPI } from '~/apis/services/user.service'
-import { resendMailAPI } from '~/apis/services/user.service'
+import { verifyUserAPI } from '~/apis/services/userService'
+import { resendMailAPI } from '~/apis/services/userService'
 
 const OTP_LENGTH = 6
 const RESEND_COOLDOWN = 60
