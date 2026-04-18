@@ -3,6 +3,7 @@ import ApiSuccess from '#core/success.response.js'
 import { StatusCodes } from 'http-status-codes'
 import accessService from '#services/access.service.js'
 import { REFRESHTOKEN_LIFE } from '#utils/constant.js'
+import emailService from '#services/email.service.js'
 
 const signUp = async (req, res, next) => {
   new ApiSuccess({
@@ -70,10 +71,20 @@ const refreshtoken = async (req, res, next) => {
   }).send(res)
 }
 
+const sendMail = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.CREATED,
+    message: 'send Mail successfully!',
+    metadata: await emailService.sendVerificationEmail(req.body)
+  }).send(res)
+}
+
+
 export default {
   signUp,
   verify,
   login,
   logout,
-  refreshtoken
+  refreshtoken,
+  sendMail
 }

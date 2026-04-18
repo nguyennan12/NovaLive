@@ -3,16 +3,14 @@ import { redisClient } from '#database/init.redis.js'
 import authHelper from '#helpers/auth.helper.js'
 import OtpModel from '#models/otp.model.js'
 import userRepo from '#models/repository/user.repo.js'
-import { REFRESHTOKEN_LIFE } from '#utils/constant.js'
+import { PREFIX, REFRESHTOKEN_LIFE } from '#utils/constant.js'
 import converter from '#utils/converter.js'
 import data from '#utils/data.js'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { StatusCodes } from 'http-status-codes'
 import emailService from './email.service.js'
-import otpService from './otp.service.js'
 import tokenService from './token.service.js'
-import { PREFIX } from '#utils/constant.js'
 
 const SignUp = async ({ email, password }) => {
   const foundUser = await userRepo.findUserByEmail({ email })
@@ -23,8 +21,7 @@ const SignUp = async ({ email, password }) => {
   if (!newUser) throw new ApiError(StatusCodes.BAD_REQUEST, 'Register user error')
 
   //send email
-  const otpToken = await otpService.createOtp({ email })
-  emailService.sendVerificationEmail({ email: newUser.user_email, otpToken: otpToken.otp_token }).catch(console.error)
+  emailService.sendVerificationEmail({ email: newUser.user_email }).catch(console.error)
 
   const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,
@@ -43,7 +40,6 @@ const SignUp = async ({ email, password }) => {
   })
   return {
     user: data.getInfo(['_id', 'user_name', 'user_email'], newUser),
-    otp: otpToken,
     tokens
   }
 }
@@ -53,7 +49,7 @@ const verify = async ({ email, otpToken }) => {
   if (!foundUser) throw new ApiError(StatusCodes.BAD_REQUEST, 'Account not found!')
   //found lastOTP
   const lastOtpToken = await OtpModel.findOne({ otp_email: email }).sort({ createdAt: -1 })
-  if (lastOtpToken.otp_token != otpToken) throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid OTP code!')
+  if (!lastOtpToken || lastOtpToken.otp_token != otpToken) throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid OTP code!')
   //change status
   const user = await userRepo.changeStatus({ email, status: 'active' })
   //remove otp
@@ -66,7 +62,7 @@ const verify = async ({ email, otpToken }) => {
 
 const login = async ({ email, password }) => {
   const foundUser = await userRepo.findUserByEmail({ email })
-  if (!foundUser) throw new ApiError(StatusCodes.BAD_REQUEST, 'Account not found!')
+  if (!foundUser || foundUser.user_status !== 'active') throw new ApiError(StatusCodes.BAD_REQUEST, 'Account not found!')
 
   const matchPassword = await bcrypt.compare(password, foundUser.user_password)
   if (!matchPassword) throw new ApiError(StatusCodes.UNAUTHORIZED, 'Authentication error')

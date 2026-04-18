@@ -9,6 +9,7 @@ function toFullAdress({ street, ward, district, province }) {
   return [street, ward, district, province]
     .filter(Boolean)
     .map(s => s.trim())
+    .join(', ')
 }
 
 export default {
