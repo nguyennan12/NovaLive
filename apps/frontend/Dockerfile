@@ -2,15 +2,16 @@
 FROM node:20-alpine AS development
 WORKDIR /app
 COPY package.json yarn.lock ./
-COPY . .
 RUN yarn install
+COPY . .
+
 
 # Môi trường Production
 FROM node:20-alpine AS build-stage
 WORKDIR /app
 COPY package.json yarn.lock ./
-COPY . .
 RUN yarn install --frozen-lockfile
+COPY . .
 WORKDIR /app/apps/frontend
 RUN yarn build
 

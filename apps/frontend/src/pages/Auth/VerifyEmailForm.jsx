@@ -23,17 +23,17 @@ function VerifyEmailForm() {
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''))
   const [loading, setLoading] = useState(false)
   const [resendCooldown, setResendCooldown] = useState(RESEND_COOLDOWN)
-  const [canResend, setCanResend] = useState(false)
+  let canResend = resendCooldown <= 0
 
   const inputRefs = useRef([])
 
   useEffect(() => {
-    if (resendCooldown <= 0) {
-      setCanResend(true)
-      return
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => {
+        setResendCooldown(prev => prev - 1)
+      }, 1000)
+      return () => clearTimeout(timer)
     }
-    const timer = setTimeout(() => setResendCooldown(prev => prev - 1), 1000)
-    return () => clearTimeout(timer)
   }, [resendCooldown])
 
   const handleChange = (index, value) => {
@@ -74,7 +74,6 @@ function VerifyEmailForm() {
 
   const handleSubmit = async () => {
     const code = otp.join('')
-
     setLoading(true)
     try {
       await toast.promise(
@@ -91,7 +90,6 @@ function VerifyEmailForm() {
 
   const handleResend = async () => {
     if (!canResend) return
-    setCanResend(false)
     setResendCooldown(RESEND_COOLDOWN)
     setOtp(Array(OTP_LENGTH).fill(''))
     inputRefs.current[0]?.focus()
@@ -213,7 +211,7 @@ function VerifyEmailForm() {
         </Box>
 
         <Box sx={{ padding: '0 1em 1.5em', textAlign: 'center', display: 'flex', gap: 0.5, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Typography variant="body2" sx={{ color: '#838383' }}>Didn&apos;t receive the code?</Typography>
+          <Typography variant="body2" sx={{ color: '#838383' }}>Didn&apost receive the code?</Typography>
           <Typography
             variant="body2"
             onClick={handleResend}
