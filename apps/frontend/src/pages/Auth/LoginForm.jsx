@@ -6,11 +6,12 @@ import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
-import { useColorScheme } from '@mui/material/styles'
-import { Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import FieldErrorAlert from '~/components/common/Form/FieldErrorAlert'
-import { useForm } from 'react-hook-form'
+import { loginUserAPI } from '~/redux/user/userSlice'
 import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,
@@ -18,12 +19,8 @@ import {
   PASSWORD_CONFIRMATION_MESSAGE,
   PASSWORD_RULE
 } from '~/utils/validators'
-import { useSearchParams, useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { loginUserAPI } from '~/redux/user/userSlice'
 
 function LoginForm() {
-  const { mode } = useColorScheme()
   const { register, handleSubmit, formState: { errors } } = useForm()
   let [searchParams] = useSearchParams()
 
@@ -112,9 +109,7 @@ function LoginForm() {
               size="large"
               fullWidth
               sx={{
-                background: mode === 'dark'
-                  ? 'linear-gradient(90deg, #0d6d08, #2cb92f, #8dd654)'
-                  : 'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)',
+                background: 'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)',
                 color: '#ffffff'
               }}
 

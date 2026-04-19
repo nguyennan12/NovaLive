@@ -61,6 +61,8 @@ const verify = async ({ email, otpToken }) => {
 }
 
 const login = async ({ email, password }) => {
+  console.log('🚀 ~ login ~ password:', password)
+  console.log('🚀 ~ login ~ email:', email)
   const foundUser = await userRepo.findUserByEmail({ email })
   if (!foundUser || foundUser.user_status !== 'active') throw new ApiError(StatusCodes.BAD_REQUEST, 'Account not found!')
 

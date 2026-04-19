@@ -26,7 +26,7 @@ function Auth() {
     <Box sx={{
       minHeight: '100vh',
       width: '100%',
-      bgcolor: mode === 'light' ? '#ffffff' : '#1a2518',
+      bgcolor: mode === 'light' ? '#ffffff' : '#09062a',
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -45,8 +45,8 @@ function Auth() {
               radial-gradient(circle 600px at 0% 200px, #bfdbfe, transparent),
               radial-gradient(circle 600px at 100% 500px, #bfdbfe, transparent) `
             : `
-              radial-gradient(circle 600px at 0% 200px, #6bb828, transparent),
-              radial-gradient(circle 600px at 100% 500px, #6bb828, transparent)
+              radial-gradient(circle 600px at 0% 200px, #021f9f, transparent),
+              radial-gradient(circle 600px at 100% 500px, #021f9f, transparent)
             `
       }}>
         {isLogin && <LoginForm />}

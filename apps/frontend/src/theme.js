@@ -33,7 +33,7 @@ const theme = extendTheme({
           contrastText: '#fafafa'
         },
         secondary: {
-          main: '#6bb828',
+          main: '#1f14b3',
           contrastText: '#ffffff'
         },
         divider: '#3b3b3b'
