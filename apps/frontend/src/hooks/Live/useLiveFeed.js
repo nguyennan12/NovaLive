@@ -15,8 +15,8 @@ export const useLiveFeed = () => {
         setLives(res.lives)
         nextCursorRef.current = res.nextCursor
         hasMoreRef.current = res.hasMore
-      } catch (err) {
-        console.error(err)
+      } catch {
+        // console.error(err)
       } finally {
         setLoading(false)
       }
@@ -43,7 +43,6 @@ export const useLiveFeed = () => {
     if (currentIndex >= lives.length - 1) return
     const nextIndex = currentIndex + 1
     setCurrentIndex(nextIndex)
-    // Còn 2 live nữa là hết → fetch thêm
     if (nextIndex >= lives.length - 2) fetchMore()
   }
 
@@ -61,15 +60,23 @@ export const useLiveFeed = () => {
   const handleTouchEnd = (e) => {
     if (touchStartY.current === null) return
     const diff = touchStartY.current - e.changedTouches[0].clientY
-    if (Math.abs(diff) < 50) return // Quá nhỏ, bỏ qua
+    if (Math.abs(diff) < 50) return
     diff > 0 ? goNext() : goPrev()
     touchStartY.current = null
   }
 
+  const isScrolling = useRef(false)
   const handleWheel = useCallback((e) => {
-    e.preventDefault()
+    if (isScrolling.current) return
+
+    isScrolling.current = true
+
     e.deltaY > 0 ? goNext() : goPrev()
+
+    setTimeout(() => {
+      isScrolling.current = false
+    }, 500)
   }, [currentIndex, lives.length])
 
-  return { lives, currentIndex, goNext, goPrev, loadingMore, handleTouchEnd, handleTouchStart, handleWheel, HashChangeEvent }
+  return { lives, currentIndex, goNext, goPrev, loadingMore, handleTouchEnd, handleTouchStart, handleWheel, HashChangeEvent, loading }
 }

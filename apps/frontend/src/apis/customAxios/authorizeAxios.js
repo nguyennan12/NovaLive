@@ -1,7 +1,7 @@
 // authorizeAxios.js — import store thẳng, không cần injectStore
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { store } from '~/redux/store'  // OK vì userSlice không import axios nữa
+import { store } from '~/redux/store'
 import { clearCurrentUser } from '~/redux/user/userSlice'
 
 const authorizedAxiosInstance = axios.create({

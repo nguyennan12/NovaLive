@@ -3,6 +3,8 @@ import AgoraRTC from 'agora-rtc-sdk-ng'
 import { joinLiveAPI } from '~/apis/services/liveService'
 import { env } from '~/enviroment'
 
+AgoraRTC.setLogLevel(4)
+
 export const useLivePlayer = ({ liveId, userId }) => {
   const videoRef = useRef(null)
   const clientRef = useRef(null)

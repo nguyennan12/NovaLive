@@ -10,21 +10,18 @@ import { useLiveFeed } from '~/hooks/Live/useLiveFeed'
 export const LiveFeed = ({ userId }) => {
   const { lives, loading, currentIndex, goNext, goPrev, loadingMore, handleTouchEnd, handleTouchStart, handleWheel } = useLiveFeed()
 
-  // Chờ fetch xong
   if (loading) return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'black' }}>
       <CircularProgress sx={{ color: 'white' }} />
     </Box>
   )
 
-  // Không có live nào
   if (lives.length === 0) return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'black' }}>
       <Typography color="white">Không có live nào đang phát</Typography>
     </Box>
   )
 
-  // Chỉ đến đây khi lives có data
   const currentLive = lives[currentIndex]
 
   return (
@@ -43,16 +40,13 @@ export const LiveFeed = ({ userId }) => {
         userSelect: 'none'
       }}
     >
-      {/* Chỉ render LivePlayer của live hiện tại
-          Khi currentIndex thay đổi → key thay đổi → React unmount cái cũ, mount cái mới
-          LivePlayer cũ tự cleanup (leave Agora) trong useEffect return */}
+
       <LivePlayer
         key={currentLive._id}
         liveId={currentLive._id}
         userId={userId}
       />
 
-      {/* Nút điều hướng */}
       <Box sx={{
         position: 'absolute', right: 12, top: '50%',
         transform: 'translateY(-50%)',
@@ -74,7 +68,6 @@ export const LiveFeed = ({ userId }) => {
         </IconButton>
       </Box>
 
-      {/* Counter */}
       <Box sx={{
         position: 'absolute', bottom: 16, left: '50%',
         transform: 'translateX(-50%)',
