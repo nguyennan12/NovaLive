@@ -5,6 +5,8 @@ import Overlay from './Overlay/Overlay'
 import { useLivePlayer } from '~/hooks/Live/useLivePlayer'
 
 const LivePlayer = ({ liveId, userId }) => {
+
+
   const { videoRef, status } = useLivePlayer({ liveId, userId })
 
   return (

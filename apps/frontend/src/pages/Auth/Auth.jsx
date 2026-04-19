@@ -17,9 +17,9 @@ function Auth() {
 
   const { mode } = useColorScheme()
 
-  // if (currentUser) {
-  //   return <Navigate to='/' replace={true} />
-  // }
+  if (currentUser) {
+    return <Navigate to='/' replace={true} />
+  }
 
 
   return (

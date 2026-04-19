@@ -15,8 +15,8 @@ export const useLiveFeed = () => {
         setLives(res.lives)
         nextCursorRef.current = res.nextCursor
         hasMoreRef.current = res.hasMore
-      } catch {
-        // console.error(err)
+      } catch (err) {
+        console.error(err)
       } finally {
         setLoading(false)
       }

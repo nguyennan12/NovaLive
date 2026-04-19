@@ -1,15 +1,15 @@
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import App from './App'
-import theme from './theme'
-import { ToastContainer } from 'react-toastify'
 import { ConfirmProvider } from 'material-ui-confirm'
+import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
-import { store } from './redux/store'
-import { PersistGate } from 'redux-persist/integration/react'
+import { BrowserRouter } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
 import { persistStore } from 'redux-persist'
+import { PersistGate } from 'redux-persist/integration/react'
+import App from './App'
+import { store } from './redux/store'
+import theme from './theme'
 
 const persitor = persistStore(store)
 

@@ -1,6 +1,32 @@
-node_modules
-npm-debug.log
-yarn-error.log
+# Dependencies
+**/node_modules
+**/.yarn/cache
+**/.pnp.*
+
+# Build outputs
+**/dist
+**/build
+**/.vite
+
+# Git
 .git
+.gitignore
+
+# Environment files
 .env
-dist
+**/.env
+.env.*
+**/.env.*
+
+# Docker data (nếu có folder local)
+docker-data
+
+# Logs
+*.log
+**/*.log
+
+# Editor/OS
+.vscode
+.idea
+**/.DS_Store
+**/Thumbs.db

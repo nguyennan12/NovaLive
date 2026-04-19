@@ -1,4 +1,4 @@
-import authorizedAxiosInstance from '~/apis/customAxios/authorizeAxios'
+import authorizedAxiosInstance from '../customAxios/authorizeAxios'
 import { toast } from 'react-toastify'
 
 export const registerUserAPI = async (data) => {
@@ -18,6 +18,10 @@ export const resendMailAPI = async (data) => {
   return response
 }
 
+export const loginAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post('access/login', data)
+  return response
+}
 
 export const refreshTokenAPI = async () => {
   const response = await authorizedAxiosInstance.post('access/refreshtoken')

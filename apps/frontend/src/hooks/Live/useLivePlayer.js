@@ -30,12 +30,11 @@ export const useLivePlayer = ({ liveId, userId }) => {
           }
           if (mediaType === 'audio') remoteUser.audioTrack.play()
         })
-
         client.on('user-unpublished', (_, mediaType) => {
           if (mediaType === 'video' && isMounted) setStatus('ended')
         })
-
         await client.join(env.AGORA_APP_ID, channelName, token, userId)
+
       } catch {
         if (isMounted) setStatus('error')
       }

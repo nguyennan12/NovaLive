@@ -2,26 +2,31 @@ version: '3.8'
 
 services:
   frontend:
-      build:
-        context: .
-        dockerfile: apps/frontend/Dockerfile
-        target: development
-      working_dir: /app/apps/frontend
-      ports:
-        - "5173:5173"
-      volumes:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      target: development
+    working_dir: /app/apps/frontend
+    ports:
+      - "5173:5173"
+    volumes:
       - .:/app
-      - /app/node_modules
+      - root_node_modules:/app/node_modules
       - /app/apps/frontend/node_modules
-      environment:
+    environment:
       - CHOKIDAR_USEPOLLING=true
-      stdin_open: true
-      tty: true
-      command: yarn dev --host
-      depends_on:
-        - backend
-      networks:
-        - livestream-ecommerce-network
+      - WATCHPACK_POLLING=true
+      - VITE_PORT=5173
+      - VITE_HOST=0.0.0.0
+    stdin_open: true
+    tty: true
+    command: yarn dev --host 0.0.0.0 --port 5173
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - livestream-ecommerce-network
+
   backend:
     build:
       context: .
@@ -34,20 +39,25 @@ services:
       - .env
     volumes:
       - .:/app
-      - /app/node_modules
+      - root_node_modules:/app/node_modules
       - /app/apps/backend/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
       - NODE_ENV=dev
+      - TZ=Asia/Ho_Chi_Minh
     stdin_open: true
     tty: true
     command: yarn dev
     depends_on:
-      - mongodb_db
-      - elasticsearch
-      - rabbitmq
+      mongodb_db:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
       - livestream-ecommerce-network
+    restart: unless-stopped
 
   mongodb_db:
     image: mongo:8.0
@@ -57,6 +67,13 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
@@ -65,8 +82,14 @@ services:
     networks:
       - livestream-ecommerce-network
     volumes:
-      - redis_data:/data 
+      - redis_data:/data
     command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
@@ -85,6 +108,13 @@ services:
       - es_data:/usr/share/elasticsearch/data
     networks:
       - livestream-ecommerce-network
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.12.0
@@ -96,11 +126,13 @@ services:
     ports:
       - "5601:5601"
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     networks:
       - livestream-ecommerce-network
+
   rabbitmq:
-    image: rabbitmq:3-management-alpine 
+    image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     ports:
       - "5672:5672"
@@ -112,12 +144,19 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - livestream-ecommerce-network
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
 
 networks:
   livestream-ecommerce-network:
     driver: bridge
 
 volumes:
+  root_node_modules:
   mongo_data:
   es_data:
   rabbitmq_data:

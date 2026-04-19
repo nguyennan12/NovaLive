@@ -1,12 +1,8 @@
+// authorizeAxios.js — import store thẳng, không cần injectStore
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { refreshTokenAPI } from '../services/userService'
-import { logoutUserAPI } from '~/redux/user/userSlice'
-
-let axiosReduxStore
-export const injectStore = (mainStore) => {
-  axiosReduxStore = mainStore
-}
+import { store } from '~/redux/store'  // OK vì userSlice không import axios nữa
+import { clearCurrentUser } from '~/redux/user/userSlice'
 
 const authorizedAxiosInstance = axios.create({
   baseURL: '/v1/api',
@@ -15,54 +11,45 @@ const authorizedAxiosInstance = axios.create({
 })
 
 authorizedAxiosInstance.interceptors.request.use((config) => {
+  const user = store.getState()?.user?.currentUser
+  if (user) {
+    config.headers['x-client-id'] = user._id
+    config.headers['Authorization'] = `Bearer ${user.accessToken}`
+  }
   return config
-}, (error) => {
-  return Promise.reject(error)
-})
-
+}, (error) => Promise.reject(error))
 
 let refreshTokenPromise = null
 
 authorizedAxiosInstance.interceptors.response.use(
-  (response) => {
-    return response.data
-  },
+  (response) => response.data,
   (error) => {
     if (error.response?.status === 401) {
-      if (axiosReduxStore) {
-        axiosReduxStore.dispatch(logoutUserAPI(false))
-      }
+      store.dispatch(clearCurrentUser())
+      window.location.href = '/login'
+      return Promise.reject(error)
     }
+
     const originalRequests = error.config
     if (error.response?.status === 410 && !originalRequests._retry) {
       originalRequests._retry = true
-
       if (!refreshTokenPromise) {
-        refreshTokenPromise = refreshTokenAPI()
-          .then((data) => {
-            return data?.accessToken
-          })
+        refreshTokenPromise = import('~/apis/services/userService')
+          .then(({ refreshTokenAPI }) => refreshTokenAPI())
           .catch((_error) => {
-            if (axiosReduxStore) {
-              axiosReduxStore.dispatch(logoutUserAPI(false))
-            }
+            store.dispatch(clearCurrentUser())
+            window.location.href = '/login'
             return Promise.reject(_error)
           })
-          .finally(() => {
-            refreshTokenPromise = null
-          })
+          .finally(() => { refreshTokenPromise = null })
       }
-      return refreshTokenPromise.then(() => {
-        return authorizedAxiosInstance(originalRequests)
-      })
+      return refreshTokenPromise.then(() => authorizedAxiosInstance(originalRequests))
     }
+
     if (error.response?.status !== 410) {
-      let errorMessage = error?.message
-      if (error.response?.data?.message) {
-        errorMessage = error.response?.data?.message
-      }
-      toast.error(errorMessage)
+      toast.error(error.response?.data?.message || error?.message)
     }
+
     return Promise.reject(error)
   }
 )

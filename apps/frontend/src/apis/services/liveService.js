@@ -6,6 +6,6 @@ export const joinLiveAPI = async (liveId) => {
 }
 
 export const getActiveSessionsAPI = async (params) => {
-  const response = await authorizedAxiosInstance.get('livestream/', { params })
+  const response = await authorizedAxiosInstance.get('livestream/active', { params })
   return response.metadata
 }

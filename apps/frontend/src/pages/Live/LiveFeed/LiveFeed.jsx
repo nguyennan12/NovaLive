@@ -1,14 +1,32 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Box from '@mui/material/Box'
+import { Typography } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import LivePlayer from '../LivePlayer/LivePlayer'
 import { useLiveFeed } from '~/hooks/Live/useLiveFeed'
 
 export const LiveFeed = ({ userId }) => {
-  const { lives, currentIndex, goNext, goPrev, loadingMore, handleTouchEnd, handleTouchStart, handleWheel } = useLiveFeed()
+  const { lives, loading, currentIndex, goNext, goPrev, loadingMore, handleTouchEnd, handleTouchStart, handleWheel } = useLiveFeed()
+
+  // Chờ fetch xong
+  if (loading) return (
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'black' }}>
+      <CircularProgress sx={{ color: 'white' }} />
+    </Box>
+  )
+
+  // Không có live nào
+  if (lives.length === 0) return (
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'black' }}>
+      <Typography color="white">Không có live nào đang phát</Typography>
+    </Box>
+  )
+
+  // Chỉ đến đây khi lives có data
   const currentLive = lives[currentIndex]
+
   return (
     <Box
       onTouchStart={handleTouchStart}

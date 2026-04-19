@@ -1,15 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import authorizedAxiosInstance from '~/apis/customAxios/authorizeAxios'
 import { toast } from 'react-toastify'
 
-const initialState = {
-  currentUser: null
-}
+const initialState = { currentUser: null }
 
 export const loginUserAPI = createAsyncThunk(
   'user/loginUserAPI',
   async (data) => {
-    const response = await authorizedAxiosInstance.post('access/login', data)
+    const { loginAPI } = await import('~/apis/services/userService')
+    const response = await loginAPI(data)
     return response
   }
 )
@@ -17,25 +15,23 @@ export const loginUserAPI = createAsyncThunk(
 export const logoutUserAPI = createAsyncThunk(
   'user/logoutUserAPI',
   async (showSuccessMessage = true) => {
-    const response = await authorizedAxiosInstance.delete('access/logout')
-    if (showSuccessMessage) {
-      toast.success('Logged out successfully!')
-    }
-    return response
+    const { logoutAPI } = await import('~/apis/services/userService')
+    await logoutAPI()
+    if (showSuccessMessage) toast.success('Logged out successfully!')
   }
 )
-
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
-  //xu ly dong bo
-  reducers: {},
-  //xu ly bat dong bo
+  reducers: {
+    setCurrentUser: (state, action) => { state.currentUser = action.payload },
+    clearCurrentUser: (state) => { state.currentUser = null }
+  },
   extraReducers: (builder) => {
     builder.addCase(loginUserAPI.fulfilled, (state, action) => {
-      const user = action.payload
-      state.currentUser = user
+      const { user, tokens } = action.payload.metadata
+      state.currentUser = { ...user, accessToken: tokens.accessToken }
     })
     builder.addCase(logoutUserAPI.fulfilled, (state) => {
       state.currentUser = null
@@ -43,12 +39,6 @@ export const userSlice = createSlice({
   }
 })
 
-// Action: nơi chứa các hàm reducer để các component gọi lại băng dispath() lấy data
-// export const { increment, decrement, incrementByAmount } = userSlice.actions
-
-//Selector: nơi để các component gọi bằng ueSelector lấy dữ liệu đã cập nhất trong state Redux ra sử dụng
-export const selectCurrentUser = (state) => {
-  return state.user.currentUser
-}
-
+export const { setCurrentUser, clearCurrentUser } = userSlice.actions
+export const selectCurrentUser = (state) => state.user.currentUser
 export const UserReducer = userSlice.reducer
