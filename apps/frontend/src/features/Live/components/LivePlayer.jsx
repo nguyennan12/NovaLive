@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import Overlay from './Overlay/Overlay'
-import { useLivePlayer } from '~/hooks/Live/useLivePlayer'
+import { useLivePlayer } from '~/features/Live/hooks/useLivePlayer'
 
 const LivePlayer = ({ liveId, userId }) => {
 

@@ -4,12 +4,12 @@ import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
-import EndCofirmDialog from './Component/EndCofirmDialog'
-import LiveControls from './Component/LiveControls'
-import LiveEndScreen from './Component/LiveEndScreen'
-import LiveHeader from './Component/LiveHeader'
-import LiveStartScreen from './Component/LiveStartScreen'
-import { useLiveHost } from '~/hooks/Live/useLiveHost'
+import EndCofirmDialog from './LiveHost/EndCofirmDialog'
+import LiveControls from './LiveHost/LiveControls'
+import LiveEndScreen from './LiveHost/LiveEndScreen'
+import LiveHeader from './LiveHost/LiveHeader'
+import LiveStartScreen from './LiveHost/LiveStartScreen'
+import { useLiveHost } from '~/features/Shop/hooks/useLiveHost'
 
 const LiveHost = ({ liveId }) => {
   const currentUser = useSelector(selectCurrentUser)

@@ -1,8 +1,8 @@
 import { Box } from '@mui/material'
 import { Routes, Route } from 'react-router-dom'
-import Auth from '~/pages/Auth/Auth'
-import Live from '~/pages/Live/Live'
-import ShopLive from '~/pages/Shop/ShopLive'
+import Auth from '~/features/Auth/pages/Auth'
+import Live from '~/features/Live/pages/Live'
+import ShopLive from '~/features/Shop/pages/ShopLive'
 
 const AppRoutes = () => {
   return (

@@ -1,11 +1,11 @@
 import { useLocation, Navigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
-import LoginForm from './LoginForm'
-import RegisterForm from './RegisterForm'
+import LoginForm from '../components/LoginForm'
+import RegisterForm from '../components/RegisterForm'
 import { useColorScheme } from '@mui/material/styles'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
-import VerifyEmailForm from './VerifyEmailForm'
+import VerifyEmailForm from '../components/VerifyEmailForm'
 
 function Auth() {
   const location = useLocation()

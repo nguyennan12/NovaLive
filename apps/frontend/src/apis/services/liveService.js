@@ -1,4 +1,4 @@
-import authorizedAxiosInstance from '~/apis/customAxios/authorizeAxios'
+import authorizedAxiosInstance from '~/apis/custom/authorizeAxios'
 
 export const joinLiveAPI = async (liveId) => {
   const response = await authorizedAxiosInstance.post(`livestream/${liveId}/join`)

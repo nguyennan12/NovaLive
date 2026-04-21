@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
-import LiveHost from './LiveHost/LiveHost'
+import LiveHost from '../components/LiveHost'
 function ShopLive() {
   const { liveId } = useParams()
   const currentUser = useSelector(selectCurrentUser)

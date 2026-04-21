@@ -1,4 +1,4 @@
-import authorizedAxiosInstance from '../customAxios/authorizeAxios'
+import authorizedAxiosInstance from '../custom/authorizeAxios'
 import { toast } from 'react-toastify'
 
 export const registerUserAPI = async (data) => {

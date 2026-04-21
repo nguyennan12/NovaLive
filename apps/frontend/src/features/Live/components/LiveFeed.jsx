@@ -4,8 +4,8 @@ import Box from '@mui/material/Box'
 import { Typography } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
-import LivePlayer from '../LivePlayer/LivePlayer'
-import { useLiveFeed } from '~/hooks/Live/useLiveFeed'
+import LivePlayer from './LivePlayer'
+import { useLiveFeed } from '~/features/Live/hooks/useLiveFeed'
 
 export const LiveFeed = ({ userId }) => {
   const { lives, loading, currentIndex, goNext, goPrev, loadingMore, handleTouchEnd, handleTouchStart, handleWheel } = useLiveFeed()
