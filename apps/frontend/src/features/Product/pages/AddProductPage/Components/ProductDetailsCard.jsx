@@ -10,7 +10,7 @@ import {
   selectAttributesBySlug,
   selectCategoryLoading,
   setAttributesBySlug
-} from '~/redux/product/categorySlice'
+} from '~/common/redux/product/categorySlice'
 
 export default function ProductDetailsCard() {
   const dispatch = useDispatch()

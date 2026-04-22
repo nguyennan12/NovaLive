@@ -6,12 +6,13 @@ import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
 import { Box, Breadcrumbs, Button, Link, Paper, Typography, useColorScheme } from '@mui/material'
 import { FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import AppBar from '~/components/layout/AppBar/AppBar'
+import AppBar from '~/common/components/layout/AppBar/AppBar'
 import AdvanceTab from './Components/AdvanceTab'
 import GeneralTab from './Components/GeneralTab'
 import StatusCard from './Components/StatusCard'
 import ThumbnailUpload from './Components/ThumbnailUpload'
-import { addProductAPI } from '~/apis/services/productService'
+import { addProductAPI } from '~/common/apis/services/productService'
+import { Link as RouterLink } from 'react-router-dom'
 
 const AddProductPage = () => {
   const { mode } = useColorScheme()
@@ -60,13 +61,46 @@ const AddProductPage = () => {
       >
         <Box sx={{ mb: 3 }}>
           <Breadcrumbs sx={{ mb: 1.5 }}>
-            <Link href="#" underline="hover" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, fontSize: '0.82rem', color: 'primary.contrastText' }}>
+            <Link
+              component={RouterLink}
+              to="/dashboard/shop"
+              underline="hover"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                fontSize: '0.82rem',
+                color: 'primary.contrastText'
+              }}
+            >
               <HomeIcon sx={{ fontSize: 14 }} /> Dashboard
             </Link>
-            <Link href="#" underline="hover" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, fontSize: '0.82rem', color: 'primary.contrastText' }}>
+
+            <Link
+              component={RouterLink}
+              to="/products"
+              underline="hover"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                fontSize: '0.82rem',
+                color: 'primary.contrastText'
+              }}
+            >
               <InventoryIcon sx={{ fontSize: 14 }} /> Products
             </Link>
-            <Typography color="text.primary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, fontSize: '0.82rem', fontWeight: 600 }}>
+
+            <Typography
+              color="text.primary"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                fontSize: '0.82rem',
+                fontWeight: 600
+              }}
+            >
               <AddIcon sx={{ fontSize: 14 }} /> Add New
             </Typography>
           </Breadcrumbs>

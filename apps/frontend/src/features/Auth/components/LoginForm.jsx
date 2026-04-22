@@ -10,21 +10,19 @@ import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import FieldErrorAlert from '~/components/common/Form/FieldErrorAlert'
-import { loginUserAPI } from '~/redux/user/userSlice'
-import { useColorScheme } from '@mui/material'
+import FieldErrorAlert from '~/common/components/common/Form/FieldErrorAlert'
+import { loginUserAPI } from '~/common/redux/user/userSlice'
 import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,
   FIELD_REQUIRED_MESSAGE,
   PASSWORD_CONFIRMATION_MESSAGE,
   PASSWORD_RULE
-} from '~/utils/validators'
+} from '~/common/utils/validators'
 
 function LoginForm() {
   const { register, handleSubmit, formState: { errors } } = useForm()
   let [searchParams] = useSearchParams()
-  const { mode } = useColorScheme()
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -111,9 +109,8 @@ function LoginForm() {
               size="large"
               fullWidth
               sx={{
-                background: mode === 'dark'
-                  ? 'linear-gradient(90deg, #0d6d08, #2cb92f, #8dd654)'
-                  : 'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)',
+                background:
+                  'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)',
                 color: '#ffffff'
               }}
 

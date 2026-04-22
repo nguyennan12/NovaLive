@@ -17,11 +17,11 @@ const theme = extendTheme({
       palette: {
         primary: {
           main: '#fafafa',
-          contrastText: '#494949'
+          contrastText: '#2d2d2d'
         },
         secondary: {
-          main: '#3465c8',
-          contrastText: '#4183ff'
+          main: '#3485f7',
+          contrastText: '#e6efff'
         },
         divider: '#eeeeee'
       }
@@ -29,11 +29,11 @@ const theme = extendTheme({
     dark: {
       palette: {
         primary: {
-          main: '#363636',
+          main: '#222222',
           contrastText: '#c2c2c2'
         },
         secondary: {
-          main: '#26cae3',
+          main: '#74ecfe',
           contrastText: '#292a2a'
         }
       }

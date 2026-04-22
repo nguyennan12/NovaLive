@@ -15,8 +15,6 @@ import { getMinPriceFromSkus, getTotalStockFromSkus } from '#utils/data.js'
 import { validateProductOwnership } from '#helpers/spu.helper.js'
 
 const createSpu = async ({ reqBody, userId }) => {
-  console.log('🚀 ~ createSpu ~ userId:', userId)
-  console.log('🚀 ~ createSpu ~ reqBody:', reqBody)
   const {
     spu_shopId,
     spu_attributes,

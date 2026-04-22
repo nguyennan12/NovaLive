@@ -3,6 +3,8 @@ import { spuModel } from '#models/spu.model.js'
 import { ELASTIC_INDEX } from '#utils/constant.js'
 import spuRepo from '#models/repository/spu.repo.js'
 import shopRepo from '#models/repository/shop.repo.js'
+import ApiError from '#core/error.response.js'
+import { StatusCodes } from 'http-status-codes'
 
 export const transformSPUtoES = (doc) => {
   return {
@@ -46,7 +48,7 @@ export const syncProdcutToEs = async (productId) => {
 }
 
 export const validateProductOwnership = async ({ productId, userId }) => {
-  const foundProduct = await spuRepo.findProductDetail(productId)
+  const foundProduct = await spuRepo.findProductById(productId)
   if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product does not exist!')
   const foundShop = await shopRepo.findShopByIdAndOwnId({
     shopId: foundProduct.spu_shopId,

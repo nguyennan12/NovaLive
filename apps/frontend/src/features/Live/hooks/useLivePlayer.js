@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import AgoraRTC from 'agora-rtc-sdk-ng'
-import { joinLiveAPI } from '~/apis/services/liveService'
-import { env } from '~/enviroment'
+import { joinLiveAPI } from '~/common/apis/services/liveService'
+import { env } from '~/common/configs/enviroment'
 
 AgoraRTC.setLogLevel(4)
 

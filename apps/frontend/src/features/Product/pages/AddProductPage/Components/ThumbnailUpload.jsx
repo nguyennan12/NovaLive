@@ -3,7 +3,7 @@ import { Box, CircularProgress, FormHelperText, Paper, Typography, useColorSchem
 import { useMemo, useRef, useState } from 'react'
 import { Controller, useFormContext, useWatch } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { uploadSingleImageAPI } from '~/apis/services/uploadService'
+import { uploadSingleImageAPI } from '~/common/apis/services/uploadService'
 
 const ThumbnailUpload = () => {
   const { control, setValue } = useFormContext()
@@ -45,7 +45,7 @@ const ThumbnailUpload = () => {
     <Controller
       name="spu_thumb"
       control={control}
-      rules={{ required: 'Product thumbnail is required' }}
+      // rules={{ required: 'Product thumbnail is required' }}
       render={({ fieldState: { error } }) => (
         <Box>
           <Paper

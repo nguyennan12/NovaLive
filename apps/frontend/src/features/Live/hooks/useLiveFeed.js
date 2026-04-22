@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { getActiveSessionsAPI } from '~/apis/services/liveService'
+import { getActiveSessionsAPI } from '~/common/apis/services/liveService'
 export const useLiveFeed = () => {
   const [lives, setLives] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)

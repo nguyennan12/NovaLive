@@ -12,7 +12,7 @@ export const fetchCategoriesAPI = createAsyncThunk(
   'category/fetchCategoriesAPI',
   async (params = {}, { rejectWithValue }) => {
     try {
-      const { getAllCategoryAPI } = await import('~/apis/services/categoryService')
+      const { getAllCategoryAPI } = await import('~/common/apis/services/categoryService')
       const response = await getAllCategoryAPI(params)
       return response
     } catch (err) {
@@ -25,7 +25,7 @@ export const fetchAttributesBySlugAPI = createAsyncThunk(
   'category/fetchAttributesBySlugAPI',
   async (slugArr = [], { rejectWithValue }) => {
     try {
-      const { getAttributeByCategorySlugAPI } = await import('~/apis/services/categoryService')
+      const { getAttributeByCategorySlugAPI } = await import('~/common/apis/services/categoryService')
       const response = await getAttributeByCategorySlugAPI(slugArr)
       return response
     } catch (err) {

@@ -8,8 +8,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { useColorScheme } from '@mui/material/styles'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { verifyUserAPI } from '~/apis/services/userService'
-import { resendMailAPI } from '~/apis/services/userService'
+import { verifyUserAPI } from '~/common/apis/services/userService'
+import { resendMailAPI } from '~/common/apis/services/userService'
 
 const OTP_LENGTH = 6
 const RESEND_COOLDOWN = 60
@@ -101,9 +101,7 @@ function VerifyEmailForm() {
   }
 
   const isDark = mode === 'dark'
-  const gradientBg = isDark
-    ? 'linear-gradient(90deg, #0d6d08, #2cb92f, #8dd654)'
-    : 'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)'
+  const gradientBg = 'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)'
 
   return (
     <Zoom in={true} style={{ transitionDelay: '200ms' }}>
@@ -120,7 +118,7 @@ function VerifyEmailForm() {
             width: 56,
             height: 56,
             borderRadius: '50%',
-            background: isDark ? 'rgba(44, 185, 47, 0.15)' : 'rgba(52, 101, 200, 0.1)',
+            background: 'rgba(52, 101, 200, 0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -129,13 +127,13 @@ function VerifyEmailForm() {
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
               <path
                 d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
-                stroke={isDark ? '#2cb92f' : '#3465c8'}
+                stroke={isDark ? '#26cae3' : '#3465c8'}
                 strokeWidth="1.8"
                 fill="none"
               />
               <path
                 d="M2 6l10 7 10-7"
-                stroke={isDark ? '#2cb92f' : '#3465c8'}
+                stroke={isDark ? '#26cae3' : '#3465c8'}
                 strokeWidth="1.8"
                 strokeLinecap="round"
               />
@@ -169,7 +167,7 @@ function VerifyEmailForm() {
                 fontWeight: '600',
                 border: '2px solid',
                 borderColor: digit
-                  ? (isDark ? '#2cb92f' : '#3465c8')
+                  ? (isDark ? '#26cae3' : '#3465c8')
                   : (isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'),
                 borderRadius: '8px',
                 outline: 'none',
@@ -178,7 +176,7 @@ function VerifyEmailForm() {
                 transition: 'border-color 0.2s, box-shadow 0.2s',
                 caretColor: 'transparent',
                 '&:focus': {
-                  borderColor: isDark ? '#2cb92f' : '#3465c8',
+                  borderColor: isDark ? 'secondary.main' : 'secondary.main',
                   boxShadow: isDark
                     ? '0 0 0 3px rgba(44,185,47,0.2)'
                     : '0 0 0 3px rgba(52,101,200,0.15)'

@@ -3,7 +3,7 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { Autocomplete, Box, Button, Chip, Grid, IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
-import { generateCombinations } from '~/utils/formatters'
+import { generateCombinations } from '~/common/utils/formatters'
 
 export default function ProductVariantsCard() {
 
@@ -26,9 +26,9 @@ export default function ProductVariantsCard() {
       return {
         sku_tier_idx: tierIdx,
         tier_options: comb.options,
-        price: '',
-        stock: '',
-        weight: ''
+        sku_price: '',
+        sku_stock: '',
+        sku_weight: ''
       }
     })
 
@@ -174,7 +174,7 @@ export default function ProductVariantsCard() {
                     {/* PRICE */}
                     <TableCell sx={{ minWidth: 140 }}>
                       <Controller
-                        name={`sku_list.${index}.price`}
+                        name={`sku_list.${index}.sku_price`}
                         control={control}
                         rules={{ required: 'Price is required', min: { value: 0, message: 'Price invalid' } }}
                         render={({ field, fieldState: { error } }) => (
@@ -197,7 +197,7 @@ export default function ProductVariantsCard() {
                     {/* Stock */}
                     <TableCell sx={{ minWidth: 120 }}>
                       <Controller
-                        name={`sku_list.${index}.stock`}
+                        name={`sku_list.${index}.sku_stock`}
                         control={control}
                         rules={{ required: 'Stock is required', min: { value: 0, message: 'Stock invalid' } }}
                         render={({ field, fieldState: { error } }) => (
@@ -216,7 +216,7 @@ export default function ProductVariantsCard() {
                     {/* WEIGHT */}
                     <TableCell sx={{ minWidth: 160 }}>
                       <Controller
-                        name={`sku_list.${index}.weight`}
+                        name={`sku_list.${index}.sku_weight`}
                         control={control}
                         rules={{ required: 'Weight is required', min: { value: 0, message: 'Weight invalid' } }}
                         render={({ field, fieldState: { error } }) => (

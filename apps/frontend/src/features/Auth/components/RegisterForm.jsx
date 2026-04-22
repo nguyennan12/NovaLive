@@ -9,15 +9,15 @@ import { useColorScheme } from '@mui/material/styles'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { registerUserAPI } from '~/apis/services/userService'
-import FieldErrorAlert from '~/components/common/Form/FieldErrorAlert'
+import { registerUserAPI } from '~/common/apis/services/userService'
+import FieldErrorAlert from '~/common/components/common/Form/FieldErrorAlert'
 import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,
   FIELD_REQUIRED_MESSAGE,
   PASSWORD_RULE,
   PASSWORD_RULE_MESSAGE
-} from '~/utils/validators'
+} from '~/common/utils/validators'
 
 function RegisterForm() {
   const { mode } = useColorScheme()
@@ -113,9 +113,8 @@ function RegisterForm() {
               size="large"
               fullWidth
               sx={{
-                background: mode === 'dark'
-                  ? 'linear-gradient(90deg, #0d6d08, #2cb92f, #8dd654)'
-                  : 'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)',
+                background:
+                  'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)',
                 color: '#ffffff'
               }}
 

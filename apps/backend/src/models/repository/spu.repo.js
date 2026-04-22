@@ -9,7 +9,7 @@ const findBySpuId = findBySpuCode
 
 const changePublishStatus = async ({ productId, shopId, isPublished }) => {
   return await spuModel.findOneAndUpdate(
-    { spu_code: productId, spu_shopId: converter.toObjectId(shopId) },
+    { _id: productId, spu_shopId: converter.toObjectId(shopId) },
     { $set: { isDraft: !isPublished, isPublished: isPublished } },
     { returnDocument: 'after' }
   ).lean()
@@ -28,6 +28,10 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
 
 const findProductDetail = async (productId) => {
   return await spuModel.findOne({ spu_code: productId, isDeleted: false, isPublished: true }).lean()
+}
+
+const findProductById = async (id) => {
+  return await spuModel.findById(id).lean()
 }
 
 const deleteProduct = async (productId) => {
@@ -64,5 +68,6 @@ export default {
   findProductDetail,
   deleteProduct,
   searchProducts,
-  findProductByIds
+  findProductByIds,
+  findProductById
 }

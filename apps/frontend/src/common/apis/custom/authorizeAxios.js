@@ -1,8 +1,8 @@
 // authorizeAxios.js — import store thẳng, không cần injectStore
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { store } from '~/redux/store'
-import { clearCurrentUser } from '~/redux/user/userSlice'
+import { store } from '~/common/redux/store'
+import { clearCurrentUser } from '~/common/redux/user/userSlice'
 
 const authorizedAxiosInstance = axios.create({
   baseURL: '/v1/api',
@@ -34,7 +34,7 @@ authorizedAxiosInstance.interceptors.response.use(
     if (error.response?.status === 410 && !originalRequests._retry) {
       originalRequests._retry = true
       if (!refreshTokenPromise) {
-        refreshTokenPromise = import('~/apis/services/userService')
+        refreshTokenPromise = import('~/common/apis/services/userService')
           .then(({ refreshTokenAPI }) => refreshTokenAPI())
           .catch((_error) => {
             store.dispatch(clearCurrentUser())

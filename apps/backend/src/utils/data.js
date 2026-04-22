@@ -31,6 +31,7 @@ const getInfoNested = (fields = [], object = {}) => {
 export const getMinPriceFromSkus = (skuList = []) => {
   if (!skuList.length) return 0
   return Math.min(...skuList.map(s => s.sku_price))
+
 }
 
 export const getTotalStockFromSkus = (skuList = []) => {

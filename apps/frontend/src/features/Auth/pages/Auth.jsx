@@ -4,7 +4,7 @@ import LoginForm from '../components/LoginForm'
 import RegisterForm from '../components/RegisterForm'
 import { useColorScheme } from '@mui/material/styles'
 import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '~/redux/user/userSlice'
+import { selectCurrentUser } from '~/common/redux/user/userSlice'
 import VerifyEmailForm from '../components/VerifyEmailForm'
 
 function Auth() {
@@ -26,7 +26,7 @@ function Auth() {
     <Box sx={{
       minHeight: '100vh',
       width: '100%',
-      bgcolor: mode === 'light' ? '#ffffff' : '#1a2518',
+      bgcolor: mode === 'light' ? '#ffffff' : '#1b145e',
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -45,8 +45,8 @@ function Auth() {
               radial-gradient(circle 600px at 0% 200px, #bfdbfe, transparent),
               radial-gradient(circle 600px at 100% 500px, #bfdbfe, transparent) `
             : `
-              radial-gradient(circle 600px at 0% 200px, #6bb828, transparent),
-              radial-gradient(circle 600px at 100% 500px, #6bb828, transparent)
+              radial-gradient(circle 600px at 0% 200px, #3089d1, transparent),
+              radial-gradient(circle 600px at 100% 500px, #3089d1, transparent)
             `
       }}>
         {isLogin && <LoginForm />}

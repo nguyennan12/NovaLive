@@ -6,7 +6,7 @@ const initialState = { currentUser: null }
 export const loginUserAPI = createAsyncThunk(
   'user/loginUserAPI',
   async (data) => {
-    const { loginAPI } = await import('~/apis/services/userService')
+    const { loginAPI } = await import('~/common/apis/services/userService')
     const response = await loginAPI(data)
     return response
   }
@@ -15,7 +15,7 @@ export const loginUserAPI = createAsyncThunk(
 export const logoutUserAPI = createAsyncThunk(
   'user/logoutUserAPI',
   async (showSuccessMessage = true) => {
-    const { logoutAPI } = await import('~/apis/services/userService')
+    const { logoutAPI } = await import('~/common/apis/services/userService')
     await logoutAPI()
     if (showSuccessMessage) toast.success('Logged out successfully!')
   }

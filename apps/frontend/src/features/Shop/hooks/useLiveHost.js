@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import AgoraRTC from 'agora-rtc-sdk-ng'
-import { startLiveAPI, endLiveAPI } from '~/apis/services/liveService'
-import { formatDuration } from '~/utils/formatters'
+import { startLiveAPI, endLiveAPI } from '~/common/apis/services/liveService'
+import { formatDuration } from '~/common/utils/formatters'
 
 const AGORA_APP_ID = import.meta.env.VITE_AGORA_APP_ID
 

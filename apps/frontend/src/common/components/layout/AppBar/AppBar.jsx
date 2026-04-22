@@ -13,7 +13,7 @@ import { useState } from 'react'
 import Chip from '@mui/material/Chip'
 import Profiles from './Menu/Profile'
 import { useColorScheme } from '@mui/material/styles'
-import ChangeTheme from '~/components/common/switch/changeTheme'
+import ChangeTheme from '../../common/switch/ChangeTheme'
 
 
 function AppBar() {
