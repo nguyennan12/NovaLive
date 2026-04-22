@@ -11,6 +11,7 @@ import AdvanceTab from './Components/AdvanceTab'
 import GeneralTab from './Components/GeneralTab'
 import StatusCard from './Components/StatusCard'
 import ThumbnailUpload from './Components/ThumbnailUpload'
+import { addProductAPI } from '~/apis/services/productService'
 
 const AddProductPage = () => {
   const { mode } = useColorScheme()
@@ -20,8 +21,17 @@ const AddProductPage = () => {
   const { handleSubmit, reset } = methods
 
   const onSubmit = (data) => {
-    toast.success('Add product successfully!')
-    console.log('Payload Data:', data)
+    const published = data.status === 'draft' ? false : true
+    const payload = {
+      ...data,
+      isPublished: published,
+      spu_shopId: '69e364dfdf24f31846f15580'
+    }
+    console.log('Payload Data:', payload)
+    toast.promise(addProductAPI(payload), { pending: 'Creating...' })
+      .then(() => {
+        methods.reset()
+      })
   }
 
 

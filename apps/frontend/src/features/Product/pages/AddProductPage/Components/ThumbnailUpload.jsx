@@ -1,26 +1,44 @@
 import ImageIcon from '@mui/icons-material/Image'
-import { Box, FormHelperText, Paper, Typography, useColorScheme } from '@mui/material'
-import { useEffect, useState } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
+import { Box, CircularProgress, FormHelperText, Paper, Typography, useColorScheme } from '@mui/material'
+import { useMemo, useRef, useState } from 'react'
+import { Controller, useFormContext, useWatch } from 'react-hook-form'
+import { toast } from 'react-toastify'
+import { uploadSingleImageAPI } from '~/apis/services/uploadService'
 
 const ThumbnailUpload = () => {
-  const { control } = useFormContext() // Lấy context từ form cha
-  const [preview, setPreview] = useState(null)
+  const { control, setValue } = useFormContext()
   const { mode } = useColorScheme()
+  const [uploading, setUploading] = useState(false)
 
-  //hiển thị ảnh xem trước
-  const generatePreview = (file) => {
-    if (!file) {
-      setPreview(null)
-      return
+
+  const spuThumb = useWatch({ control, name: 'spu_thumb' })
+
+  const preview = useMemo(() => {
+    if (!spuThumb) return null
+    if (typeof spuThumb === 'string') return spuThumb
+    return spuThumb.thumb_url || spuThumb.image_url || null
+  }, [spuThumb])
+
+  const inputRef = useRef(null)
+
+  const uploadFile = async (file) => {
+    if (!file) return
+    try {
+      setUploading(true)
+      const uploaded = await uploadSingleImageAPI(file)
+      setValue('spu_thumb', uploaded.thumb_url, { shouldDirty: true, shouldValidate: true })
+      toast.success('Uploaded thumbnail!')
+    } catch (e) {
+      toast.error(e?.message || 'Upload thumbnail failed!')
+    } finally {
+      setUploading(false)
     }
-    if (typeof file === 'string') {
-      setPreview(file)
-      return
-    }
-    const reader = new FileReader()
-    reader.onload = (e) => setPreview(e.target.result)
-    reader.readAsDataURL(file)
+  }
+
+  const onDrop = (e) => {
+    e.preventDefault()
+    const file = e.dataTransfer?.files?.[0]
+    if (file) uploadFile(file)
   }
 
   return (
@@ -28,94 +46,103 @@ const ThumbnailUpload = () => {
       name="spu_thumb"
       control={control}
       rules={{ required: 'Product thumbnail is required' }}
-      //field quản lý input nhập vào ,fieldState quản lý trạng thái
-      render={({ field: { onChange, value }, fieldState: { error } }) => {
-
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        useEffect(() => {
-          generatePreview(value)//nếu value thay đổi thì gen lại ảnh
-        }, [value])
-
-        const handleFile = (file) => {
-          if (!file) return
-          onChange(file)
-        }
-
-        return (
-          <Box>
-            <Paper
-              variant="outlined"
-              sx={{
-                p: 2,
-                borderRadius: 3,
-                border: '1.5px dashed',
-                borderColor: error ? 'error.main' : 'secondary.main',
-                background: error ? 'error.50' : 'rgba(52,101,200,0.04)',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                textAlign: 'center',
-                minHeight: 200,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 1,
-                position: 'relative',
-                overflow: 'hidden'
+      render={({ fieldState: { error } }) => (
+        <Box>
+          <Paper
+            variant="outlined"
+            onClick={() => inputRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={onDrop}
+            sx={{
+              p: 2,
+              borderRadius: 3,
+              border: '1.5px dashed',
+              borderColor: error ? 'error.main' : 'secondary.main',
+              background: error ? 'error.50' : 'rgba(52,101,200,0.04)',
+              cursor: uploading ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s',
+              textAlign: 'center',
+              minHeight: 200,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1,
+              position: 'relative',
+              overflow: 'hidden',
+              opacity: uploading ? 0.8 : 1
+            }}
+          >
+            <input
+              ref={inputRef}
+              type="file"
+              accept=".png,.jpg,.jpeg"
+              style={{ display: 'none' }}
+              disabled={uploading}
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) uploadFile(file)
+                // reset input để chọn lại cùng 1 file vẫn trigger change
+                e.target.value = ''
               }}
-              onClick={() => document.getElementById('thumb-upload').click()}
-            >
-              <input
-                id="thumb-upload"
-                type="file"
-                accept=".png,.jpg,.jpeg"
-                style={{ display: 'none' }}
-                onChange={(e) => {
-                  if (e.target.files && e.target.files.length > 0) {
-                    handleFile(e.target.files[0])
-                  }
-                }}
+            />
+
+            {preview ? (
+              <Box
+                component="img"
+                src={preview}
+                alt="Preview"
+                sx={{ maxWidth: '100%', maxHeight: 180, objectFit: 'contain', borderRadius: 2 }}
               />
-
-              {preview ? (
+            ) : (
+              <>
                 <Box
-                  component="img"
-                  src={preview}
-                  alt="Preview"
-                  sx={{ maxWidth: '100%', maxHeight: 180, objectFit: 'contain', borderRadius: 2 }}
-                />
-              ) : (
-                <>
-                  <Box
+                  sx={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: '50%',
+                    background: error
+                      ? 'transparent'
+                      : mode === 'light'
+                        ? 'linear-gradient(135deg, #eef2ff, #dbeafe)'
+                        : 'linear-gradient(135deg, #eefff6, #dcfedb)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 1
+                  }}
+                >
+                  <ImageIcon
                     sx={{
-                      width: 56, height: 56, borderRadius: '50%',
-                      background: error ? 'transparent' :
-                        mode === 'light' ? 'linear-gradient(135deg, #eef2ff, #dbeafe)'
-                          : 'linear-gradient(135deg, #eefff6, #dcfedb)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1
+                      color: error ? 'error.main' : mode === 'light' ? 'primary.main' : 'secondary.main',
+                      fontSize: 28
                     }}
-                  >
-                    <ImageIcon sx={{ color: error ? 'error.main' : mode === 'light' ? 'primary.main' : 'secondary.main', fontSize: 28 }} />
-                  </Box>
-                  <Typography variant="body2" fontWeight={600} color={error ? 'error.main' : 'primary.contrastText'}>
-                    Click to browse
-                  </Typography>
-                  <Typography variant="caption" color={error ? 'error.main' : 'primary.contrastText'}>
-                    Only *.png, *.jpg and *.jpeg accepted
-                  </Typography>
-                </>
-              )}
+                  />
+                </Box>
 
-            </Paper>
-
-            {error && (
-              <FormHelperText error sx={{ mt: 1, fontWeight: 500 }}>
-                {error.message}
-              </FormHelperText>
+                <Typography variant="body2" fontWeight={600} color={error ? 'error.main' : 'primary.contrastText'}>
+                  {uploading ? 'Uploading...' : 'Click or drop image here'}
+                </Typography>
+                <Typography variant="caption" color={error ? 'error.main' : 'primary.contrastText'}>
+                  Only *.png, *.jpg and *.jpeg accepted
+                </Typography>
+              </>
             )}
-          </Box>
-        )
-      }}
+
+            {uploading && (
+              <Box sx={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', bgcolor: 'rgba(0,0,0,0.25)' }}>
+                <CircularProgress size={28} />
+              </Box>
+            )}
+          </Paper>
+
+          {error && (
+            <FormHelperText error sx={{ mt: 1, fontWeight: 500 }}>
+              {error.message}
+            </FormHelperText>
+          )}
+        </Box>
+      )}
     />
   )
 }

@@ -39,6 +39,72 @@ export default function GeneralTab() {
           />
         </Box>
 
+        <Box sx={{ display: 'flex', gap: 2 }}>
+
+          {/* Cột Price */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mb={0.75}>
+              Price <span style={{ color: '#ef4444' }}>*</span>
+            </Typography>
+            <Controller
+              name="spu_price"
+              control={control}
+              rules={{
+                required: 'Price is required!',
+                min: { value: 0, message: 'Price cannot be negative' }
+              }}
+              render={({ field, fieldState: { error } }) => (
+                <TextField
+                  {...field}
+                  value={field.value ?? ''}
+                  fullWidth
+                  size="small"
+                  type="number"
+                  placeholder="0.00"
+                  error={!!error}
+                  helperText={error?.message}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === '' ? undefined : Number(value))
+                  }}
+                />
+              )}
+            />
+          </Box>
+
+          {/* Cột quantity */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mb={0.75}>
+              Quantity <span style={{ color: '#ef4444' }}>*</span>
+            </Typography>
+            <Controller
+              name="spu_quantity"
+              control={control}
+              rules={{
+                required: 'Quantity is required!',
+                min: { value: 0, message: 'Stock cannot be negative' }
+              }}
+              render={({ field, fieldState: { error } }) => (
+                <TextField
+                  {...field}
+                  value={field.value ?? ''}
+                  fullWidth
+                  size="small"
+                  type="number"
+                  placeholder="0"
+                  error={!!error}
+                  helperText={error?.message}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    field.onChange(value === '' ? undefined : Number(value))
+                  }}
+                />
+              )}
+            />
+          </Box>
+
+        </Box>
+
         <Box>
           <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mb={0.75}>
             Description

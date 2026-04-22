@@ -182,6 +182,10 @@ export default function ProductVariantsCard() {
                             {...field} fullWidth size="small" type="number" placeholder="0"
                             error={!!error} helperText={error?.message}
                             FormHelperTextProps={{ sx: { mx: 0, mt: 0.5 } }}
+                            onChange={(e) => {
+                              const value = e.target.value
+                              field.onChange(value === '' ? undefined : Number(value))
+                            }}
                             slotProps={{
                               startAdornment: <InputAdornment position="start"><Typography variant="body2">$</Typography></InputAdornment>
                             }}
@@ -200,6 +204,10 @@ export default function ProductVariantsCard() {
                           <TextField {...field} fullWidth size="small" type="number" placeholder="0"
                             error={!!error} helperText={error?.message}
                             FormHelperTextProps={{ sx: { mx: 0, mt: 0.5 } }}
+                            onChange={(e) => {
+                              const value = e.target.value
+                              field.onChange(value === '' ? undefined : Number(value))
+                            }}
                           />
                         )}
                       />
@@ -215,6 +223,10 @@ export default function ProductVariantsCard() {
                           <TextField {...field} fullWidth size="small" type="number" placeholder="gam"
                             error={!!error} helperText={error?.message}
                             FormHelperTextProps={{ sx: { mx: 0, mt: 0.5 } }}
+                            onChange={(e) => {
+                              const value = e.target.value
+                              field.onChange(value === '' ? undefined : Number(value))
+                            }}
                             InputProps={{
                               startAdornment: <InputAdornment position="start"><Typography variant="body2">g</Typography></InputAdornment>
                             }}

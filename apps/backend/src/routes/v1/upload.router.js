@@ -2,14 +2,15 @@ import uploadController from '#controllers/upload.controller.js'
 import asyncHandler from '#helpers/asyncHandler.js'
 import authentication from '#middlewares/authentication.middleware.js'
 import express from 'express'
+import uploadCloud from '#config/cloudinary.config.js'
 
 const Router = express.Router()
 
 Router.use(authentication)
 
-Router.post('/product/thumb', asyncHandler(uploadController.uploadProductImage))
-Router.post('/multi-product/thumb', asyncHandler(uploadController.uploadMultiProductImage))
-Router.post('/user/avatar', asyncHandler(uploadController.uploadAvatar))
+Router.post('/product/thumb', uploadCloud.single('file'), asyncHandler(uploadController.uploadProductImage))
+Router.post('/multi-product/thumb', uploadCloud.array('files', 10), asyncHandler(uploadController.uploadMultiProductImage))
+Router.post('/user/avatar', uploadCloud.single('file'), asyncHandler(uploadController.uploadAvatar))
 
 
 export const uploadRouter = Router

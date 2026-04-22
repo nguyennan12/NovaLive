@@ -1,15 +1,14 @@
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '#core/error.response.js'
-import uploadCloud from '#config/cloudinary.config.js'
-
+import { v2 as cloudinary } from 'cloudinary'
 const uploadImageFromLocal = async ({ path, folderName }) => {
   try {
-    const result = await uploadCloud.uploader.upload(path, {
+    const result = await cloudinary.uploader.upload(path, {
       folder: folderName
     })
     return {
       image_url: result.secure_url,
-      thumb_url: uploadCloud.url(result.public_id, {
+      thumb_url: cloudinary.url(result.public_id, {
         height: 100,
         width: 100,
         format: 'jpg',

@@ -122,7 +122,7 @@ const addAttributesToCategoryBulk = async ({ categoryId, reqBody }) => {
 
 const getAttributeByCategorySlug = async (slug = []) => {
   const { sortedAttrs } = await getCategoryAttributeTemplate(slug)
-  if (!sortedAttrs.length) throw new ApiError(StatusCodes.BAD_REQUEST, 'Not found')
+  if (!sortedAttrs.length) throw new ApiError(StatusCodes.BAD_REQUEST, 'Not found Attribute')
   return sortedAttrs
 }
 

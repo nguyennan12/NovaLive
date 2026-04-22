@@ -15,13 +15,17 @@ import { getMinPriceFromSkus, getTotalStockFromSkus } from '#utils/data.js'
 import { validateProductOwnership } from '#helpers/spu.helper.js'
 
 const createSpu = async ({ reqBody, userId }) => {
+  console.log('🚀 ~ createSpu ~ userId:', userId)
+  console.log('🚀 ~ createSpu ~ reqBody:', reqBody)
   const {
     spu_shopId,
     spu_attributes,
     spu_variations,
     spu_category,
     sku_list,
+    isPublished,
     ...spuData } = reqBody
+
 
   //xử lý đồng thời tìm shop và lấy attribute đã xử lý ra (gồm id, name, value)
   const [foundShop, normalizedAttrs] = await Promise.all([
@@ -46,6 +50,9 @@ const createSpu = async ({ reqBody, userId }) => {
   //nếu có sku_list thì xử lý tạo sku
   if (newSpu && sku_list.length) {
     await skuService.createSku({ spu_id: newSpu._id, sku_list, spu_code: newSpu.spu_code })
+  }
+  if (isPublished === true) {
+    await publishProduct({ productId: newSpu._id, userId })
   }
   //lưu vào elastic
   await syncProdcutToEs(newSpu._id)

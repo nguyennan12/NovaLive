@@ -236,7 +236,6 @@ export default function ProductDetailsCard() {
                             {...field}
                             {...commonProps}
                             value={field.value ?? ''}
-                            placeholder="Nhập nhiều giá trị, cách nhau dấu phẩy"
                             onChange={(e) => {
                               field.onChange(e.target.value)
                               rebuildSpuAttributes()

@@ -7,7 +7,7 @@ import { StatusCodes } from 'http-status-codes'
 const uploadProductImage = async (req, res, next) => {
   const file = req.file
   const shopId = req.user.shopId
-  folderName = `${CLOUDINARY_ROOT_FOLDER}/Shops/${shopId}/Products`
+  const folderName = `${CLOUDINARY_ROOT_FOLDER}/Shops/${shopId}/Products`
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Upload thumb product successfully!',
@@ -17,7 +17,7 @@ const uploadProductImage = async (req, res, next) => {
 const uploadMultiProductImage = async (req, res, next) => {
   const files = req.files
   const shopId = req.user.shopId
-  folderName = `${CLOUDINARY_ROOT_FOLDER}/Shops/${shopId}/Products`
+  const folderName = `${CLOUDINARY_ROOT_FOLDER}/Shops/${shopId}/Products`
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Upload multi thumb product successfully!',
@@ -27,11 +27,11 @@ const uploadMultiProductImage = async (req, res, next) => {
 const uploadAvatar = async (req, res, next) => {
   const file = req.file
   const userId = req.user.userId
-  folderName = `${CLOUDINARY_ROOT_FOLDER}/Users/${userId}/avatar`
+  const folderName = `${CLOUDINARY_ROOT_FOLDER}/Users/${userId}/avatar`
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Upload avatar successfully!',
-    metadata: await uploadService.uploadMultiImageFromLocal({ path: file.path, folderName: folderName })
+    metadata: await uploadService.uploadImageFromLocal({ path: file.path, folderName: folderName })
   }).send(res)
 }
 
