@@ -5,7 +5,7 @@ export default function AdvanceTab() {
   const { control } = useFormContext()
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
 
       {/* Options */}
       <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, border: '1px solid secondary.contrastText' }}>

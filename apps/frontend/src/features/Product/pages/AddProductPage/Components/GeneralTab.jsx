@@ -6,11 +6,12 @@ import LinkIcon from '@mui/icons-material/Link'
 import { Box, Divider, Paper, TextField, Typography } from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
 import ProductVariantsCard from './ProductVariantsCard'
+import ProductDetailsCard from './ProductDetailsCard'
 
 export default function GeneralTab() {
   const { control } = useFormContext()
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
       <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, border: '1px solid secondary.contrastText' }}>
         <Typography variant="h6" fontWeight={700} mb={2.5}>General</Typography>
 
@@ -69,7 +70,7 @@ export default function GeneralTab() {
             </Box>
 
             <Controller
-              name="description"
+              name="spu_description"
               control={control}
               render={({ field }) => (
                 <TextField
@@ -95,6 +96,8 @@ export default function GeneralTab() {
       </Paper>
 
       <ProductVariantsCard />
+
+      <ProductDetailsCard />
 
     </Box>
   )

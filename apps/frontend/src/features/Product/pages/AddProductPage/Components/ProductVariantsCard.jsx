@@ -3,12 +3,9 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { Autocomplete, Box, Button, Chip, Grid, IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
-import { useColorScheme } from '@mui/material'
 import { generateCombinations } from '~/utils/formatters'
 
 export default function ProductVariantsCard() {
-  const { mode } = useColorScheme()
-
 
   const { control, watch, setValue, getValues } = useFormContext()
   const variations = watch('spu_variations') || []

@@ -3,6 +3,9 @@ import attributeModel from '#models/attribute.model.js'
 const findAttributeById = async (attributeId) => {
   return await attributeModel.findOne({ attr_id: attributeId }).lean()
 }
+const findAttributesByIds = async (attributeIds) => {
+  return await attributeModel.find({ attr_id: { $in: attributeIds } }).lean()
+}
 
 const findAtributeByIds = async (attrIds) => {
   return await attributeModel
@@ -11,5 +14,6 @@ const findAtributeByIds = async (attrIds) => {
 }
 export default {
   findAttributeById,
-  findAtributeByIds
+  findAtributeByIds,
+  findAttributesByIds
 }

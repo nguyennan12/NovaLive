@@ -10,6 +10,7 @@ Router.post('', asyncHandler(categoryController.createCategory))
 Router.get('', asyncHandler(categoryController.getAllCategory))
 Router.post('/bulk', asyncHandler(categoryController.createCategoryBulk))
 Router.post('/:categoryId/attribute', asyncHandler(categoryController.addAttributeToCategory))
+Router.post('/:categoryId/attribute/bulk', asyncHandler(categoryController.addAttributesToCategoryBulk))
 Router.get('/attribute', asyncHandler(categoryController.getAttributeByCategorySlug))
 
 export const categoryRouter = Router

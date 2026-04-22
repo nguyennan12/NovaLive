@@ -3,49 +3,19 @@ import CloseIcon from '@mui/icons-material/Close'
 import HomeIcon from '@mui/icons-material/Home'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
-import { Box, Breadcrumbs, Button, Link, Paper, Tab, Tabs, Typography, useColorScheme } from '@mui/material'
-import { useState } from 'react'
+import { Box, Breadcrumbs, Button, Link, Paper, Typography, useColorScheme } from '@mui/material'
 import { FormProvider, useForm } from 'react-hook-form'
-import AdvanceTab from './Components/AdvanceTab'
-import GeneralTab from './Components/GeneralTab'
-import ProductDetailsCard from './Components/ProductDetailsCard'
-import StatusCard from './Components/StatusCard'
-import ThumbnailUpload from './Components/ThumbnailUpload'
 import { toast } from 'react-toastify'
 import AppBar from '~/components/layout/AppBar/AppBar'
+import AdvanceTab from './Components/AdvanceTab'
+import GeneralTab from './Components/GeneralTab'
+import StatusCard from './Components/StatusCard'
+import ThumbnailUpload from './Components/ThumbnailUpload'
 
-const initialForm = {
-  name: 'New Balance 2002R Light Grey',
-  description: 'If you unsure regarding your size, please click the size chart button and browse through the chart to find your correct measurements. For more details, kindly add our Customer Service to consult further.',
-  basePrice: '132',
-  comparePrice: '',
-  discountType: 'none',
-  discountValue: '',
-  category: 'Sneakers',
-  tags: ['New Balance', 'Trending'],
-  brand: 'New Balance',
-  sku: 'NB-2002R-LGY',
-  stock: '85',
-  weight: '',
-  width: '',
-  height: '',
-  depth: '',
-  status: 'published',
-  metaTitle: '',
-  metaDesc: '',
-  slug: 'new-balance-2002r-light-grey',
-  sizes: ['US 8', 'US 9', 'US 10'],
-  colors: 'Light Grey, Silver',
-  taxable: true,
-  freeShipping: false,
-  returnAllowed: true,
-  featured: false
-}
 const AddProductPage = () => {
   const { mode } = useColorScheme()
-  const [tab, setTab] = useState(0)
 
-  const methods = useForm({ defaultValues: initialForm, mode: 'onBlur' })
+  const methods = useForm({ mode: 'onBlur' })
 
   const { handleSubmit, reset } = methods
 
@@ -60,7 +30,7 @@ const AddProductPage = () => {
   }
 
   const handleCancel = () => {
-    reset(initialForm)
+    reset()
     toast.info('Changes discarded.')
   }
 
@@ -132,27 +102,13 @@ const AddProductPage = () => {
               <Typography variant="subtitle1" fontWeight={700} mb={1.5}>Thumbnail</Typography>
               <ThumbnailUpload />
             </Paper>
-
             <StatusCard />
-            <ProductDetailsCard />
-
+            <AdvanceTab />
           </Box>
 
           {/* RIGHT main content */}
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Paper variant="outlined" sx={{ borderRadius: 3, border: '1px solid secondary.contrastText', overflow: 'hidden' }}>
-              <Box sx={{ borderBottom: '1px solid secondary.contrastText', px: 3, background: 'secondary.contrastText' }}>
-                <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ '& .MuiTabs-indicator': { background: mode === 'light' ? 'linear-gradient(90deg, #3465c8, #5b85e8)' : 'linear-gradient(90deg, #3492df, #74c9fa)', borderRadius: 2, height: 3 }, '& .Mui-selected': { color: 'secondary.main' } }}>
-                  <Tab label="General" />
-                  <Tab label="Advance" />
-                </Tabs>
-              </Box>
-
-              <Box sx={{ p: 3, background: 'transparent' }}>
-                {tab === 0 && <GeneralTab />}
-                {tab === 1 && <AdvanceTab />}
-              </Box>
-            </Paper>
+          <Box sx={{ flex: 1, minWidth: 0, width: '100%' }}>
+            <GeneralTab />
           </Box>
         </Box>
 

@@ -5,6 +5,7 @@ import slugify from 'slugify'
 
 const skuSchema = new Schema({
   sku_id: { type: String, required: true, unique: true },
+  sku_name: { type: String, required: true, unique: true },
   sku_tier_idx: { type: Array, default: [0] },
   sku_default: { type: Boolean, default: false },
   sku_slug: { type: String, default: '' },

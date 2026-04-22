@@ -50,7 +50,6 @@ const createCategoryBulk = async (categoryArray) => {
 
 const addAttributeToCategory = async ({ categoryId, reqBody }) => {
   const { attributeId, isRequired, displayOrder } = reqBody
-  console.log('🚀 ~ addAttributeToCategory ~ attributeId:', attributeId)
   const foundAttr = await attributeRepo.findAttributeById(attributeId)
   if (!foundAttr) throw new ApiError(StatusCodes.BAD_REQUEST, 'Attribute not found')
   const updatedCategory = await CategoryModel.findOneAndUpdate(
@@ -75,6 +74,52 @@ const addAttributeToCategory = async ({ categoryId, reqBody }) => {
   return updatedCategory
 }
 
+const addAttributesToCategoryBulk = async ({ categoryId, reqBody }) => {
+  if (!reqBody || !Array.isArray(reqBody) || reqBody.length === 0) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid request payload. Expected a non-empty array of attributes.')
+  }
+
+  const mappedAttributes = reqBody.map(item => ({
+    attr_id: item.attributeId,
+    isRequired: item.isRequired,
+    displayOrder: item.displayOrder
+  }))
+
+
+  const attributeIds = mappedAttributes.map(attr => attr.attr_id)
+  const foundAttrs = await attributeRepo.findAttributesByIds(attributeIds)
+  if (foundAttrs.length !== attributeIds.length) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'One or more attributes not found in the system.')
+  }
+  const category = await CategoryModel.findOne({ cat_id: categoryId }).lean()
+  if (!category) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Category not found.')
+  }
+  const existingAttrIds = category.cat_attributes.map(attr => attr.attr_id.toString())
+
+  const newAttributes = mappedAttributes.filter(attr =>
+    !existingAttrIds.includes(attr.attr_id.toString())
+  )
+
+  if (newAttributes.length === 0) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'All provided attributes already exist in this category.')
+  }
+
+  const updatedCategory = await CategoryModel.findOneAndUpdate(
+    { cat_id: categoryId },
+    {
+      $push: {
+        cat_attributes: {
+          $each: newAttributes
+        }
+      }
+    },
+    { new: true, runValidators: true }
+  )
+
+  return updatedCategory
+}
+
 const getAttributeByCategorySlug = async (slug = []) => {
   const { sortedAttrs } = await getCategoryAttributeTemplate(slug)
   if (!sortedAttrs.length) throw new ApiError(StatusCodes.BAD_REQUEST, 'Not found')
@@ -90,5 +135,6 @@ export default {
   createCategoryBulk,
   addAttributeToCategory,
   getAttributeByCategorySlug,
-  getAllCategory
+  getAllCategory,
+  addAttributesToCategoryBulk
 }

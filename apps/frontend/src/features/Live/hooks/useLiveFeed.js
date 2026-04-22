@@ -78,5 +78,5 @@ export const useLiveFeed = () => {
     }, 500)
   }, [currentIndex, lives.length])
 
-  return { lives, currentIndex, goNext, goPrev, loadingMore, handleTouchEnd, handleTouchStart, handleWheel, HashChangeEvent, loading }
+  return { lives, currentIndex, goNext, goPrev, loadingMore, handleTouchEnd, handleTouchStart, handleWheel, loading }
 }
