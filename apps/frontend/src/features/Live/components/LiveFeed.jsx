@@ -30,14 +30,18 @@ export const LiveFeed = ({ userId }) => {
       onTouchEnd={handleTouchEnd}
       onWheel={handleWheel}
       sx={{
-        position: 'relative',
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
         width: '100%',
         maxWidth: 400,
-        height: '100vh',
+        height: '98vh',
         mx: 'auto',
-        bgcolor: 'black',
+        bgcolor: '#101010',
         overflow: 'hidden',
-        userSelect: 'none'
+        userSelect: 'none',
+        borderRadius: '18px'
       }}
     >
 

@@ -2,14 +2,14 @@ import { extendTheme } from '@mui/material/styles'
 
 const APP_BAR_HEIGHT = '60px'
 const CHAT_INPUT_HEIGHT = '64px'
-const MAIN_STREAM_HEIGHT = `calc(100vh - ${APP_BAR_HEIGHT})`
+const MAIN_CONTENT_HEIGHT = `calc(100vh - ${APP_BAR_HEIGHT})`
 
 
 const theme = extendTheme({
-  livestreamLayout: {
+  app: {
     appBarHeight: APP_BAR_HEIGHT,
     chatInputHeight: CHAT_INPUT_HEIGHT,
-    mainStreamHeight: MAIN_STREAM_HEIGHT
+    mainContentHeight: MAIN_CONTENT_HEIGHT
   },
 
   colorSchemes: {
@@ -21,7 +21,7 @@ const theme = extendTheme({
         },
         secondary: {
           main: '#3465c8',
-          contrastText: '#ffffff'
+          contrastText: '#4183ff'
         },
         divider: '#eeeeee'
       }
@@ -29,14 +29,13 @@ const theme = extendTheme({
     dark: {
       palette: {
         primary: {
-          main: '#222526',
-          contrastText: '#fafafa'
+          main: '#363636',
+          contrastText: '#c2c2c2'
         },
         secondary: {
-          main: '#1f14b3',
-          contrastText: '#ffffff'
-        },
-        divider: '#3b3b3b'
+          main: '#26cae3',
+          contrastText: '#292a2a'
+        }
       }
     }
   },

@@ -10,22 +10,27 @@ import { PersistGate } from 'redux-persist/integration/react'
 import App from './App'
 import { store } from './redux/store'
 import theme from './theme'
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+
 
 const persitor = persistStore(store)
+const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
 
   <BrowserRouter basename='/'>
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persitor}>
-        <ThemeProvider theme={theme}>
-          <ConfirmProvider>
-            <CssBaseline />
-            <App />
-            <ToastContainer autoClose={2000} theme="colored" />
-          </ConfirmProvider>
-        </ThemeProvider >
-      </PersistGate>
+      <QueryClientProvider client={queryClient}>
+        <PersistGate loading={null} persistor={persitor}>
+          <ThemeProvider theme={theme}>
+            <ConfirmProvider>
+              <CssBaseline />
+              <App />
+              <ToastContainer autoClose={2000} theme="colored" />
+            </ConfirmProvider>
+          </ThemeProvider >
+        </PersistGate>
+      </QueryClientProvider>
     </Provider>
   </BrowserRouter>
 )

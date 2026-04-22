@@ -17,6 +17,7 @@
     "@mui/lab": "^9.0.0-beta.2",
     "@mui/material": "^9.0.0",
     "@reduxjs/toolkit": "^2.11.2",
+    "@tanstack/react-query": "^5.99.2",
     "agora-rtc-react": "^2.5.1",
     "agora-rtc-sdk-ng": "^4.24.3",
     "axios": "^1.15.0",
