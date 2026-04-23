@@ -1,4 +1,4 @@
-import authorizedAxiosInstance from '~/apis/custom/authorizeAxios'
+import authorizedAxiosInstance from '../custom/authorizeAxios'
 
 export const createCategoryAPI = async (data) => {
   const res = await authorizedAxiosInstance.post('category', data)

@@ -5,7 +5,6 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
 import CircularProgress from '@mui/material/CircularProgress'
-import { useColorScheme } from '@mui/material/styles'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { verifyUserAPI } from '~/common/apis/services/userService'
@@ -15,7 +14,6 @@ const OTP_LENGTH = 6
 const RESEND_COOLDOWN = 60
 
 function VerifyEmailForm() {
-  const { mode } = useColorScheme()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const registeredEmail = searchParams.get('registeredEmail') || ''
@@ -100,7 +98,6 @@ function VerifyEmailForm() {
     )
   }
 
-  const isDark = mode === 'dark'
   const gradientBg = 'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)'
 
   return (
@@ -109,9 +106,7 @@ function VerifyEmailForm() {
         minWidth: '380px',
         maxWidth: '380px',
         borderRadius: '12px',
-        boxShadow: isDark
-          ? '0 0 3px 0.5px rgba(211, 206, 206, 0.15)'
-          : '0 0 3px 0.5px rgba(0,0,0,0.15)'
+        boxShadow: '0 0 3px 0.5px rgba(0,0,0,0.15)'
       }}>
         <Box sx={{ margin: '1.5em 1em 0.5em', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
           <Box sx={{
@@ -127,13 +122,13 @@ function VerifyEmailForm() {
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
               <path
                 d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
-                stroke={isDark ? '#26cae3' : '#3465c8'}
+                stroke="#3465c8"
                 strokeWidth="1.8"
                 fill="none"
               />
               <path
                 d="M2 6l10 7 10-7"
-                stroke={isDark ? '#26cae3' : '#3465c8'}
+                stroke="#3465c8"
                 strokeWidth="1.8"
                 strokeLinecap="round"
               />
@@ -142,7 +137,7 @@ function VerifyEmailForm() {
           <Typography variant="h6" sx={{ fontWeight: '600' }}>Check your email</Typography>
           <Typography variant="body2" sx={{ color: '#838383', textAlign: 'center', lineHeight: 1.5 }}>
             We sent a 6-digit verification code to <br />
-            <strong style={{ color: isDark ? '#ccc' : '#444' }}>{registeredEmail}</strong>
+            <strong style={{ color: '#444' }}>{registeredEmail}</strong>
           </Typography>
         </Box>
 
@@ -167,19 +162,17 @@ function VerifyEmailForm() {
                 fontWeight: '600',
                 border: '2px solid',
                 borderColor: digit
-                  ? (isDark ? '#26cae3' : '#3465c8')
-                  : (isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'),
+                  ? '#3465c8'
+                  : 'rgba(0,0,0,0.2)',
                 borderRadius: '8px',
                 outline: 'none',
-                background: isDark ? 'rgba(255,255,255,0.05)' : '#fff',
-                color: isDark ? '#fff' : '#111',
+                background: '#fff',
+                color: '#111',
                 transition: 'border-color 0.2s, box-shadow 0.2s',
                 caretColor: 'transparent',
                 '&:focus': {
-                  borderColor: isDark ? 'secondary.main' : 'secondary.main',
-                  boxShadow: isDark
-                    ? '0 0 0 3px rgba(44,185,47,0.2)'
-                    : '0 0 0 3px rgba(52,101,200,0.15)'
+                  borderColor: 'secondary.main',
+                  boxShadow: '0 0 0 3px rgba(52,101,200,0.15)'
                 }
               }}
             />

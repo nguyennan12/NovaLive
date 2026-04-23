@@ -31,7 +31,6 @@ const SidebarProfile = ({ activeKey, collapsed, onItemClick }) => (
         onClick={onItemClick}
       />
     ))}
-
     {/* User info */}
     <Box
       sx={{
@@ -83,6 +82,7 @@ const SidebarProfile = ({ activeKey, collapsed, onItemClick }) => (
         />
       )}
     </Box>
+
   </Box>
 )
 

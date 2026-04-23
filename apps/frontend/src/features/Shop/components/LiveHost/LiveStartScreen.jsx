@@ -3,10 +3,8 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import { useColorScheme } from '@mui/material/styles'
 
 const LiveStartScreen = ({ startLive }) => {
-  const { mode } = useColorScheme()
   return (
     <Box sx={{
       position: 'absolute', inset: 0,
@@ -24,9 +22,7 @@ const LiveStartScreen = ({ startLive }) => {
           startIcon={<PlayArrowIcon />}
           sx={{
             fontWeight: '600',
-            background: mode === 'dark'
-              ? 'linear-gradient(90deg, #0d6d08, #2cb92f, #8dd654)'
-              : 'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)',
+            background: 'linear-gradient(90deg, #3465c8, #69aedc, #8acdde)',
             color: '#ffffff'
           }}
         >

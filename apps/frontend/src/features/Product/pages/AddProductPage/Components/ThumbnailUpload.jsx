@@ -1,5 +1,5 @@
 import ImageIcon from '@mui/icons-material/Image'
-import { Box, CircularProgress, FormHelperText, Paper, Typography, useColorScheme } from '@mui/material'
+import { Box, CircularProgress, FormHelperText, Paper, Typography } from '@mui/material'
 import { useMemo, useRef, useState } from 'react'
 import { Controller, useFormContext, useWatch } from 'react-hook-form'
 import { toast } from 'react-toastify'
@@ -7,7 +7,6 @@ import { uploadSingleImageAPI } from '~/common/apis/services/uploadService'
 
 const ThumbnailUpload = () => {
   const { control, setValue } = useFormContext()
-  const { mode } = useColorScheme()
   const [uploading, setUploading] = useState(false)
 
 
@@ -101,11 +100,7 @@ const ThumbnailUpload = () => {
                     width: 56,
                     height: 56,
                     borderRadius: '50%',
-                    background: error
-                      ? 'transparent'
-                      : mode === 'light'
-                        ? 'linear-gradient(135deg, #eef2ff, #dbeafe)'
-                        : 'linear-gradient(135deg, #eefff6, #dcfedb)',
+                    background: error ? 'transparent' : 'linear-gradient(135deg, #eef2ff, #dbeafe)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -114,7 +109,7 @@ const ThumbnailUpload = () => {
                 >
                   <ImageIcon
                     sx={{
-                      color: error ? 'error.main' : mode === 'light' ? 'primary.main' : 'secondary.main',
+                      color: error ? 'error.main' : 'primary.main',
                       fontSize: 28
                     }}
                   />

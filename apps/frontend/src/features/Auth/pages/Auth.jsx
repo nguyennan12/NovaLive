@@ -1,8 +1,7 @@
-import { useLocation, Navigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import LoginForm from '../components/LoginForm'
 import RegisterForm from '../components/RegisterForm'
-import { useColorScheme } from '@mui/material/styles'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/common/redux/user/userSlice'
 import VerifyEmailForm from '../components/VerifyEmailForm'
@@ -13,9 +12,7 @@ function Auth() {
   const isRegister = location.pathname === '/register'
   const isverify = location.pathname === '/verify'
 
-  const currentUser = useSelector(selectCurrentUser)
-
-  const { mode } = useColorScheme()
+  useSelector(selectCurrentUser)
 
   // if (currentUser) {
   //   return <Navigate to='/' replace={true} />
@@ -26,7 +23,7 @@ function Auth() {
     <Box sx={{
       minHeight: '100vh',
       width: '100%',
-      bgcolor: mode === 'light' ? '#ffffff' : '#1b145e',
+      bgcolor: '#ffffff',
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -39,15 +36,9 @@ function Auth() {
         position: 'absolute',
         zIndex: 0,
         inset: 0,
-        backgroundImage:
-          mode === 'light'
-            ? `
-              radial-gradient(circle 600px at 0% 200px, #bfdbfe, transparent),
-              radial-gradient(circle 600px at 100% 500px, #bfdbfe, transparent) `
-            : `
-              radial-gradient(circle 600px at 0% 200px, #3089d1, transparent),
-              radial-gradient(circle 600px at 100% 500px, #3089d1, transparent)
-            `
+        backgroundImage: `
+          radial-gradient(circle 600px at 0% 200px, #bfdbfe, transparent),
+          radial-gradient(circle 600px at 100% 500px, #bfdbfe, transparent) `
       }}>
         {isLogin && <LoginForm />}
         {isRegister && <RegisterForm />}

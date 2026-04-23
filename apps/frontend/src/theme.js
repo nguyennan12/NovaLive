@@ -25,21 +25,8 @@ const theme = extendTheme({
         },
         divider: '#eeeeee'
       }
-    },
-    dark: {
-      palette: {
-        primary: {
-          main: '#222222',
-          contrastText: '#c2c2c2'
-        },
-        secondary: {
-          main: '#74ecfe',
-          contrastText: '#292a2a'
-        }
-      }
     }
   },
-  colorSchemeSelector: 'class',
   components: {
     MuiCssBaseline: {
       styleOverrides: {

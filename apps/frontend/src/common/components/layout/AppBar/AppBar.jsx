@@ -12,13 +12,10 @@ import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import Chip from '@mui/material/Chip'
 import Profiles from './Menu/Profile'
-import { useColorScheme } from '@mui/material/styles'
-import ChangeTheme from '../../common/switch/ChangeTheme'
 
 
 function AppBar() {
   const [searchValue, setSearchValue] = useState('')
-  const { mode } = useColorScheme()
   return (
     <Box sx={{
       height: (theme) => theme.app.appBarHeight,
@@ -47,10 +44,7 @@ function AppBar() {
             color: 'secondary.main',
             px: 1,
             fontWeight: 'bold',
-            backgroundColor:
-              mode === 'dark'
-                ? 'rgba(134, 245, 134, 0.3)'
-                : 'rgba(154, 185, 247, 0.3)'
+            backgroundColor: 'rgba(154, 185, 247, 0.3)'
 
           }} />
         </ Box>
@@ -87,8 +81,6 @@ function AppBar() {
             minWidth: '100px',
             display: { xs: 'none', md: 'flex' }
           }} />
-
-        <ChangeTheme />
 
         <Tooltip title="Notifications">
           <Badge color="secondary" variant="dot">

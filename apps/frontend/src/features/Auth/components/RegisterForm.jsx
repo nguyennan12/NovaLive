@@ -5,7 +5,6 @@ import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
-import { useColorScheme } from '@mui/material/styles'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -20,8 +19,7 @@ import {
 } from '~/common/utils/validators'
 
 function RegisterForm() {
-  const { mode } = useColorScheme()
-  const { register, handleSubmit, watch, formState: { errors } } = useForm()
+  const { register, handleSubmit, getValues, formState: { errors } } = useForm()
   const navigate = useNavigate()
 
   const onSubmitRegister = (data) => {
@@ -41,9 +39,7 @@ function RegisterForm() {
           minWidth: '380px',
           maxWidth: '380px',
           borderRadius: '12px',
-          boxShadow: mode === 'dark'
-            ? '0 0 3px 0.5px rgba(211, 206, 206, 0.15)'
-            : '0 0 3px 0.5px rgba(0,0,0,0.15)'
+          boxShadow: '0 0 3px 0.5px rgba(0,0,0,0.15)'
         }}>
           <Box sx={{ margin: '1em', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography variant='h6' sx={{ fontWeight: '600' }}>Welcome Back!</Typography>
@@ -98,7 +94,7 @@ function RegisterForm() {
                 error={!!errors['password_cofimation']}
                 {...register('password_cofimation', {
                   validate: (value) => {
-                    if (value === watch('password')) return true
+                    if (value === getValues('password')) return true
                     return 'Password Confirmation does not match!'
                   }
                 })}

@@ -1,12 +1,13 @@
 import { Box } from '@mui/material'
 import Sidebar from '../SideBar/SideBarShop/SideBarShop'
+import ProductsPage from '~/features/Product/pages/ProductPage/ProductPage'
 
 const DashboardShop = ({ children }) => (
-  <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+  <Box sx={{ background: 'linear-gradient(135deg, #f8faff 0%, #f0f4ff 50%, #f5f8ff 100%)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
     <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
       {/* Sidebar */}
-      <Box sx={{ p: 1, height: '100vh', position: 'sticky' }}>
+      <Box sx={{ p: 2, position: 'sticky' }}>
         <Sidebar />
       </Box>
 
@@ -19,7 +20,7 @@ const DashboardShop = ({ children }) => (
           p: 3
         }}
       >
-        {children}
+        <ProductsPage />
       </Box>
     </Box>
   </Box>

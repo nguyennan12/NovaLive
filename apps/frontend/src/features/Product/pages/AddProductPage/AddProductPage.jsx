@@ -3,7 +3,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import HomeIcon from '@mui/icons-material/Home'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
-import { Box, Breadcrumbs, Button, Link, Paper, Typography, useColorScheme } from '@mui/material'
+import { Box, Breadcrumbs, Button, Link, Paper, Typography } from '@mui/material'
 import { FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import AppBar from '~/common/components/layout/AppBar/AppBar'
@@ -15,8 +15,6 @@ import { addProductAPI } from '~/common/apis/services/productService'
 import { Link as RouterLink } from 'react-router-dom'
 
 const AddProductPage = () => {
-  const { mode } = useColorScheme()
-
   const methods = useForm({ mode: 'onBlur' })
 
   const { handleSubmit, reset } = methods
@@ -28,7 +26,6 @@ const AddProductPage = () => {
       isPublished: published,
       spu_shopId: '69e364dfdf24f31846f15580'
     }
-    console.log('Payload Data:', payload)
     toast.promise(addProductAPI(payload), { pending: 'Creating...' })
       .then(() => {
         methods.reset()
@@ -36,7 +33,7 @@ const AddProductPage = () => {
   }
 
 
-  const onError = (errors) => {
+  const onError = () => {
     toast.error('Please check the required fields!')
   }
 
@@ -53,9 +50,7 @@ const AddProductPage = () => {
         onSubmit={handleSubmit(onSubmit, onError)}
         sx={{
           minHeight: '100vh',
-          background: mode === 'light' ?
-            'linear-gradient(135deg, #f8faff 0%, #f0f4ff 50%, #f5f8ff 100%)' :
-            'linear-gradient(135deg, #222222 , #101010 , #111111 )',
+          background: 'linear-gradient(135deg, #f8faff 0%, #f0f4ff 50%, #f5f8ff 100%)',
           p: { xs: 2, md: 4 }
         }}
       >
@@ -119,7 +114,7 @@ const AddProductPage = () => {
                 variant="outlined"
                 startIcon={<CloseIcon />}
                 onClick={handleCancel}
-                sx={{ borderRadius: 2.5, px: 2.5, py: 1, borderColor: 'secondary.main', color: mode === 'light' ? '#555' : '#ccc', '&:hover': { borderColor: mode === 'light' ? '#ccc' : '#666', background: mode === 'light' ? '#fafafa' : '#333' } }}
+                sx={{ borderRadius: 2.5, px: 2.5, py: 1, borderColor: 'secondary.main', color: '#555', '&:hover': { borderColor: '#ccc', background: '#fafafa' } }}
               >
                 Cancel
               </Button>
