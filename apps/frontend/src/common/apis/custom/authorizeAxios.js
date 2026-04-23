@@ -46,9 +46,9 @@ authorizedAxiosInstance.interceptors.response.use(
       return refreshTokenPromise.then(() => authorizedAxiosInstance(originalRequests))
     }
 
-    if (error.response?.status !== 410) {
-      toast.error(error.response?.data?.message || error?.message)
-    }
+    // if (error.response?.status !== 410) {
+    //   toast.error(error.response?.data?.message || error?.message)
+    // }
 
     return Promise.reject(error)
   }

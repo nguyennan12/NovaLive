@@ -9,8 +9,8 @@ const uploadImageFromLocal = async ({ path, folderName }) => {
     return {
       image_url: result.secure_url,
       thumb_url: cloudinary.url(result.public_id, {
-        height: 100,
-        width: 100,
+        height: 600,
+        width: 600,
         format: 'jpg',
         crop: 'fill'
       })

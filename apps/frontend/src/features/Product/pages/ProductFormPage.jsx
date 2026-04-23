@@ -7,16 +7,41 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { Link as RouterLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { addProductAPI } from '~/common/apis/services/productService'
-import AppBar from '~/common/components/layout/AppBar/AppBar'
-import AdvanceTab from '../components/AddProductPage/AdvanceTab'
-import StatusCard from '../components/AddProductPage/StatusCard'
-import ThumbnailUpload from '../components/AddProductPage/ThumbnailUpload'
-import GeneralTab from '../components/AddProductPage/GeneralTab'
+import AdvanceTab from '../components/ProductFormPage/AdvanceTab'
+import GeneralTab from '../components/ProductFormPage/GeneralTab'
+import StatusCard from '../components/ProductFormPage/StatusCard'
+import ThumbnailUpload from '../components/ProductFormPage/ThumbnailUpload'
+import { useParams } from 'react-router-dom'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { getProductDetailAPI } from '~/common/apis/services/productService'
 
-const AddProductPage = () => {
+const ProductFormPage = () => {
   const methods = useForm({ mode: 'onBlur' })
-
   const { handleSubmit, reset } = methods
+
+  const { id } = useParams()
+  const isUpdate = !!id
+  const { data: product } = useQuery({
+    queryKey: ['product', id],
+    queryFn: () => getProductDetailAPI(id),
+    enabled: !!id
+  })
+  useEffect(() => {
+    if (product) {
+      reset({
+        spu_name: product.spu_name,
+        spu_price: product.spu_price,
+        spu_quantity: product.spu_quantity,
+        spu_thumb: product.spu_thumb,
+        spu_category: product.spu_category,
+        spu_variations: product.spu_variations,
+        sku_list: product.sku_list,
+        spu_attributes: product.spu_attributes
+      })
+    }
+  }, [product])
 
   const onSubmit = (data) => {
     const published = data.status === 'draft' ? false : true
@@ -27,7 +52,7 @@ const AddProductPage = () => {
     }
     toast.promise(addProductAPI(payload), { pending: 'Creating...' })
       .then(() => {
-        methods.reset()
+        // methods.reset()
       })
   }
 
@@ -69,25 +94,27 @@ const AddProductPage = () => {
               <InventoryIcon sx={{ fontSize: 14 }} /> Products
             </Link>
 
-            <Typography
-              color="text.primary"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                fontSize: '0.82rem',
-                fontWeight: 600
-              }}
-            >
-              <AddIcon sx={{ fontSize: 14 }} /> Add New
-            </Typography>
+            {isUpdate ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, fontWeight: 600 }}>
+                <EditOutlinedIcon sx={{ fontSize: 14 }} />
+                Update
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, fontWeight: 600 }}>
+                <AddIcon sx={{ fontSize: 14 }} />
+                Add New
+              </Box>
+            )}
           </Breadcrumbs>
 
           <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
             <Box>
-              <Typography variant="h5" fontWeight={800} letterSpacing="-0.5px" sx={{ color: 'primary.contrastText' }}>
+              {isUpdate ? <Typography variant="h5" fontWeight={800} letterSpacing="-0.5px" sx={{ color: 'primary.contrastText' }}>
+                Update Product
+              </Typography> : <Typography variant="h5" fontWeight={800} letterSpacing="-0.5px" sx={{ color: 'primary.contrastText' }}>
                 Add New Product
-              </Typography>
+              </Typography>}
+
               <Typography variant="body2" color="primary.contrastText" mt={0.25}>
                 Fill in all details below to publish a new product listing.
               </Typography>
@@ -139,4 +166,4 @@ const AddProductPage = () => {
   )
 }
 
-export default AddProductPage
+export default ProductFormPage

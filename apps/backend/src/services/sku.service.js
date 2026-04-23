@@ -1,27 +1,27 @@
-/* eslint-disable no-unused-vars */
 import ApiError from '#core/error.response.js'
 import { redisClient } from '#database/init.redis.js'
 import shopRepo from '#models/repository/shop.repo.js'
 import spuRepo from '#models/repository/spu.repo.js'
 import { skuModel } from '#models/sku.model.js'
 import { spuModel } from '#models/spu.model.js'
-import { getMinPriceFromSkus } from '#utils/data.js'
+import { PREFIX } from '#utils/constant.js'
+import converter from '#utils/converter.js'
+import { getMinPriceFromSkus, getNameSkuByTierOption } from '#utils/data.js'
 import { generateSkuId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import _ from 'lodash'
-import { PREFIX } from '#utils/constant.js'
-import converter from '#utils/converter.js'
 
 
 const createSku = async ({ spu_id, sku_list, spu_code }) => {
   try {
     const skuList = sku_list.map(sku => {
-      return { ...sku, sku_spuId: spu_id, sku_id: generateSkuId(spu_code, sku.sku_tier_idx) }
+      return { ...sku, sku_spuId: spu_id, sku_name: getNameSkuByTierOption(sku.tier_options), sku_id: generateSkuId(spu_code, sku.sku_tier_idx) }
     })
     //create 1 mảng array cái sku
     const newSku = await skuModel.create(skuList)
     return newSku
   } catch (error) {
+    console.log(error.message)
     return []
   }
 }
@@ -41,7 +41,7 @@ const getOneSku = async ({ skuId, spuId }) => {
 }
 
 const getAllSkuBySpuId = async (spuId) => {
-  const foundProduct = await spuRepo.findBySpuId(spuId)
+  const foundProduct = await spuRepo.findProductById(spuId)
   if (!foundProduct) throw new ApiError(StatusCodes.BAD_REQUEST, 'Product does not exists!')
   return await skuModel.find({ sku_spuId: foundProduct._id }).lean()
 }

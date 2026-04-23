@@ -22,6 +22,8 @@ const createSpu = async ({ reqBody, userId }) => {
     spu_category,
     sku_list,
     isPublished,
+    spu_price,
+    spu_quantity,
     ...spuData } = reqBody
 
 
@@ -41,12 +43,12 @@ const createSpu = async ({ reqBody, userId }) => {
     spu_attributes: normalizedAttrs,
     spu_variations,
     spu_category: spu_category,
-    spu_price: getMinPriceFromSkus(sku_list),
-    spu_quantity: getTotalStockFromSkus(sku_list),
+    spu_price: getMinPriceFromSkus(sku_list) || spu_price,
+    spu_quantity: getTotalStockFromSkus(sku_list) || spu_quantity,
   })
 
   //nếu có sku_list thì xử lý tạo sku
-  if (newSpu && sku_list.length) {
+  if (newSpu && (sku_list && sku_list.length)) {
     await skuService.createSku({ spu_id: newSpu._id, sku_list, spu_code: newSpu.spu_code })
   }
   if (isPublished === true) {
@@ -134,12 +136,28 @@ const getDraftProduct = async ({ userId, limit = 50, page = 1 }) => {
 
 const getAllProducts = async ({ limit = 50, sort = 'ctime', page = 1 }) => {
   const filter = { isPublished: true, isDeleted: false }
-  const select = ['spu_name', 'spu_price', 'spu_thumb']
-  return await spuRepo.findAllProducts({ limit, sort, page, filter, select })
+  const select = ['spu_name', 'spu_code', 'spu_price', 'spu_thumb', 'spu_quantity']
+  const limitNumber = Number(limit)
+  const pageNumber = Number(page)
+  const { products, totalItems } = await spuRepo.findAllProducts({ limit: limitNumber, sort, page: pageNumber, filter, select })
+  const totalPages = Math.ceil(totalItems / limitNumber)
+  return {
+    products,
+    totalItems,
+    totalPages,
+    currentPage: pageNumber,
+    limit: limitNumber
+  }
 }
 
 const getProductDetail = async ({ productId }) => {
-  return await spuRepo.findProductDetail(productId)
+  const spuDetail = await spuRepo.findProductDetail(productId)
+  if (!spuDetail) { return null }
+  const skuList = await skuService.getAllSkuBySpuId(spuDetail._id)
+  return {
+    ...spuDetail,
+    sku_list: skuList
+  }
 }
 
 const deleteProduct = async ({ productId, userId }) => {

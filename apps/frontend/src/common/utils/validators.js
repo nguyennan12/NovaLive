@@ -22,3 +22,19 @@ export const singleFileValidator = (file) => {
   }
   return null
 }
+
+export function validateForm(form) {
+  const errors = {}
+  if (!form.name.trim()) errors.name = 'Tên không được để trống'
+  if (!form.value || isNaN(+form.value) || +form.value <= 0)
+    errors.value = 'Giá trị phải lớn hơn 0'
+  if (form.type === 'percentage' && +form.value > 100)
+    errors.value = 'Giá trị % không được vượt quá 100'
+  if (!form.startDate) errors.startDate = 'Chọn ngày bắt đầu'
+  if (!form.endDate) errors.endDate = 'Chọn ngày kết thúc'
+  if (form.startDate && form.endDate && form.endDate < form.startDate)
+    errors.endDate = 'Ngày kết thúc phải sau ngày bắt đầu'
+  if (form.usageLimit && (isNaN(+form.usageLimit) || +form.usageLimit < 1))
+    errors.usageLimit = 'Giới hạn phải là số nguyên dương'
+  return errors
+}

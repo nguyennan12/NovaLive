@@ -26,3 +26,34 @@ export const generateCombinations = (variations) => {
   })
   return results
 }
+
+export function formatValue(type, value) {
+  if (type === 'percentage') return `${value}%`
+  if (value >= 1000) return `${Math.round(value / 1000)}k ₫`
+  return `${value} ₫`
+}
+
+
+export function formatDate(dateStr) {
+  if (!dateStr) return '—'
+  return new Date(dateStr).toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  })
+}
+
+export const formatVND = (value) => {
+  if (!value && value !== 0) return '0 ₫'
+
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(value)
+}
+
+export const getStockStatus = (stock) => {
+  if (stock === 0) return 'out'
+  if (stock <= 10) return 'low'
+  return 'in'
+}

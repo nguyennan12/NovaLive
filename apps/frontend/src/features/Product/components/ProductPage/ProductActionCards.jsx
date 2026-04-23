@@ -21,7 +21,7 @@ const cardData = [
     btnVariant: 'outlined',
     btnBorderColor: '#3465c8',
     btnColor: '#3465c8',
-    path: '/products/create'
+    path: '/products/form'
   },
   {
     key: 'stock',
@@ -76,6 +76,7 @@ const ActionCard = ({ card }) => {
   const Icon = card.icon
   const SubIcon = card.subIcon
   const navigate = useNavigate()
+
 
   return (
     <Box

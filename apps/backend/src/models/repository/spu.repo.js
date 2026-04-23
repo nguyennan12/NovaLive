@@ -18,12 +18,16 @@ const changePublishStatus = async ({ productId, shopId, isPublished }) => {
 const findAllProducts = async ({ limit, sort, page, filter, select }) => {
   const skip = (page - 1) * limit
   const sortBy = sort === 'ctime' ? { _id: -1 } : { _id: 1 }
-  return await spuModel.find(filter)
-    .sort(sortBy)
-    .skip(skip)
-    .limit(limit)
-    .select(select)
-    .lean()
+  const [products, totalItems] = await Promise.all([
+    spuModel.find(filter)
+      .sort(sortBy)
+      .skip(skip)
+      .limit(limit)
+      .select(select)
+      .lean(),
+    spuModel.countDocuments(filter) // Đếm tổng số document thỏa mãn filter
+  ])
+  return { products, totalItems }
 }
 
 const findProductDetail = async (productId) => {

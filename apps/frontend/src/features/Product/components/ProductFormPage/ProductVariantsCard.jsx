@@ -1,5 +1,5 @@
 import AddIcon from '@mui/icons-material/Add'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import { Autocomplete, Box, Button, Chip, Grid, IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
@@ -83,14 +83,14 @@ export default function ProductVariantsCard() {
             <Tooltip title="Remove this attribute">
               <IconButton
                 size="small" color="error" onClick={() => removeVariation(index)}
-                sx={{ position: 'absolute', top: 8, right: 8, background: 'primary.main', border: '1px solid #fee2e2' }}
+                sx={{ position: 'absolute', top: 0, right: 8, background: 'primary.main', border: '1px solid #fee2e2' }}
               >
-                <CloseOutlinedIcon fontSize="small" />
+                <DeleteOutlineOutlinedIcon fontSize="small" />
               </IconButton>
             </Tooltip>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={4}>
+            <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 {/* VARIATION */}
                 <Typography variant="caption" fontWeight={600} display="block" mb={0.5}>Variation Name</Typography>
                 <Controller
@@ -105,7 +105,7 @@ export default function ProductVariantsCard() {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={8}>
+              <Grid size={{ xs: 12, sm: 8 }} >
                 {/* OPTIONS */}
                 <Typography variant="caption" fontWeight={600} display="block" mb={0.5}>Options (Press Enter to add)</Typography>
                 <Controller
@@ -181,12 +181,12 @@ export default function ProductVariantsCard() {
                           <TextField
                             {...field} fullWidth size="small" type="number" placeholder="0"
                             error={!!error} helperText={error?.message}
-                            FormHelperTextProps={{ sx: { mx: 0, mt: 0.5 } }}
                             onChange={(e) => {
                               const value = e.target.value
                               field.onChange(value === '' ? undefined : Number(value))
                             }}
                             slotProps={{
+                              formHelperText: { sx: { mx: 0, mt: 0.5 } },
                               startAdornment: <InputAdornment position="start"><Typography variant="body2">$</Typography></InputAdornment>
                             }}
                           />
@@ -203,11 +203,11 @@ export default function ProductVariantsCard() {
                         render={({ field, fieldState: { error } }) => (
                           <TextField {...field} fullWidth size="small" type="number" placeholder="0"
                             error={!!error} helperText={error?.message}
-                            FormHelperTextProps={{ sx: { mx: 0, mt: 0.5 } }}
                             onChange={(e) => {
                               const value = e.target.value
                               field.onChange(value === '' ? undefined : Number(value))
                             }}
+                            slotProps={{ formHelperText: { sx: { mx: 0, mt: 0.5 } } }}
                           />
                         )}
                       />
@@ -222,13 +222,13 @@ export default function ProductVariantsCard() {
                         render={({ field, fieldState: { error } }) => (
                           <TextField {...field} fullWidth size="small" type="number" placeholder="gam"
                             error={!!error} helperText={error?.message}
-                            FormHelperTextProps={{ sx: { mx: 0, mt: 0.5 } }}
                             onChange={(e) => {
                               const value = e.target.value
                               field.onChange(value === '' ? undefined : Number(value))
                             }}
-                            InputProps={{
-                              startAdornment: <InputAdornment position="start"><Typography variant="body2">g</Typography></InputAdornment>
+                            slotProps={{
+                              formHelperText: { sx: { mx: 0, mt: 0.5 } },
+                              startAdornment: <InputAdornment position="start"><Typography variant="body2">$</Typography></InputAdornment>
                             }}
                           />
                         )}

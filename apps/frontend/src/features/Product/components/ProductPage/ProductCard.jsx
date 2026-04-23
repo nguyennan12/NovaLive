@@ -1,5 +1,9 @@
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
+import { formatVND } from '~/common/utils/formatters'
+import { getStockStatus } from '~/common/utils/formatters'
+import { useNavigate } from 'react-router-dom'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 
 const stockConfig = {
   in: { label: 'In Stock', color: '#4ade80' },
@@ -7,19 +11,10 @@ const stockConfig = {
   out: { label: 'Out', color: '#f87171' }
 }
 
-const gradients = [
-  'linear-gradient(135deg, #eef0f4 0%, #dde0e8 100%)',
-  'linear-gradient(135deg, #f0ede8 0%, #e0d8d0 100%)',
-  'linear-gradient(135deg, #eaf0ec 0%, #d4e4d8 100%)',
-  'linear-gradient(135deg, #f0eaf0 0%, #e0d4e0 100%)',
-  'linear-gradient(135deg, #eaeef0 0%, #d4dce4 100%)',
-  'linear-gradient(135deg, #f0eeea 0%, #e4dcd4 100%)'
-]
 
-const ProductCard = ({ product, index, onEdit }) => {
-  const stock = stockConfig[product.stock] || stockConfig['in']
-  const gradient = gradients[index % gradients.length]
-
+const ProductCard = ({ product }) => {
+  const navigate = useNavigate()
+  const stock = stockConfig[getStockStatus(product.spu_quantity)] || stockConfig['in']
   return (
     <Box
       sx={{
@@ -37,7 +32,6 @@ const ProductCard = ({ product, index, onEdit }) => {
         <Box
           sx={{
             position: 'relative',
-            background: gradient,
             borderRadius: '12px',
             height: { xs: 150, sm: 180 },
             display: 'flex',
@@ -47,40 +41,69 @@ const ProductCard = ({ product, index, onEdit }) => {
           }}
         >
           <Box
+            component="img"
+            src={product.spu_thumb}
+            alt={product.spu_name}
             sx={{
-              width: '75%',
-              height: '50%',
-              background: 'rgba(160,160,160,0.25)',
-              borderRadius: '10px',
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: '10px'
+            }}
+          />
+
+          {/* Edit */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              bgcolor: 'background.paper',
+              borderRadius: '50px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+              overflow: 'hidden',
+              width: 32,
+              height: 32,
+              transition: 'width 0.3s ease-in-out',
+              '&:hover': {
+                width: 68
+              }
             }}
           >
-            <Typography sx={{ fontSize: '0.6rem', color: '#aaa', letterSpacing: '0.06em' }}>
-              NO IMAGE
-            </Typography>
-          </Box>
+            <Tooltip title='Edit' placement="top">
+              <IconButton
+                size='small'
+                onClick={() => navigate(`/products/form/${product.spu_code}`)}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  flexShrink: 0,
+                  borderRadius: '50%',
+                  '&:hover': { bgcolor: '#c6ecff' }
+                }}
+              >
+                <EditOutlinedIcon sx={{ fontSize: 16, color: 'secondary.main' }} />
+              </IconButton>
+            </Tooltip>
 
-          {/* Heart */}
-          <Tooltip title='Edit'>
-            <IconButton
-              size='small'
-              onClick={() => onEdit && onEdit(product)}
-              sx={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                bgcolor: 'tranparent',
-                width: 32,
-                height: 32,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                '&:hover': { bgcolor: '#c6ecff' }
-              }}
-            >
-              <EditOutlinedIcon sx={{ fontSize: 15, color: 'secondary.main' }} />
-            </IconButton>
-          </Tooltip>
+            <Tooltip title='Delete' placement="top">
+              <IconButton
+                size='small'
+                onClick={() => { }}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  flexShrink: 0,
+                  borderRadius: '50%',
+                  '&:hover': { bgcolor: '#ffcdd2' }
+                }}
+              >
+                <DeleteOutlineOutlinedIcon sx={{ fontSize: 16, color: 'error.main' }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
       </Box>
 
@@ -90,16 +113,16 @@ const ProductCard = ({ product, index, onEdit }) => {
           noWrap
           sx={{ fontSize: '0.95rem', fontWeight: 700, color: 'primary.contractText', letterSpacing: '-0.02em' }}
         >
-          {product.name}
+          {product.spu_name}
         </Typography>
-        <Typography sx={{ fontSize: '0.75rem', color: '#777', mt: 0.25 }}>
+        {/* <Typography sx={{ fontSize: '0.75rem', color: '#777', mt: 0.25 }}>
           {product.brand || product.category}
-        </Typography>
+        </Typography> */}
 
         {/* Price + Stock pill */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1.5 }}>
           <Typography sx={{ fontSize: '1.35rem', fontWeight: 800, color: 'primary.contractText', letterSpacing: '-0.03em', lineHeight: 1 }}>
-            ${product.price}
+            {formatVND(product.spu_price)}
           </Typography>
 
           <Box

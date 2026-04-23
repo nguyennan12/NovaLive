@@ -1,28 +1,27 @@
 import { useState } from 'react'
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, Pagination } from '@mui/material'
 import ProductCard from './ProductCard'
-import UpdateProductDrawer from './UpdateProductDrawer'
+import { getAllProductsAPI } from '~/common/apis/services/productService'
+import { useQuery } from '@tanstack/react-query'
 
-const MOCK_PRODUCTS = [
-  { id: 1, name: 'Air Force 1 Low', price: '59', stock: 'in', category: 'Footwear', brand: 'Nike' },
-  { id: 2, name: 'Wireless Earbuds Pro', price: '89', stock: 'low', category: 'Electronics', brand: 'Sony' },
-  { id: 3, name: 'Leather Crossbody Bag', price: '120', stock: 'in', category: 'Accessories', brand: 'Coach' },
-  { id: 4, name: 'Running Shoes X3', price: '75', stock: 'out', category: 'Footwear', brand: 'Adidas' },
-  { id: 5, name: 'Stainless Water Bottle', price: '22', stock: 'in', category: 'Lifestyle', brand: 'Hydro Flask' },
-  { id: 6, name: 'Slim Fit Jeans', price: '55', stock: 'low', category: 'Clothing', brand: 'Levi\'s' },
-  { id: 7, name: 'Bamboo Desk Organizer', price: '38', stock: 'in', category: 'Office', brand: 'Muji' },
-  { id: 8, name: 'Ceramic Coffee Mug', price: '18', stock: 'in', category: 'Kitchen', brand: 'Fellow' }
-]
 
 const ProductList = () => {
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const handleEdit = (product) => {
-    setSelectedProduct(product)
-    setDrawerOpen(true)
+  const [page, setPage] = useState(1)
+  const limit = 8
+
+  const { data = [] } = useQuery({
+    queryKey: ['products', page],
+    queryFn: () => getAllProductsAPI({ page, limit })
+  })
+
+  const products = data?.products || []
+  const totalPages = data?.totalPages || 1
+  const totalItems = data?.totalItems || 0
+
+  const handlePageChange = (event, value) => {
+    setPage(value)
   }
-
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
@@ -30,7 +29,7 @@ const ProductList = () => {
           Product List
         </Typography>
         <Typography sx={{ fontSize: '0.75rem', color: 'primary.contrastText', opacity: 0.45 }}>
-          Showing {MOCK_PRODUCTS.length} of 1,245
+          Showing {products.length} of {totalItems}
         </Typography>
       </Box>
 
@@ -52,18 +51,21 @@ const ProductList = () => {
           '&::-webkit-scrollbar-thumb': { bgcolor: '#d1d5db', borderRadius: '4px' }
         }}
       >
-        {MOCK_PRODUCTS.map((product, i) => (
-          <Box key={product.id} >
-            <ProductCard product={product} index={i} onEdit={handleEdit} />
+        {products.map((product, i) => (
+          <Box key={product.spu_code} >
+            <ProductCard product={product} index={i} />
           </Box>
         ))}
       </Box>
 
-      <UpdateProductDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        product={selectedProduct}
-      />
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 2 }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
     </>
   )
 }

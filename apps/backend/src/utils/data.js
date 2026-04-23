@@ -39,6 +39,11 @@ export const getTotalStockFromSkus = (skuList = []) => {
   return skuList.reduce((sum, s) => sum + s.sku_stock, 0)
 }
 
+export const getNameSkuByTierOption = (tier_options) => {
+  if (!tier_options || !Array.isArray(tier_options)) return ''
+  return tier_options.join(' ')
+}
+
 export default {
   getInfo,
   getNameFromEmail,
