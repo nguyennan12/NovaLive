@@ -1,6 +1,6 @@
 import { Box } from '@mui/material'
 import Sidebar from '../SideBar/SideBarShop/SideBarShop'
-import ProductsPage from '~/features/Product/pages/ProductPage/ProductPage'
+import ProductsPage from '~/features/Product/pages/ProductPage'
 import { Outlet } from 'react-router-dom'
 
 const DashboardShop = () => {

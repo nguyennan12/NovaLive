@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material'
-import ProductActionCards from './components/ProductActionCards'
-import ProductFilterBar from './components/ProductFilterBar'
-import ProductList from './components/ProductList'
+import ProductActionCards from '../components/ProductPage/ProductActionCards'
+import ProductFilterBar from '../components/ProductPage/ProductFilterBar'
+import ProductList from '../components/ProductPage/ProductList'
 
 const ProductsPage = () => (
   <Box>
