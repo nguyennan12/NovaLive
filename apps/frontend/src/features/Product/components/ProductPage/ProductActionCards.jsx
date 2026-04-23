@@ -26,7 +26,7 @@ const cardData = [
   {
     key: 'stock',
     icon: WarningAmberRoundedIcon,
-    iconBg: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+    iconBg: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
     iconColor: '#fff',
     label: 'Stock Inventory',
     value: '14 Items',
@@ -35,14 +35,14 @@ const cardData = [
     subColor: '#ef4444',
     btnLabel: 'Manage Stock',
     btnVariant: 'outlined',
-    btnBorderColor: '#f59e0b',
-    btnColor: '#f59e0b',
+    btnBorderColor: '#8b5cf6',
+    btnColor: '#8b5cf6',
     path: '/inventory'
   },
   {
     key: 'discount',
     icon: LocalOfferRoundedIcon,
-    iconBg: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
+    iconBg: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
     iconColor: '#fff',
     label: 'Active Discounts',
     value: '3',
@@ -51,8 +51,8 @@ const cardData = [
     subColor: '#f59e0b',
     btnLabel: '+ New Discount',
     btnVariant: 'outlined',
-    btnBorderColor: '#8b5cf6',
-    btnColor: '#8b5cf6',
+    btnBorderColor: '#f59e0b',
+    btnColor: '#f59e0b',
     path: '/discounts/create'
   },
   {

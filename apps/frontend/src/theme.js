@@ -23,6 +23,10 @@ const theme = extendTheme({
           main: '#3485f7',
           contrastText: '#e6efff'
         },
+        third: {
+          main: '#8b5cf6',
+          contrastText: '#e6efff'
+        },
         divider: '#eeeeee'
       }
     }

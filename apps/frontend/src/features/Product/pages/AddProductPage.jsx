@@ -43,7 +43,6 @@ const AddProductPage = () => {
 
   return (
     <FormProvider {...methods}>
-      <AppBar />
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit, onError)}

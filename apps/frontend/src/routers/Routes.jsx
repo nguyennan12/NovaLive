@@ -6,6 +6,7 @@ import ShopLive from '~/features/Shop/pages/ShopLive'
 import AddProductPage from '~/features/Product/pages/AddProductPage'
 import DashboardShop from '~/common/components/layout/DashBoard/DashBoardShop'
 import ProductsPage from '~/features/Product/pages/ProductPage'
+import InventoryPage from '~/features/Inventory/pages/InventoryPage'
 
 const AppRoutes = () => {
   return (
@@ -17,6 +18,7 @@ const AppRoutes = () => {
       <Route path='/live' element={<Live />} />
       <Route path='/shop/live/:liveId' element={<ShopLive />} />
       <Route path='/products/create' element={<AddProductPage />} />
+      <Route path='/inventory' element={<InventoryPage />} />
       <Route path='/dashboard/shop' element={<DashboardShop />}>
         <Route index element={<Box>dashboard</Box>} />
         <Route path="products" element={<ProductsPage />} />
