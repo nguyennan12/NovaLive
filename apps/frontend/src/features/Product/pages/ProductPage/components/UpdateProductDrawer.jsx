@@ -3,7 +3,6 @@ import {
   Select, MenuItem, InputLabel, FormControl, Divider, IconButton
 } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined'
 
 const fieldSx = {
   '& .MuiOutlinedInput-root': {
@@ -64,7 +63,6 @@ const UpdateProductDrawer = ({ open, onClose, product }) => (
 
     <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2.5, overflowY: 'auto', flex: 1 }}>
 
-
       <TextField
         key={`name-${product?.id}`}
         label='Product Name'
@@ -92,6 +90,16 @@ const UpdateProductDrawer = ({ open, onClose, product }) => (
         type='number'
         sx={fieldSx}
       />
+
+      <TextField
+        label='Stock Quantity'
+        placeholder='0'
+        fullWidth
+        size='small'
+        type='number'
+        sx={fieldSx}
+      />
+
 
       <FormControl size='small' fullWidth>
         <InputLabel
@@ -130,13 +138,12 @@ const UpdateProductDrawer = ({ open, onClose, product }) => (
           fontSize: '0.85rem',
           fontWeight: 600,
           borderRadius: '8px',
-          borderColor: 'divider',
-          color: 'primary.contrastText',
-          '&:hover': { borderColor: 'primary.contrastText' }
+          background: 'linear-gradient(90deg, #db3f23, #ec4516, #e81111)',
+          color: '#fff'
         }}
         onClick={onClose}
       >
-        Cancel
+        Delete
       </Button>
       <Button
         fullWidth

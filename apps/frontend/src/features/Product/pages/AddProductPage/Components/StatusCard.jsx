@@ -21,7 +21,7 @@ const StatusCard = () => {
           sx={{ color: statusColor[currentStatus] || '#22c55e', fontSize: 14 }}
         />
       </Box>
-      <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+      <Typography variant="caption" color="primary.contractText" display="block" mb={1}>
         Set Status
       </Typography>
 
@@ -29,6 +29,7 @@ const StatusCard = () => {
         <Controller
           name="status"
           control={control}
+          defaultValue="published"
           render={({ field }) => (
             <Select
               {...field}
@@ -41,7 +42,7 @@ const StatusCard = () => {
                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'secondary.main' }
               }}
             >
-              <MenuItem value="published">Published</MenuItem>
+              <MenuItem value="published" >Published</MenuItem>
               <MenuItem value="draft">Draft</MenuItem>
               <MenuItem value="archived">Archived</MenuItem>
             </Select>

@@ -1,8 +1,20 @@
 import { Box, Typography } from '@mui/material'
 import SidebarNavItem from './SidebarNavItem'
+import { useNavigate, useLocation } from 'react-router-dom'
 
-const SidebarSection = ({ section, activeKey, collapsed, onItemClick }) => (
-  <Box sx={{ mb: 1 }}>
+const SidebarSection = ({ section, collapsed, onItemClick }) => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const handleItemClick = (item) => {
+    const fullPath = `/dashboard/shop${item.path}`
+    navigate(fullPath)
+    onItemClick?.(item)
+  }
+  const isActive = (item) => item.path === ''
+    ? location.pathname === '/dashboard/shop'
+    : location.pathname.startsWith(`/dashboard/shop${item.path}`)
+
+  return <Box sx={{ mb: 1 }}>
     {!collapsed && (
       <Typography
         sx={{
@@ -28,12 +40,12 @@ const SidebarSection = ({ section, activeKey, collapsed, onItemClick }) => (
       <SidebarNavItem
         key={item.key}
         item={item}
-        active={activeKey === item.key}
+        active={isActive(item)}
         collapsed={collapsed}
-        onClick={onItemClick}
+        onClick={() => handleItemClick(item)}
       />
     ))}
   </Box>
-)
+}
 
 export default SidebarSection

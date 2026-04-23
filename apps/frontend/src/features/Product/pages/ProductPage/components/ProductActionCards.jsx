@@ -1,10 +1,10 @@
-import { Box, Typography, Button, Grid } from '@mui/material'
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded'
 import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded'
 import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded'
-import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded'
-import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded'
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
+import { Box, Button, Grid, Typography } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 
 const cardData = [
   {
@@ -18,9 +18,10 @@ const cardData = [
     subColor: '#22c55e',
     subIcon: TrendingUpRoundedIcon,
     btnLabel: '+ Add Product',
-    btnVariant: 'contained',
-    btnBg: '#3465c8',
-    btnColor: '#fff'
+    btnVariant: 'outlined',
+    btnBorderColor: '#3465c8',
+    btnColor: '#3465c8',
+    path: '/products/create'
   },
   {
     key: 'stock',
@@ -35,7 +36,8 @@ const cardData = [
     btnLabel: 'Manage Stock',
     btnVariant: 'outlined',
     btnBorderColor: '#f59e0b',
-    btnColor: '#f59e0b'
+    btnColor: '#f59e0b',
+    path: '/inventory'
   },
   {
     key: 'discount',
@@ -50,7 +52,8 @@ const cardData = [
     btnLabel: '+ New Discount',
     btnVariant: 'outlined',
     btnBorderColor: '#8b5cf6',
-    btnColor: '#8b5cf6'
+    btnColor: '#8b5cf6',
+    path: '/discounts/create'
   },
   {
     key: 'schedule',
@@ -72,6 +75,7 @@ const cardData = [
 const ActionCard = ({ card }) => {
   const Icon = card.icon
   const SubIcon = card.subIcon
+  const navigate = useNavigate()
 
   return (
     <Box
@@ -165,6 +169,7 @@ const ActionCard = ({ card }) => {
       <Button
         size='small'
         variant={card.btnVariant}
+        onClick={() => navigate(card.path)}
         sx={{
           mt: 'auto',
           fontSize: '0.78rem',

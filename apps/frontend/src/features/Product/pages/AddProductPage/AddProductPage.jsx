@@ -58,22 +58,7 @@ const AddProductPage = () => {
           <Breadcrumbs sx={{ mb: 1.5 }}>
             <Link
               component={RouterLink}
-              to="/dashboard/shop"
-              underline="hover"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                fontSize: '0.82rem',
-                color: 'primary.contrastText'
-              }}
-            >
-              <HomeIcon sx={{ fontSize: 14 }} /> Dashboard
-            </Link>
-
-            <Link
-              component={RouterLink}
-              to="/products"
+              to="/dashboard/shop/products"
               underline="hover"
               sx={{
                 display: 'flex',

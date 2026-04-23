@@ -6,7 +6,6 @@ import { NAV_SECTIONS } from '~/common/configs/sidebar.config'
 import SidebarSection from './components/SidebarSection'
 import SidebarStoreSelect from './components/SidebarStoreSelect'
 import SidebarProfile from './components/SidebarProfile'
-import AppsIcon from '@mui/icons-material/Apps'
 
 const SIDEBAR_EXPANDED = 240
 const SIDEBAR_COLLAPSED = 60
@@ -138,7 +137,6 @@ const Sidebar = () => {
           <SidebarSection
             key={section.label}
             section={section}
-            activeKey={activeKey}
             collapsed={collapsed}
             onItemClick={setActiveKey}
           />

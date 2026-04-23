@@ -15,20 +15,20 @@ export const NAV_SECTIONS = [
   {
     label: 'General',
     items: [
-      { key: 'dashboard', label: 'Dashboard', icon: DashboardRoundedIcon, badge: null },
-      { key: 'orders', label: 'Orders', icon: ShoppingBagOutlinedIcon, badge: null },
-      { key: 'products', label: 'Products', icon: Inventory2OutlinedIcon, badge: null },
-      { key: 'customers', label: 'Customers', icon: PeopleAltOutlinedIcon, badge: null }
+      { key: 'dashboard', label: 'Dashboard', icon: DashboardRoundedIcon, badge: null, path: '' },
+      { key: 'orders', label: 'Orders', icon: ShoppingBagOutlinedIcon, badge: null, path: '/orders' },
+      { key: 'products', label: 'Products', icon: Inventory2OutlinedIcon, badge: null, path: '/products' },
+      { key: 'customers', label: 'Customers', icon: PeopleAltOutlinedIcon, badge: null, path: '/customers' }
     ]
   },
   {
     label: 'Tools',
     items: [
-      { key: 'live', label: 'Live', icon: LiveTvOutlinedIcon, badge: null },
-      { key: 'analytics', label: 'Analytics', icon: BarChartOutlinedIcon, badge: null },
-      { key: 'marketing', label: 'Marketing', icon: TrackChangesOutlinedIcon, badge: null },
-      { key: 'finance', label: 'Finance', icon: AccountBalanceOutlinedIcon, badge: null },
-      { key: 'shipping', label: 'Shipping & Fulfillment', icon: LocalShippingOutlinedIcon, badge: null }
+      { key: 'live', label: 'Live', icon: LiveTvOutlinedIcon, badge: null, path: '/live' },
+      { key: 'analytics', label: 'Analytics', icon: BarChartOutlinedIcon, badge: null, path: '/analytics' },
+      { key: 'marketing', label: 'Marketing', icon: TrackChangesOutlinedIcon, badge: null, path: '/marketing' },
+      { key: 'finance', label: 'Finance', icon: AccountBalanceOutlinedIcon, badge: null, path: '/finance' },
+      { key: 'shipping', label: 'Shipping & Fulfillment', icon: LocalShippingOutlinedIcon, badge: null, path: '/shipping' }
     ]
   }
 ]

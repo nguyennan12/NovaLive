@@ -34,7 +34,6 @@ const ProductList = () => {
         </Typography>
       </Box>
 
-      {/* Flex wrap grid — max 2 rows visible, then scroll vertically */}
       <Box
         sx={{
           display: 'grid',
@@ -45,10 +44,10 @@ const ProductList = () => {
           gap: 1.5,
           width: '100%',
           justifyContent: 'center',
-          maxHeight: 'calc(2 * 320px + 12px)',
+          maxHeight: 'calc(2 * 310px + 12px)',
           overflowY: 'auto',
           p: 1,
-          scrollbarWidth: 'thin',
+          scrollbarWidth: '-moz-initial',
           '&::-webkit-scrollbar': { width: '2px' },
           '&::-webkit-scrollbar-thumb': { bgcolor: '#d1d5db', borderRadius: '4px' }
         }}

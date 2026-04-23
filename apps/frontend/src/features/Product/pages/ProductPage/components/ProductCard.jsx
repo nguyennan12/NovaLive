@@ -1,11 +1,5 @@
-import { useState } from 'react'
-import { Box, Typography, IconButton, Tooltip, Collapse } from '@mui/material'
-import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
-import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
-import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
-import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded'
+import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 
 const stockConfig = {
   in: { label: 'In Stock', color: '#4ade80' },
@@ -23,8 +17,6 @@ const gradients = [
 ]
 
 const ProductCard = ({ product, index, onEdit }) => {
-  const [liked, setLiked] = useState(false)
-  const [actionsOpen, setActionsOpen] = useState(false)
   const stock = stockConfig[product.stock] || stockConfig['in']
   const gradient = gradients[index % gradients.length]
 
@@ -47,7 +39,7 @@ const ProductCard = ({ product, index, onEdit }) => {
             position: 'relative',
             background: gradient,
             borderRadius: '12px',
-            height: { xs: 120, sm: 150 },
+            height: { xs: 150, sm: 180 },
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -71,25 +63,24 @@ const ProductCard = ({ product, index, onEdit }) => {
           </Box>
 
           {/* Heart */}
-          <IconButton
-            size='small'
-            onClick={() => setLiked((v) => !v)}
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              bgcolor: 'tranparent',
-              width: 32,
-              height: 32,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-              '&:hover': { bgcolor: '#c4c4c4' }
-            }}
-          >
-            {liked
-              ? <FavoriteRoundedIcon sx={{ fontSize: 16, color: '#f87171' }} />
-              : <FavoriteBorderRoundedIcon sx={{ fontSize: 16, color: '#535353' }} />
-            }
-          </IconButton>
+          <Tooltip title='Edit'>
+            <IconButton
+              size='small'
+              onClick={() => onEdit && onEdit(product)}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                bgcolor: 'tranparent',
+                width: 32,
+                height: 32,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                '&:hover': { bgcolor: '#c6ecff' }
+              }}
+            >
+              <EditOutlinedIcon sx={{ fontSize: 15, color: 'secondary.main' }} />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
 
@@ -97,7 +88,7 @@ const ProductCard = ({ product, index, onEdit }) => {
       <Box sx={{ px: 2, pt: 1.25, pb: 1.75 }}>
         <Typography
           noWrap
-          sx={{ fontSize: '0.95rem', fontWeight: 700, color: '#f0f0f0', letterSpacing: '-0.02em' }}
+          sx={{ fontSize: '0.95rem', fontWeight: 700, color: 'primary.contractText', letterSpacing: '-0.02em' }}
         >
           {product.name}
         </Typography>
@@ -139,61 +130,6 @@ const ProductCard = ({ product, index, onEdit }) => {
           </Box>
         </Box>
 
-        {/* Actions toggle */}
-        <Box sx={{ mt: 1.25, borderTop: '1px solid rgba(255,255,255,0.06)', pt: 1 }}>
-          <Box
-            onClick={() => setActionsOpen((v) => !v)}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 0.4,
-              cursor: 'pointer',
-              opacity: actionsOpen ? 0.7 : 0.35,
-              '&:hover': { opacity: 0.75 },
-              transition: 'opacity 0.15s'
-            }}
-          >
-            <Typography sx={{ fontSize: '0.6rem', color: 'primary.contractText', letterSpacing: '0.08em', fontWeight: 600 }}>
-              MANAGE
-            </Typography>
-            {actionsOpen
-              ? <ExpandLessRoundedIcon sx={{ fontSize: 13, color: 'primary.contractText' }} />
-              : <ExpandMoreRoundedIcon sx={{ fontSize: 13, color: 'primary.contractText' }} />
-            }
-          </Box>
-
-          <Collapse in={actionsOpen}>
-            <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'center' }}>
-              <Tooltip title='Edit'>
-                <IconButton
-                  size='small'
-                  onClick={() => onEdit && onEdit(product)}
-                  sx={{
-                    bgcolor: 'rgba(255,255,255,0.07)',
-                    borderRadius: '8px',
-                    '&:hover': { bgcolor: 'rgba(100,160,255,0.18)', color: '#7ab8ff' }
-                  }}
-                >
-                  <EditOutlinedIcon sx={{ fontSize: 15, color: '#bbb' }} />
-                </IconButton>
-              </Tooltip>
-
-              <Tooltip title='Delete'>
-                <IconButton
-                  size='small'
-                  sx={{
-                    bgcolor: 'rgba(255,255,255,0.07)',
-                    borderRadius: '8px',
-                    '&:hover': { bgcolor: 'rgba(248,113,113,0.18)', color: '#f87171' }
-                  }}
-                >
-                  <DeleteOutlineRoundedIcon sx={{ fontSize: 15, color: '#bbb' }} />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </Collapse>
-        </Box>
       </Box>
     </Box>
   )
