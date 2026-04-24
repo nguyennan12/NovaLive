@@ -136,7 +136,7 @@ const StockOutForm = () => {
           label='Quantity *'
           size='small'
           type='number'
-          inputProps={{ min: 1, max: form.product?.stock || undefined }}
+          slotProps={{ min: 1, max: form.product?.stock || undefined }}
           value={form.qty}
           onChange={(e) => set('qty')(e.target.value)}
           error={!!errors.qty}

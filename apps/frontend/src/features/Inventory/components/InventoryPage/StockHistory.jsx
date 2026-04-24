@@ -42,12 +42,14 @@ const StockHistory = ({ loading = false }) => {
             placeholder='Search product, user...'
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <SearchRoundedIcon sx={{ fontSize: 15, color: '#9ca3af' }} />
-                </InputAdornment>
-              )
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchRoundedIcon sx={{ fontSize: 15, color: '#9ca3af' }} />
+                  </InputAdornment>
+                )
+              }
             }}
             sx={{
               '& .MuiOutlinedInput-root': {

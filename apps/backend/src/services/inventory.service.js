@@ -13,31 +13,40 @@ import { StatusCodes } from 'http-status-codes'
 const reserveStockScript = fileHelper.loadLuaScript('lua/reserveStock.lua')
 
 const addStockToInventory = async ({ shopId, reqBody }) => {
-  const { productId, skuId, stock } = reqBody
+  const { productId, skuId, stock, note, resason = '' } = reqBody
   if (!stock || stock < 0) throw new ApiError(StatusCodes.BAD_REQUEST, 'Stock invalid')
-
+  const isSkuMode = !!skuId
+  const finalSkuId = skuId || productId
   //tìm product và sku tương ứng
-  const [foundSku, foundProduct] = await Promise.all([
-    skuModel.findOne({ sku_spuId: productId, _id: skuId }).lean(),
-    spuModel.findById(productId)
-  ])
-  if (!foundSku || !foundProduct) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Product does not exists')
+  const foundProduct = await spuModel.findById(productId)
+  if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product does not exists')
+
+  let foundSku = null
+  if (isSkuMode) {
+    foundSku = await skuModel.findOne({
+      sku_spuId: productId,
+      _id: finalSkuId
+    }).lean()
+
+    if (!foundSku) throw new ApiError(StatusCodes.NOT_FOUND, 'SKU does not exists')
   }
+
 
   //thêm stock vào inventory
   const newInven = await inventoryModel.findOneAndUpdate(
     {
       inven_shopId: converter.toObjectId(shopId),
       inven_productId: productId,
-      inven_skuId: skuId
+      inven_skuId: finalSkuId,
+      inven_note: note,
+      inven_reason: resason ? resason : ''
     },
     {
       $inc: { inven_stock: stock }
     },
     { upsert: true, new: true }
   )
-  const prefix = `${PREFIX.INVENTORY_SKU}:${skuId}:stock`
+  const prefix = `${PREFIX.INVENTORY_SKU}:${finalSkuId}:stock`
   const availableStock = newInven.inven_stock - newInven.inven_reserved
 
   const ttl = 3600

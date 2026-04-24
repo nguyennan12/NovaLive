@@ -11,8 +11,8 @@ export const getAllProductsAPI = async ({ page = 1, limit = 10 }) => {
   const response = await authorizedAxiosInstance.get(`product?page=${page}&limit=${limit}`)
   return response.metadata
 }
-export const getAllSkuAPI = async ({ page = 1, limit = 10 }) => {
-  const response = await authorizedAxiosInstance.get(`product/skus?page=${page}&limit=${limit}`)
+export const getAllProductWithStockAPI = async (query) => {
+  const response = await authorizedAxiosInstance.get(`product/skus?${query}`)
   return response.metadata
 }
 

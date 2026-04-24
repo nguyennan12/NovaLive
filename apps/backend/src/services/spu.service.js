@@ -255,7 +255,7 @@ const searchProduct = async ({ keyword, category, minPrice, status, stock, sortB
   }
 }
 
-const getAllProductsWithStockDetails = async ({ page = 1, sort = 'ctime', limit = 50, stock = 'all' }, shopId) => {
+const queryAllProductsWithStockDetails = async ({ page = 1, sort = 'ctime', limit = 50, stock = 'all', keyword = '' }, shopId) => {
   const LOW_STOCK_THRESHOLD = 10;
   const skip = (page - 1) * limit;
   const sortOrder = sort === 'ctime' ? -1 : 1;
@@ -303,7 +303,7 @@ const getAllProductsWithStockDetails = async ({ page = 1, sort = 'ctime', limit 
         }
       }
     }
-  ];
+  ]
 
   if (stock === 'in') {
     pipeline.push({ $match: { total_stock: { $gte: 10 } } });
@@ -311,6 +311,14 @@ const getAllProductsWithStockDetails = async ({ page = 1, sort = 'ctime', limit 
     pipeline.push({ $match: { total_stock: { $gt: 0, $lt: LOW_STOCK_THRESHOLD } } });
   } else if (stock === 'out') {
     pipeline.push({ $match: { total_stock: 0 } });
+  }
+
+  if (keyword !== '') {
+    pipeline.push({
+      $match: {
+        spu_name: { $regex: keyword, $options: 'i' }
+      }
+    })
   }
 
   const [result] = await spuModel.aggregate([
@@ -338,6 +346,7 @@ const getAllProductsWithStockDetails = async ({ page = 1, sort = 'ctime', limit 
   ]);
 
   const totalItems = result.metadata[0]?.totalItems || 0
+  console.log("🚀 ~ queryAllProductsWithStockDetails ~ totalItems:", totalItems)
 
   return {
     items: result.data,
@@ -359,7 +368,7 @@ export default {
   getProductDetail,
   deleteProduct,
   searchProduct,
-  getAllProductsWithStockDetails
+  queryAllProductsWithStockDetails
 }
 
 

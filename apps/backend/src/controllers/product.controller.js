@@ -87,7 +87,7 @@ const getAllSkusWithStock = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Get list sku successfully!',
-    metadata: await spuService.getAllProductsWithStockDetails(req.query, req?.user?.shopId)
+    metadata: await spuService.queryAllProductsWithStockDetails(req.query, req?.user?.shopId)
   }).send(res)
 }
 

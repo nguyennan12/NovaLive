@@ -1,79 +1,16 @@
-import { useState, useMemo } from 'react'
-import { Box, Typography, TextField, Select, MenuItem, InputAdornment, Skeleton, Pagination } from '@mui/material'
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
-import { PRODUCTS } from '../../../../../mockdata/stockdata'
-import StatusBadge from '../shared/StatusBadge'
+import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded'
+import { Box, MenuItem, Pagination, Select, Skeleton, Typography } from '@mui/material'
 import EmptyState from '../shared/EmptyState'
 import SectionCard from '../shared/SectionCard'
-import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded'
-import { useQuery } from '@tanstack/react-query'
-import { getAllSkuAPI } from '~/common/apis/services/productService'
+import StatusBadge from '../shared/StatusBadge'
+import { useState } from 'react'
 
-const getStatus = (qty) => {
-  if (qty <= 0) return 'out'
-  if (qty <= 10) return 'low_stock'
-  return 'in_stock'
-}
 
-const ProductStockList = ({ loading = false }) => {
-  const limit = 10
-  const [page, setPage] = useState(1)
-
-  const { data = [] } = useQuery({
-    queryKey: ['skus', page],
-    queryFn: () => getAllSkuAPI({ limit, page })
-  })
-  const skus = data?.items || []
-  const totalPages = data?.totalPages || 1
+const ProductStockList = ({ loading = false, flattenedSkus, totalPages, params, setParams }) => {
 
   const handlePageChange = (event, value) => {
-    setPage(value)
+    setParams(prev => ({ ...prev, page: value }))
   }
-  const [search, setSearch] = useState('')
-  const [filter, setFilter] = useState('all')
-
-  const flattenedSkus = useMemo(() => {
-    const list = []
-    skus.forEach(spu => {
-      if (spu.has_variations && spu.variation_stocks?.length > 0) {
-        spu.variation_stocks.forEach(sku => {
-          list.push({
-            id: sku.sku_id,
-            spu_id: spu._id,
-            spu_name: spu.spu_name,
-            spu_code: spu.spu_code,
-            sku_name: sku.sku_name || Object.values(sku.attributes || {}).join(' - ') || 'Variation',
-            sku_code: sku.sku_code,
-            stock: sku.stock,
-            attributes: sku.attributes
-          })
-        })
-      } else {
-        list.push({
-          id: spu._id,
-          spu_id: spu._id,
-          spu_name: spu.spu_name,
-          spu_code: spu.spu_code,
-          sku_name: 'No variation',
-          sku_code: 'N/A',
-          stock: spu.total_stock,
-          attributes: []
-        })
-      }
-    })
-    return list
-  }, [skus])
-
-  const filtered = useMemo(() => {
-    return flattenedSkus.filter((p) => {
-      const matchSearch = p.spu_name?.toLowerCase().includes(search.toLowerCase()) ||
-        p.spu_code?.toLowerCase().includes(search.toLowerCase()) ||
-        p.sku_name?.toLowerCase().includes(search.toLowerCase())
-      const status = getStatus(p.stock)
-      const matchFilter = filter === 'all' || status === filter
-      return matchSearch && matchFilter
-    })
-  }, [flattenedSkus, search, filter])
 
   const selectSx = {
     fontSize: '0.78rem',
@@ -81,43 +18,27 @@ const ProductStockList = ({ loading = false }) => {
     borderRadius: '8px',
     minWidth: 130,
     '& fieldset': { borderColor: '#eeeeee' },
-    '&:hover fieldset': { borderColor: '#3485f7' },
-    '&.Mui-focused fieldset': { borderColor: '#3485f7' }
+    '&:hover fieldset': { borderColor: '#secondary.main' },
+    '&.Mui-focused fieldset': { borderColor: '#secondary.main' }
   }
 
   return (
     <SectionCard
       title='Product Stock'
-      subtitle={`${filtered.length} products`}
+      subtitle={`${flattenedSkus.length} products`}
       action={
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <TextField
-            size='small'
-            placeholder='Search name / SKU...'
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchRoundedIcon sx={{ fontSize: 15, color: '#9ca3af' }} />
-                  </InputAdornment>
-                )
-              }
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': { fontSize: '0.78rem', height: 34, borderRadius: '8px', '& fieldset': { borderColor: '#eeeeee' } }
-            }}
-          />
           <Select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            value={params.stock}
+            onChange={(e) => {
+              return setParams(prev => ({ ...prev, stock: e.target.value }))
+            }}
             size='small'
             sx={selectSx}
           >
             <MenuItem value='all' sx={{ fontSize: '0.78rem' }}>All Status</MenuItem>
-            <MenuItem value='in_stock' sx={{ fontSize: '0.78rem' }}>In Stock</MenuItem>
-            <MenuItem value='low_stock' sx={{ fontSize: '0.78rem' }}>Low Stock</MenuItem>
+            <MenuItem value='in' sx={{ fontSize: '0.78rem' }}>In Stock</MenuItem>
+            <MenuItem value='low' sx={{ fontSize: '0.78rem' }}>Low Stock</MenuItem>
             <MenuItem value='out' sx={{ fontSize: '0.78rem' }}>Out of Stock</MenuItem>
           </Select>
         </Box>
@@ -143,7 +64,6 @@ const ProductStockList = ({ loading = false }) => {
         ))}
       </Box>
 
-      {/* Rows */}
       {loading ? (
         Array.from({ length: 5 }).map((_, i) => (
           <Box key={i} sx={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 1, px: 1.5, py: 1.25, borderBottom: '1px solid #f3f4f6' }}>
@@ -152,10 +72,10 @@ const ProductStockList = ({ loading = false }) => {
             ))}
           </Box>
         ))
-      ) : filtered.length === 0 ? (
+      ) : flattenedSkus.length === 0 ? (
         <EmptyState icon={InventoryRoundedIcon} title='No products found' subtitle='Try changing the filters' />
       ) : (
-        filtered.map((p) => {
+        flattenedSkus.map((p) => {
           return <Box
             key={p.id}
             sx={{
@@ -199,7 +119,7 @@ const ProductStockList = ({ loading = false }) => {
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 2 }}>
         <Pagination
           count={totalPages}
-          page={page}
+          page={params.page}
           onChange={handlePageChange}
           color="primary"
         />
