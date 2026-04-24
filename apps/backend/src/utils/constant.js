@@ -70,3 +70,5 @@ export const PREFIX = {
   LIVE_SPAM: 'live_spam',
   SHIPPING_FEE: 'shipping_fee'
 }
+
+export const LOW_STOCK_THRESHOLD = 10

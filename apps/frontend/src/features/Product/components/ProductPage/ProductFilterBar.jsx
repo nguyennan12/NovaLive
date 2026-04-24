@@ -3,7 +3,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import { useSelector } from 'react-redux'
 import { selectCategories } from '~/common/redux/product/categorySlice'
-import { useState } from 'react'
+import { useFormContext, Controller } from 'react-hook-form'
 
 const selectSx = {
   fontSize: '0.8rem',
@@ -24,13 +24,8 @@ const menuItemSx = { fontSize: '0.8rem' }
 
 const ProductFilterBar = () => {
   const categories = useSelector(selectCategories)
-  const [filters, setFilters] = useState({
-    category: 'all',
-    stock: 'all',
-    status: 'all',
-    sort: 'newest'
-  })
-  console.log('🚀 ~ ProductFilterBar ~ filters:', filters)
+  const { control, register } = useFormContext()
+
   return (
     <Box
       sx={{
@@ -43,6 +38,7 @@ const ProductFilterBar = () => {
     >
       {/* Search */}
       <TextField
+        {...register('keyword')}
         placeholder='Search by name or SKU...'
         size='small'
         slotProps={{
@@ -76,49 +72,64 @@ const ProductFilterBar = () => {
       </Box>
 
       {/* Category */}
-      <Select defaultValue='all'
-        value={filters.category}
-        onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-        sx={selectSx}>
-        <MenuItem value='all' sx={menuItemSx}>All Categories</MenuItem>
-        {categories?.map((cate) => (
-          <MenuItem key={cate.id} value={cate.cat_name} sx={menuItemSx}>
-            {cate.cat_name}
-          </MenuItem>
-        ))}
-      </Select>
+      <Controller
+        name="category"
+        control={control}
+        render={({ field }) => (
+          <Select {...field} sx={selectSx}>
+            <MenuItem value='all' sx={menuItemSx}>All Categories</MenuItem>
+            {categories?.map((cate) => (
+              <MenuItem key={cate.id || cate._id} value={cate.cat_slug} sx={menuItemSx}>
+                {cate.cat_name}
+              </MenuItem>
+            ))}
+          </Select>
+        )}
+      />
 
       {/* Stock status */}
-      <Select defaultValue='all'
-        onChange={(e) => setFilters(prev => ({ ...prev, stock: e.target.value }))}
-        sx={selectSx}>
-        <MenuItem value='all' sx={menuItemSx}>All Stock</MenuItem>
-        <MenuItem value='in' sx={menuItemSx}>In Stock</MenuItem>
-        <MenuItem value='low' sx={menuItemSx}>Low Stock</MenuItem>
-        <MenuItem value='out' sx={menuItemSx}>Out of Stock</MenuItem>
-      </Select>
+      <Controller
+        name="stock"
+        control={control}
+        render={({ field }) => (
+          <Select {...field} sx={selectSx}>
+            <MenuItem value='all' sx={menuItemSx}>All Stock</MenuItem>
+            <MenuItem value='in' sx={menuItemSx}>In Stock</MenuItem>
+            <MenuItem value='low' sx={menuItemSx}>Low Stock</MenuItem>
+            <MenuItem value='out' sx={menuItemSx}>Out of Stock</MenuItem>
+          </Select>
+        )}
+      />
 
-      {/* Discount */}
-      <Select defaultValue='all'
-        onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-        sx={selectSx}>
-        <MenuItem value='all' sx={menuItemSx}>Status</MenuItem>
-        <MenuItem value='publish' sx={menuItemSx}>Publish</MenuItem>
-        <MenuItem value='draft' sx={menuItemSx}>Draft</MenuItem>
-        <MenuItem value='sold out' sx={menuItemSx}>Sold out</MenuItem>
-      </Select>
+      {/* Status */}
+      <Controller
+        name="status"
+        control={control}
+        render={({ field }) => (
+          <Select {...field} sx={selectSx}>
+            <MenuItem value='all' sx={menuItemSx}>Status</MenuItem>
+            <MenuItem value='published' sx={menuItemSx}>Publish</MenuItem>
+            <MenuItem value='draft' sx={menuItemSx}>Draft</MenuItem>
+            <MenuItem value='sold out' sx={menuItemSx}>Sold out</MenuItem>
+          </Select>
+        )}
+      />
 
       {/* Sort */}
-      <Select defaultValue='newest'
-        onChange={(e) => setFilters(prev => ({ ...prev, sort: e.target.value }))}
-        sx={{ ...selectSx, minWidth: 140 }}>
-        <MenuItem value='newest' sx={menuItemSx}>Newest First</MenuItem>
-        <MenuItem value='name_az' sx={menuItemSx}>Name A → Z</MenuItem>
-        <MenuItem value='price_asc' sx={menuItemSx}>Price ↑</MenuItem>
-        <MenuItem value='price_desc' sx={menuItemSx}>Price ↓</MenuItem>
-      </Select>
+      <Controller
+        name="sort"
+        control={control}
+        render={({ field }) => (
+          <Select {...field} sx={{ ...selectSx, minWidth: 140 }}>
+            <MenuItem value='newest' sx={menuItemSx}>Newest First</MenuItem>
+            <MenuItem value='name_az' sx={menuItemSx}>Name A → Z</MenuItem>
+            <MenuItem value='price_asc' sx={menuItemSx}>Price ↑</MenuItem>
+            <MenuItem value='price_desc' sx={menuItemSx}>Price ↓</MenuItem>
+          </Select>
+        )}
+      />
     </Box>
   )
 }
 
-export default ProductFilterBar
+export default ProductFilterBar

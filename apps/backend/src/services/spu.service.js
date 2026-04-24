@@ -13,6 +13,7 @@ import { StatusCodes } from 'http-status-codes'
 import skuService from './sku.service.js'
 import { getMinPriceFromSkus, getTotalStockFromSkus } from '#utils/data.js'
 import { validateProductOwnership } from '#helpers/spu.helper.js'
+import { LOW_STOCK_THRESHOLD } from '#utils/constant.js'
 
 const createSpu = async ({ reqBody, userId }) => {
   const {
@@ -171,7 +172,7 @@ const deleteProduct = async ({ productId, userId }) => {
   return result
 }
 
-const searchProduct = async ({ keyword, category, minPrice, maxPrice, page = 1, limit = 20 }) => {
+const searchProduct = async ({ keyword, category, minPrice, status, stock, sortBy, sortOrder = 'desc', maxPrice, page = 1, limit = 20 }) => {
   const must = []
   const filter = []
   if (keyword) {
@@ -185,13 +186,39 @@ const searchProduct = async ({ keyword, category, minPrice, maxPrice, page = 1, 
   }
 
   if (category) filter.push({ term: { spu_category: category } })
+  if (status) {
+    filter.push({ term: { isPublished: status === 'published' ? true : false } })
+  } else {
+    filter.push({ term: { isPublished: true } })
+  }
+  if (stock) {
+    if (stock === 'in') filter.push({ range: { spu_quantity: { gte: 10 } } })
+    else if (stock === 'low') filter.push({ range: { spu_quantity: { gt: 0, lt: LOW_STOCK_THRESHOLD } } })
+    else if (stock === 'out') filter.push({ term: { spu_quantity: 0 } })
+    else filter.push({ range: { spu_quantity: { gt: 0 } } })
+  }
+
+  let sortParams = []
+  const orderDirection = sortOrder === 'asc' ? 'asc' : 'desc';
+
+  if (sortBy === 'price') { sortParams.push({ spu_price: orderDirection }) }
+  else if (sortBy === 'time') { sortParams.push({ createdAt: orderDirection }); }
+  else if (sortBy === 'name') { sortParams.push({ 'spu_name.keyword': orderDirection }) }
+  else {
+    if (keyword) {
+      sortParams.push({ _score: 'desc' });
+    } else {
+      sortParams.push({ createdAt: 'desc' });
+    }
+  }
+
   if (minPrice || maxPrice) {
     const rangeQuery = { range: { spu_price: {} } }
     if (minPrice) rangeQuery.range.spu_price.gte = minPrice
     if (maxPrice) rangeQuery.range.spu_price.lte = maxPrice
     filter.push(rangeQuery)
   }
-  filter.push({ term: { isPublished: true } })
+
   filter.push({ term: { isDeleted: false } })
 
   const result = await ElasticClient.search({
@@ -199,13 +226,18 @@ const searchProduct = async ({ keyword, category, minPrice, maxPrice, page = 1, 
     query: { bool: { must, filter } },
     from: (page - 1) * limit,
     size: limit,
-    sort: { createdAt: 'desc' }, _source: ['mongo_id', 'spu_name', 'spu_price', 'spu_thumb', 'spu_ratingsAvg', 'spu_category']
+    sort: sortParams,
+    _source: ['mongo_id', 'spu_thumb', 'spu_name', 'spu_price', 'spu_ratingsAvg', 'spu_category', 'spu_code', 'spu_quantity']
   })
+  const totalItems = typeof result.hits.total === 'object' ? result.hits.total.value : result.hits.total;
+  const totalPages = Math.ceil(totalItems / limit);
+
   return {
-    total: result.hits.total.valueOf,
-    page,
-    limit,
-    products: result.hits.hits.map(hit => hit._source)
+    products: result.hits.hits.map(hit => hit._source),
+    totalItems,
+    totalPages,
+    currentPage: page,
+    limit
   }
 }
 

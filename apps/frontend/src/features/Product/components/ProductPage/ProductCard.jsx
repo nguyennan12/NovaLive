@@ -4,6 +4,7 @@ import { formatVND } from '~/common/utils/formatters'
 import { getStockStatus } from '~/common/utils/formatters'
 import { useNavigate } from 'react-router-dom'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft'
 
 const stockConfig = {
   in: { label: 'In Stock', color: '#4ade80' },
@@ -68,11 +69,24 @@ const ProductCard = ({ product }) => {
               height: 32,
               transition: 'width 0.3s ease-in-out',
               '&:hover': {
-                width: 68
+                width: 100
               }
             }}
           >
-            <Tooltip title='Edit' placement="top">
+            <IconButton
+              size='small'
+              sx={{
+                width: 32,
+                height: 32,
+                flexShrink: 0,
+                borderRadius: '50%',
+                '&:hover': { bgcolor: '#c6ecff' }
+              }}
+            >
+              <ArrowLeftIcon sx={{ fontSize: 20, color: 'secondary.main' }} />
+            </IconButton>
+
+            <Tooltip title='update' placement="top">
               <IconButton
                 size='small'
                 onClick={() => navigate(`/products/form/${product.spu_code}`)}
@@ -87,7 +101,6 @@ const ProductCard = ({ product }) => {
                 <EditOutlinedIcon sx={{ fontSize: 16, color: 'secondary.main' }} />
               </IconButton>
             </Tooltip>
-
             <Tooltip title='Delete' placement="top">
               <IconButton
                 size='small'

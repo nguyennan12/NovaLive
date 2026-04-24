@@ -17,12 +17,19 @@ export const deleteProductAPI = async (productId) => {
   return response.metadata
 }
 
-export const updateProductAPI = async (data) => {
-  const response = await authorizedAxiosInstance.patch('product', data)
+export const updateProductAPI = async (productId, data) => {
+  console.log(data)
+  const response = await authorizedAxiosInstance.patch(`product/${productId}`, data)
+  toast.success(`${response.message}`)
   return response.metadata
 }
 
 export const getProductDetailAPI = async (productId) => {
   const response = await authorizedAxiosInstance.get(`product/${productId}`)
+  return response.metadata
+}
+
+export const queryProductAPI = async (query) => {
+  const response = await authorizedAxiosInstance.get(`product/search?${query}`)
   return response.metadata
 }

@@ -1,20 +1,46 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Box, Typography, Pagination } from '@mui/material'
 import ProductCard from './ProductCard'
-import { getAllProductsAPI } from '~/common/apis/services/productService'
+import { queryProductAPI } from '~/common/apis/services/productService'
 import { useQuery } from '@tanstack/react-query'
-
+import { useFormContext, useWatch } from 'react-hook-form'
+import { buildQueryParams } from '~/common/utils/builder'
 
 const ProductList = () => {
-
   const [page, setPage] = useState(1)
   const limit = 8
 
-  const { data = [] } = useQuery({
-    queryKey: ['products', page],
-    queryFn: () => getAllProductsAPI({ page, limit })
-  })
+  const { control } = useFormContext()
+  const filters = useWatch({ control })
 
+  const [debouncedKeyword, setDebouncedKeyword] = useState(filters?.keyword || '')
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedKeyword(filters?.keyword || '')
+      setPage(1)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [filters?.keyword])
+
+  useEffect(() => {
+    setPage(1)
+  }, [filters?.category, filters?.status, filters?.stock, filters?.sort])
+
+  const params = buildQueryParams(filters || {})
+  params.page = page
+  params.limit = limit
+  if (debouncedKeyword) {
+    params.keyword = debouncedKeyword
+  }
+
+  const queryString = new URLSearchParams(params).toString()
+  console.log(queryString)
+  const { data = [] } = useQuery({
+    queryKey: ['products', queryString],
+    queryFn: () => queryProductAPI(queryString)
+  })
+  console.log(data)
   const products = data?.products || []
   const totalPages = data?.totalPages || 1
   const totalItems = data?.totalItems || 0
@@ -22,6 +48,7 @@ const ProductList = () => {
   const handlePageChange = (event, value) => {
     setPage(value)
   }
+
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>

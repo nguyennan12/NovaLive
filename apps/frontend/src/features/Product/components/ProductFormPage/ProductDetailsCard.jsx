@@ -101,7 +101,7 @@ export default function ProductDetailsCard() {
                 multiple
                 size="small"
                 options={categories || []}
-                value={selectedObjects}
+                value={selectedObjects || []}
                 isOptionEqualToValue={(opt, val) => opt.cat_slug === val.cat_slug}
                 getOptionLabel={(opt) => opt?.cat_name || ''}
                 onChange={(_, newObjects) => field.onChange((newObjects || []).map((c) => c.cat_slug))}
@@ -153,9 +153,9 @@ export default function ProductDetailsCard() {
           </Typography>
 
           <Box sx={{ p: 1, background: 'primary.contrastText', borderRadius: 2.5, border: '2px solid secondary.contrastText' }}>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-evenly', gap: 1 }} container spacing={2}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-evenly', gap: 1 }}>
               {sortedAttrs.map((attr) => (
-                <Grid item xs="auto" key={attr.attr_id}>
+                <Box key={attr.attr_id}>
                   <Box sx={{ width: { xs: '100px', sm: '200px' }, display: 'flex', flexDirection: 'column', gap: 0.5, justifyContent: 'space-between' }}>
                     <Typography variant="caption" color="text.secondary" display="block" mb={0.75}>
                       {attr.attr_name} {attr.isRequired ? '*' : ''}
@@ -262,7 +262,7 @@ export default function ProductDetailsCard() {
                     />
                   </Box>
 
-                </Grid>
+                </Box>
               ))}
             </Box>
           </Box>

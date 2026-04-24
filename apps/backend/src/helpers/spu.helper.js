@@ -16,6 +16,7 @@ export const transformSPUtoES = (doc) => {
     spu_quantity: doc.spu_quantity,
     spu_category: doc.spu_category,
     spu_ratingsAvg: doc.spu_ratingsAvg,
+    spu_thumb: doc.spu_thumb,
     spu_shopId: doc.spu_shopId?.toString(),
 
     spu_attributes: doc.spu_attributes?.map(attr => ({

@@ -3,7 +3,7 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import { Autocomplete, Box, Button, Chip, Grid, IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
-import { generateCombinations } from '~/common/utils/formatters'
+import { generateCombinations } from '~/common/utils/generator'
 
 export default function ProductVariantsCard() {
 

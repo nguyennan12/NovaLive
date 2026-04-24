@@ -28,6 +28,7 @@ export default function GeneralTab() {
               <>
                 <TextField
                   {...field}
+                  value={field.value ?? ""}
                   fullWidth
                   size="small"
                   placeholder="Enter product name"

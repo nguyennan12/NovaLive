@@ -6,27 +6,6 @@ export const formatDuration = (seconds) => {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '00')}`
 }
 
-export const generateCombinations = (variations) => {
-  const validVars = variations.filter(v => v.name?.trim() && v.options?.length > 0)
-  if (validVars.length === 0) return []
-
-  let results = [{ options: [], indices: [] }]
-
-  validVars.forEach((v) => {
-    const nextResults = []
-    results.forEach(res => {
-      v.options.forEach((opt, oIdx) => {
-        nextResults.push({
-          options: [...res.options, opt], // (Đỏ, S)
-          indices: [...res.indices, oIdx] // ( 0, 1)
-        })
-      })
-    })
-    results = nextResults
-  })
-  return results
-}
-
 export function formatValue(type, value) {
   if (type === 'percentage') return `${value}%`
   if (value >= 1000) return `${Math.round(value / 1000)}k ₫`
@@ -57,3 +36,17 @@ export const getStockStatus = (stock) => {
   if (stock <= 10) return 'low'
   return 'in'
 }
+
+export const formatStringToSlug = (text) => {
+  if (!text) return '';
+
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+};

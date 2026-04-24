@@ -6,20 +6,20 @@ import { Box, Breadcrumbs, Button, Link, Paper, Typography } from '@mui/material
 import { FormProvider, useForm } from 'react-hook-form'
 import { Link as RouterLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { addProductAPI } from '~/common/apis/services/productService'
+import { addProductAPI, getProductDetailAPI, updateProductAPI } from '~/common/apis/services/productService'
 import AdvanceTab from '../components/ProductFormPage/AdvanceTab'
 import GeneralTab from '../components/ProductFormPage/GeneralTab'
 import StatusCard from '../components/ProductFormPage/StatusCard'
 import ThumbnailUpload from '../components/ProductFormPage/ThumbnailUpload'
 import { useParams } from 'react-router-dom'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { getProductDetailAPI } from '~/common/apis/services/productService'
 
 const ProductFormPage = () => {
   const methods = useForm({ mode: 'onBlur' })
   const { handleSubmit, reset } = methods
+  const queryClient = useQueryClient()
 
   const { id } = useParams()
   const isUpdate = !!id
@@ -50,10 +50,9 @@ const ProductFormPage = () => {
       isPublished: published,
       spu_shopId: '69e364dfdf24f31846f15580'
     }
-    toast.promise(addProductAPI(payload), { pending: 'Creating...' })
-      .then(() => {
-        // methods.reset()
-      })
+    isUpdate === true
+      ? toast.promise(updateProductAPI(product._id, payload), { pending: 'Updating...' })
+      : toast.promise(addProductAPI(payload), { pending: 'Creating...' })
   }
 
 
