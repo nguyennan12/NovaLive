@@ -10,6 +10,7 @@ const Router = express.Router()
 Router.get('/search', asyncHandler(productController.searchProduct))
 Router.get('/variation', asyncHandler(productController.getOneSku))
 Router.get('/variations/:spuId', asyncHandler(productController.getAllSkuBySpuId))
+Router.get('/skus', asyncHandler(productController.getAllSkusWithStock))
 Router.get('/', asyncHandler(productController.getAllProducts))
 Router.get('/:productId', asyncHandler(productController.getProductDetail))
 //  === Authentication ===
@@ -17,6 +18,7 @@ Router.use(authentication)
 // === Shop ===
 Router.get('/me/public', asyncHandler(productController.getPublishedProduct))
 Router.get('/me/draft', asyncHandler(productController.getDraftProduct))
+
 
 //Router.post('', validate(productValidation.create), grantAcess('createAny', 'product'), asyncHandler(productController.createProduct))
 Router.post('/', asyncHandler(productController.createProduct))

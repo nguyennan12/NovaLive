@@ -74,7 +74,8 @@ const updateProduct = async ({ productId, reqBody, userId }) => {
     const updatedSkus = await skuService.updateSkuBySpuId({
       spuId: foundProduct._id,
       spuCode: foundProduct.spu_code,
-      skuList: reqBody.sku_list
+      skuList: reqBody.sku_list,
+      isPublished: isPublished,
     })
     //set lại giá khi đã update sku
     reqBody.spu_price = getMinPriceFromSkus(updatedSkus)
@@ -135,8 +136,8 @@ const getDraftProduct = async ({ userId, limit = 50, page = 1 }) => {
   return await spuRepo.findAllProducts({ limit, page, filter })
 }
 
-const getAllProducts = async ({ limit = 50, sort = 'ctime', page = 1 }) => {
-  const filter = { isPublished: true, isDeleted: false }
+const getAllProducts = async ({ limit = 50, sort = 'ctime', page = 1 }, shopId) => {
+  const filter = { isPublished: true, isDeleted: false, ...(shopId && { shopId }) }
   const select = ['spu_name', 'spu_code', 'spu_price', 'spu_thumb', 'spu_quantity']
   const limitNumber = Number(limit)
   const pageNumber = Number(page)
@@ -254,6 +255,99 @@ const searchProduct = async ({ keyword, category, minPrice, status, stock, sortB
   }
 }
 
+const getAllProductsWithStockDetails = async ({ page = 1, sort = 'ctime', limit = 50, stock = 'all' }, shopId) => {
+  const LOW_STOCK_THRESHOLD = 10;
+  const skip = (page - 1) * limit;
+  const sortOrder = sort === 'ctime' ? -1 : 1;
+
+  const matchFilter = { isPublished: true, isDeleted: false };
+  if (shopId) {
+    matchFilter.shopId = new mongoose.Types.ObjectId(shopId);
+  }
+
+  const pipeline = [
+    { $match: matchFilter },
+    {
+      $lookup: {
+        from: 'Skus',
+        localField: '_id',
+        foreignField: 'sku_spuId',
+        as: 'skus_array'
+      }
+    },
+    {
+      $addFields: {
+        has_variations: {
+          $gt: [{ $size: { $ifNull: ["$skus_array", []] } }, 0]
+        },
+        total_stock: {
+          $cond: {
+            if: { $eq: [{ $size: { $ifNull: ["$skus_array", []] } }, 0] },
+            then: { $ifNull: ["$spu_quantity", 0] },
+            else: { $sum: "$skus_array.sku_stock" }
+          }
+        },
+
+        variation_stocks: {
+          $map: {
+            input: "$skus_array",
+            as: "sku",
+            in: {
+              sku_id: "$$sku._id",
+              sku_code: "$$sku.sku_id",
+              sku_name: "$$sku.sku_name",
+              stock: "$$sku.sku_stock",
+              attributes: "$$sku.sku_attributes"
+            }
+          }
+        }
+      }
+    }
+  ];
+
+  if (stock === 'in') {
+    pipeline.push({ $match: { total_stock: { $gte: 10 } } });
+  } else if (stock === 'low') {
+    pipeline.push({ $match: { total_stock: { $gt: 0, $lt: LOW_STOCK_THRESHOLD } } });
+  } else if (stock === 'out') {
+    pipeline.push({ $match: { total_stock: 0 } });
+  }
+
+  const [result] = await spuModel.aggregate([
+    ...pipeline,
+    {
+      $facet: {
+        metadata: [{ $count: "totalItems" }],
+        data: [
+          { $sort: { _id: sortOrder } },
+          { $skip: skip },
+          { $limit: Number(limit) },
+          {
+            $project: {
+              _id: 1,
+              spu_name: 1,
+              spu_code: 1,
+              has_variations: 1,
+              total_stock: 1,
+              variation_stocks: 1
+            }
+          }
+        ]
+      }
+    }
+  ]);
+
+  const totalItems = result.metadata[0]?.totalItems || 0
+
+  return {
+    items: result.data,
+    totalItems,
+    totalPages: Math.ceil(totalItems / limit),
+    currentPage: Number(page),
+    limit: Number(limit)
+  }
+}
+
 export default {
   createSpu,
   updateProduct,
@@ -264,7 +358,8 @@ export default {
   getAllProducts,
   getProductDetail,
   deleteProduct,
-  searchProduct
+  searchProduct,
+  getAllProductsWithStockDetails
 }
 
 

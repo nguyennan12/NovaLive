@@ -8,12 +8,7 @@ const SectionCard = ({ title, subtitle, action, children, sx = {} }) => (
       overflow: 'hidden',
       boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
       transition: 'box-shadow 0.18s',
-      maxHeight: '550px',
-      overflowY: 'auto',
       '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.07)' },
-      scrollbarWidth: '-moz-initial',
-      '&::-webkit-scrollbar': { width: '2px' },
-      '&::-webkit-scrollbar-thumb': { bgcolor: '#d1d5db', borderRadius: '4px' },
       ...sx
     }}
   >

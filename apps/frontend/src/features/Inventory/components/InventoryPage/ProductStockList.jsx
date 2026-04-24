@@ -1,11 +1,13 @@
 import { useState, useMemo } from 'react'
-import { Box, Typography, TextField, Select, MenuItem, InputAdornment, Skeleton } from '@mui/material'
+import { Box, Typography, TextField, Select, MenuItem, InputAdornment, Skeleton, Pagination } from '@mui/material'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import { PRODUCTS } from '../../../../../mockdata/stockdata'
 import StatusBadge from '../shared/StatusBadge'
 import EmptyState from '../shared/EmptyState'
 import SectionCard from '../shared/SectionCard'
 import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded'
+import { useQuery } from '@tanstack/react-query'
+import { getAllSkuAPI } from '~/common/apis/services/productService'
 
 const getStatus = (qty) => {
   if (qty <= 0) return 'out'
@@ -14,18 +16,64 @@ const getStatus = (qty) => {
 }
 
 const ProductStockList = ({ loading = false }) => {
+  const limit = 10
+  const [page, setPage] = useState(1)
+
+  const { data = [] } = useQuery({
+    queryKey: ['skus', page],
+    queryFn: () => getAllSkuAPI({ limit, page })
+  })
+  const skus = data?.items || []
+  const totalPages = data?.totalPages || 1
+
+  const handlePageChange = (event, value) => {
+    setPage(value)
+  }
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
 
+  const flattenedSkus = useMemo(() => {
+    const list = []
+    skus.forEach(spu => {
+      if (spu.has_variations && spu.variation_stocks?.length > 0) {
+        spu.variation_stocks.forEach(sku => {
+          list.push({
+            id: sku.sku_id,
+            spu_id: spu._id,
+            spu_name: spu.spu_name,
+            spu_code: spu.spu_code,
+            sku_name: sku.sku_name || Object.values(sku.attributes || {}).join(' - ') || 'Variation',
+            sku_code: sku.sku_code,
+            stock: sku.stock,
+            attributes: sku.attributes
+          })
+        })
+      } else {
+        list.push({
+          id: spu._id,
+          spu_id: spu._id,
+          spu_name: spu.spu_name,
+          spu_code: spu.spu_code,
+          sku_name: 'No variation',
+          sku_code: 'N/A',
+          stock: spu.total_stock,
+          attributes: []
+        })
+      }
+    })
+    return list
+  }, [skus])
+
   const filtered = useMemo(() => {
-    return PRODUCTS.filter((p) => {
-      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.sku.toLowerCase().includes(search.toLowerCase())
+    return flattenedSkus.filter((p) => {
+      const matchSearch = p.spu_name?.toLowerCase().includes(search.toLowerCase()) ||
+        p.spu_code?.toLowerCase().includes(search.toLowerCase()) ||
+        p.sku_name?.toLowerCase().includes(search.toLowerCase())
       const status = getStatus(p.stock)
       const matchFilter = filter === 'all' || status === filter
       return matchSearch && matchFilter
     })
-  }, [search, filter])
+  }, [flattenedSkus, search, filter])
 
   const selectSx = {
     fontSize: '0.78rem',
@@ -48,12 +96,14 @@ const ProductStockList = ({ loading = false }) => {
             placeholder='Search name / SKU...'
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <SearchRoundedIcon sx={{ fontSize: 15, color: '#9ca3af' }} />
-                </InputAdornment>
-              )
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchRoundedIcon sx={{ fontSize: 15, color: '#9ca3af' }} />
+                  </InputAdornment>
+                )
+              }
             }}
             sx={{
               '& .MuiOutlinedInput-root': { fontSize: '0.78rem', height: 34, borderRadius: '8px', '& fieldset': { borderColor: '#eeeeee' } }
@@ -105,8 +155,8 @@ const ProductStockList = ({ loading = false }) => {
       ) : filtered.length === 0 ? (
         <EmptyState icon={InventoryRoundedIcon} title='No products found' subtitle='Try changing the filters' />
       ) : (
-        filtered.map((p) => (
-          <Box
+        filtered.map((p) => {
+          return <Box
             key={p.id}
             sx={{
               display: 'grid',
@@ -122,12 +172,12 @@ const ProductStockList = ({ loading = false }) => {
           >
             <Box>
               <Typography sx={{ fontSize: '0.82rem', fontWeight: 600, color: '#2d2d2d', lineHeight: 1.3 }}>
-                {p.name}
+                {p.spu_name}
               </Typography>
-              <Typography sx={{ fontSize: '0.7rem', color: '#9ca3af' }}>{p.brand}</Typography>
+              <Typography sx={{ fontSize: '0.7rem', color: '#9ca3af' }}>{p.sku_name}</Typography>
             </Box>
             <Typography sx={{ fontSize: '0.78rem', color: '#6b7280', alignSelf: 'center', fontFamily: 'monospace' }}>
-              {p.sku}
+              {p.sku_code !== 'N/A' ? p.sku_code : p.spu_code}
             </Typography>
             <Typography
               sx={{
@@ -142,9 +192,19 @@ const ProductStockList = ({ loading = false }) => {
             <Box sx={{ alignSelf: 'center' }}>
               <StatusBadge qty={p.stock} />
             </Box>
-          </Box>
-        ))
+          </Box>;
+        })
       )}
+
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 2 }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
+
     </SectionCard>
   )
 }

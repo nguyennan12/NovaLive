@@ -62,12 +62,12 @@ const InventoryPage = () => (
     </Box>
 
     <Grid container spacing={2}>
-      {/* Row 1: Chart – full width */}
+
       <Grid size={12}>
         <StockOverviewChart />
       </Grid>
 
-      {/* Row 2: Stock In / Stock Out – 2 cols */}
+  
       <Grid size={{ xs: 12, md: 6 }}>
         <StockInForm />
       </Grid>
@@ -75,7 +75,6 @@ const InventoryPage = () => (
         <StockOutForm />
       </Grid>
 
-      {/* Row 3: Product list + Reserved */}
       <Grid size={{ xs: 12, lg: 7 }}>
         <ProductStockList />
       </Grid>
@@ -83,7 +82,6 @@ const InventoryPage = () => (
         <ReservedStock />
       </Grid>
 
-      {/* Row 4: History – full width */}
       <Grid size={12}>
         <StockHistory />
       </Grid>
