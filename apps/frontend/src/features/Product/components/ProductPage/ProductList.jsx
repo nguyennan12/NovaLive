@@ -19,7 +19,7 @@ const ProductList = () => {
     const timer = setTimeout(() => {
       setDebouncedKeyword(filters?.keyword || '')
       setPage(1)
-    }, 500)
+    }, 300)
     return () => clearTimeout(timer)
   }, [filters?.keyword])
 
@@ -35,12 +35,12 @@ const ProductList = () => {
   }
 
   const queryString = new URLSearchParams(params).toString()
-  console.log(queryString)
   const { data = [] } = useQuery({
     queryKey: ['products', queryString],
     queryFn: () => queryProductAPI(queryString)
   })
-  console.log(data)
+
+
   const products = data?.products || []
   const totalPages = data?.totalPages || 1
   const totalItems = data?.totalItems || 0

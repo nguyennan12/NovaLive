@@ -5,6 +5,12 @@ import { getStockStatus } from '~/common/utils/formatters'
 import { useNavigate } from 'react-router-dom'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft'
+import { toast } from 'react-toastify'
+import { deleteProductAPI } from '~/common/apis/services/productService'
+import ConfirmDialog from '~/common/components/common/form/ConfirmDialog'
+import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+
 
 const stockConfig = {
   in: { label: 'In Stock', color: '#4ade80' },
@@ -15,7 +21,20 @@ const stockConfig = {
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate()
+  const [openDialog, setOpenDialog] = useState(false)
+  const [selectedId, setSelectedId] = useState(null)
   const stock = stockConfig[getStockStatus(product.spu_quantity)] || stockConfig['in']
+  const queryClient = useQueryClient()
+
+  const handleDelete = async () => {
+    await toast.promise(deleteProductAPI(selectedId), { pending: 'Deleting...' })
+    setOpenDialog(false)
+    setSelectedId(null)
+    await queryClient.refetchQueries({
+      queryKey: ['products'],
+      type: 'active'
+    })
+  }
   return (
     <Box
       sx={{
@@ -104,7 +123,10 @@ const ProductCard = ({ product }) => {
             <Tooltip title='Delete' placement="top">
               <IconButton
                 size='small'
-                onClick={() => { }}
+                onClick={() => {
+                  setSelectedId(product.mongo_id)
+                  setOpenDialog(true)
+                }}
                 sx={{
                   width: 32,
                   height: 32,
@@ -167,7 +189,16 @@ const ProductCard = ({ product }) => {
         </Box>
 
       </Box>
-    </Box>
+
+      <ConfirmDialog
+        open={openDialog}
+        title="Xác nhận xóa sản phẩm"
+        content="Bạn có chắc chắn muốn xóa sản phẩm này không? Hành động này không thể hoàn tác."
+        confirmText="Xóa sản phẩm"
+        onConfirm={handleDelete}
+        onClose={() => setOpenDialog(false)}
+      />
+    </Box >
   )
 }
 

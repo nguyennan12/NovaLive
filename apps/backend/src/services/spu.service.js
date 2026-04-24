@@ -163,13 +163,14 @@ const getProductDetail = async ({ productId }) => {
 
 const deleteProduct = async ({ productId, userId }) => {
   const { foundProduct } = await validateProductOwnership({ productId, userId })
-  const result = await spuRepo.deleteProduct(foundProduct.spu_code)
-  if (!result) throw new ApiError(StatusCodes.BAD_REQUEST, 'Operation failed')
-  await ElasticClient.delete({
-    index: ELASTIC_INDEX.PRODUCT,
-    id: result._id.toString()
-  })
-  return result
+  await Promise.all([
+    await spuRepo.deleteProduct(foundProduct.spu_code),
+    await ElasticClient.delete({
+      index: ELASTIC_INDEX.PRODUCT,
+      id: foundProduct._id.toString()
+    })
+  ])
+  return { success: 'success' }
 }
 
 const searchProduct = async ({ keyword, category, minPrice, status, stock, sortBy, sortOrder = 'desc', maxPrice, page = 1, limit = 20 }) => {
@@ -177,10 +178,22 @@ const searchProduct = async ({ keyword, category, minPrice, status, stock, sortB
   const filter = []
   if (keyword) {
     must.push({
-      multi_match: {
-        query: keyword,
-        fields: ['spu_name^2', 'spu_description'],
-        fuzziness: 'AUTO'
+      bool: {
+        should: [
+          {
+            multi_match: {
+              query: keyword,
+              fields: ['spu_name^2', 'spu_description'],
+              fuzziness: 'AUTO'
+            }
+          },
+          {
+            prefix: {
+              spu_name: keyword
+            }
+          }
+        ],
+        minimum_should_match: 1
       }
     })
   }

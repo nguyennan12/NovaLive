@@ -14,6 +14,7 @@ export const getAllProductsAPI = async ({ page = 1, limit = 10 }) => {
 
 export const deleteProductAPI = async (productId) => {
   const response = await authorizedAxiosInstance.delete(`product/${productId}`)
+  toast.success(`${response.message}`)
   return response.metadata
 }
 

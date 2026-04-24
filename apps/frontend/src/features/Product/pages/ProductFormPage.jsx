@@ -13,13 +13,13 @@ import StatusCard from '../components/ProductFormPage/StatusCard'
 import ThumbnailUpload from '../components/ProductFormPage/ThumbnailUpload'
 import { useParams } from 'react-router-dom'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
+
 
 const ProductFormPage = () => {
   const methods = useForm({ mode: 'onBlur' })
   const { handleSubmit, reset } = methods
-  const queryClient = useQueryClient()
 
   const { id } = useParams()
   const isUpdate = !!id
