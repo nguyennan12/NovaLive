@@ -1,14 +1,11 @@
-import { useState, useMemo } from 'react'
-import {
-  Box, Typography, TextField, Select, MenuItem,
-  InputAdornment, Skeleton
-} from '@mui/material'
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded'
-import { STOCK_HISTORY } from '../../../../../mockdata/stockdata'
-import StatusBadge from '../shared/StatusBadge'
+import { Box, MenuItem, Pagination, Select, Skeleton, Typography } from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { getHistoryInventoryAPI } from '~/common/apis/services/inventoryService'
 import EmptyState from '../shared/EmptyState'
 import SectionCard from '../shared/SectionCard'
+import StatusBadge from '../shared/StatusBadge'
 
 const fmt = (iso) => {
   const d = new Date(iso)
@@ -19,48 +16,35 @@ const COLS = ['Type', 'Product', 'SKU', 'Qty', 'Time', 'User', 'Note']
 const GRID = '80px 2fr 1fr 60px 1.2fr 1.5fr 2fr'
 
 const StockHistory = ({ loading = false }) => {
-  const [search, setSearch] = useState('')
-  const [typeFilter, setTypeFilter] = useState('all')
+  const limit = 10
+  const [page, setPage] = useState(1)
+  const [type, setType] = useState('all')
 
-  const filtered = useMemo(() =>
-    STOCK_HISTORY.filter((h) => {
-      const matchSearch = h.productName.toLowerCase().includes(search.toLowerCase()) ||
-        h.sku.toLowerCase().includes(search.toLowerCase()) ||
-        h.user.toLowerCase().includes(search.toLowerCase())
-      const matchType = typeFilter === 'all' || h.type === typeFilter
-      return matchSearch && matchType
-    }), [search, typeFilter])
+  const params = { page, limit, type }
+
+  const queryString = new URLSearchParams(params).toString()
+  const { data = [] } = useQuery({
+    queryKey: ['history_inventory', queryString],
+    queryFn: () => getHistoryInventoryAPI(queryString)
+  })
+
+  const histories = data?.items || []
+  const totalPages = data?.totalPages || 1
+  const totalItems = data?.totalItems || 0
+
+  const handlePageChange = (event, value) => {
+    setPage(value)
+  }
 
   return (
     <SectionCard
       title='Stock History'
-      subtitle={`${filtered.length} records`}
+      subtitle={`  ${histories.length} records / ${totalItems} histories `}
       action={
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <TextField
-            size='small'
-            placeholder='Search product, user...'
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchRoundedIcon sx={{ fontSize: 15, color: '#9ca3af' }} />
-                  </InputAdornment>
-                )
-              }
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                fontSize: '0.78rem', height: 34, borderRadius: '8px',
-                '& fieldset': { borderColor: '#eeeeee' }
-              }
-            }}
-          />
           <Select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
+            value={type}
+            onChange={(e) => setType(e.target.value)}
             size='small'
             sx={{
               fontSize: '0.78rem', height: 34, borderRadius: '8px', minWidth: 110,
@@ -103,12 +87,12 @@ const StockHistory = ({ loading = false }) => {
             ))}
           </Box>
         ))
-      ) : filtered.length === 0 ? (
+      ) : histories.length === 0 ? (
         <EmptyState icon={HistoryRoundedIcon} title='No history found' subtitle='Adjust filters to see results' />
       ) : (
-        filtered.map((h) => (
+        histories.map((h) => (
           <Box
-            key={h.id}
+            key={h._id}
             sx={{
               display: 'grid',
               gridTemplateColumns: GRID,
@@ -122,37 +106,45 @@ const StockHistory = ({ loading = false }) => {
               '&:hover': { bgcolor: '#fafafa' }
             }}
           >
-            <StatusBadge type={h.type} />
+            <StatusBadge type={h.inven_type} />
 
             <Box>
               <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#2d2d2d', lineHeight: 1.3 }} noWrap>
-                {h.productName}
+                {h.inven_productId.spu_name}
               </Typography>
             </Box>
 
             <Typography sx={{ fontSize: '0.72rem', color: '#9ca3af', fontFamily: 'monospace' }}>
-              {h.sku}
+              {h.inven_skuId.sku_id}
             </Typography>
 
             <Typography
               sx={{
                 fontSize: '0.85rem',
                 fontWeight: 800,
-                color: h.type === 'IN' ? 'secondary.main' : 'third.main',
+                color: h.inven_type === 'IN' ? 'secondary.main' : 'third.main',
                 letterSpacing: '-0.02em'
               }}
             >
-              {h.type === 'IN' ? '+' : '-'}{h.qty}
+              {h.inven_type === 'IN' ? '+' : '-'}{h.inven_quantity}
             </Typography>
 
-            <Typography sx={{ fontSize: '0.72rem', color: '#6b7280' }}>{fmt(h.time)}</Typography>
+            <Typography sx={{ fontSize: '0.72rem', color: '#6b7280' }}>{fmt(h.updatedAt)}</Typography>
 
-            <Typography sx={{ fontSize: '0.72rem', color: '#6b7280' }} noWrap>{h.user}</Typography>
+            <Typography sx={{ fontSize: '0.72rem', color: '#6b7280' }} noWrap>{h.inven_userEmail}</Typography>
 
-            <Typography sx={{ fontSize: '0.72rem', color: '#9ca3af' }} noWrap>{h.note || '—'}</Typography>
+            <Typography sx={{ fontSize: '0.72rem', color: '#9ca3af' }} noWrap>{h.inven_note || '—'}</Typography>
           </Box>
         ))
       )}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 2 }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
     </SectionCard>
   )
 }

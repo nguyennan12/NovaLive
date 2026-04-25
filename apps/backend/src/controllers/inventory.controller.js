@@ -2,6 +2,7 @@
 import ApiSuccess from '#core/success.response.js'
 import inventoryService from '#services/inventory.service.js'
 import { StatusCodes } from 'http-status-codes'
+import inventoryHistoryService from '#services/inventoryHistory.service.js'
 
 const addStockToInventory = async (req, res, next) => {
   new ApiSuccess({
@@ -16,6 +17,27 @@ const addStockToInventory = async (req, res, next) => {
   }).send(res)
 }
 
+const getHistoryInventoryByShop = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get inventory history successfully!',
+    metadata: await inventoryHistoryService.getHistoryByShop({
+      shopId: req.user.shopId,
+      ...req.query
+    })
+  }).send(res)
+}
+
+const getChartDataByShop = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get chart data successfully!',
+    metadata: await inventoryHistoryService.getChartDataByShop({ shopId: req.user.shopId, ...req.query })
+  }).send(res)
+}
+
 export default {
-  addStockToInventory
+  addStockToInventory,
+  getHistoryInventoryByShop,
+  getChartDataByShop
 }

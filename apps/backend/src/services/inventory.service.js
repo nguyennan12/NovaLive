@@ -8,7 +8,7 @@ import { spuModel } from '#models/spu.model.js'
 import { PREFIX } from '#utils/constant.js'
 import converter from '#utils/converter.js'
 import { getTotalStockFromSkus } from '#utils/data.js'
-import inventoryHistoryService from '#services/inventoryHistory.service.js'
+import inventoryHistoryService from './inventoryHistory.service.js'
 import { StatusCodes } from 'http-status-codes'
 
 //lua script
@@ -22,7 +22,7 @@ const addStockToInventory = async ({ shopId, userId, userEmail, reqBody }) => {
   const foundSku = await skuModel.findOneAndUpdate(
     { sku_spuId: productId, _id: skuId },
     { $inc: { sku_stock: delta } },
-    { new: true }
+    { returnDocument: 'after' }
   )
   if (!foundSku) throw new ApiError(StatusCodes.NOT_FOUND, 'SKU does not exist')
 
@@ -38,8 +38,6 @@ const addStockToInventory = async ({ shopId, userId, userEmail, reqBody }) => {
       inven_shopId: converter.toObjectId(shopId),
       inven_productId: productId,
       inven_skuId: skuId,
-      inven_note: note,
-      inven_reason: reason ? reason : '',
     },
     {
       $inc: { inven_stock: delta }

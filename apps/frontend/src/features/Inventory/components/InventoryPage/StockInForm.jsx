@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 import { addInventoryAPI } from '~/common/apis/services/inventoryService'
 import { WAREHOUSES } from '../../../../../mockdata/stockdata'
 import SectionCard from '../shared/SectionCard'
+import { useQueryClient } from '@tanstack/react-query'
 
 const fieldSx = {
   '& .MuiOutlinedInput-root': {
@@ -22,6 +23,7 @@ const fieldSx = {
 
 
 const StockInForm = ({ skus, setParams }) => {
+  const queryClient = useQueryClient()
   const methods = useForm({
     mode: 'onBlur',
     defaultValues: {
@@ -33,7 +35,7 @@ const StockInForm = ({ skus, setParams }) => {
     }
   })
   const { handleSubmit, reset, control } = methods
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const { product, ...rest } = data
     const payload = {
       productId: product.sku_spuId,
@@ -46,6 +48,12 @@ const StockInForm = ({ skus, setParams }) => {
       success: 'Stock adding successfully!',
       error: 'Failed to add stock'
     })
+
+    await Promise.all([
+      queryClient.refetchQueries({ queryKey: ['skus'], type: 'active' }),
+      queryClient.refetchQueries({ queryKey: ['chart_inventory'], type: 'active' }),
+      queryClient.refetchQueries({ queryKey: ['history_inventory'], type: 'active' })
+    ])
     reset()
   }
   const onError = () => {

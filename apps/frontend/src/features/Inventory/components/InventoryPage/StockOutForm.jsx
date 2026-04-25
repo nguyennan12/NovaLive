@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import { addInventoryAPI } from '~/common/apis/services/inventoryService'
 import { OUT_REASONS } from '../../../../../mockdata/stockdata'
 import SectionCard from '../shared/SectionCard'
+import { useQueryClient } from '@tanstack/react-query'
 
 const fieldSx = {
   '& .MuiOutlinedInput-root': {
@@ -37,11 +38,11 @@ const StockOutForm = ({ skus, setParams }) => {
       type: 'OUT'
     }
   })
-
+  const queryClient = useQueryClient()
   const { handleSubmit, control, watch, reset } = methods
   const selectedProduct = watch('product')
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const { product, ...rest } = data
     const payload = {
       productId: product.sku_spuId,
@@ -54,6 +55,12 @@ const StockOutForm = ({ skus, setParams }) => {
       success: 'Stock removed successfully!',
       error: 'Failed to remove stock'
     })
+    await Promise.all([
+      queryClient.refetchQueries({ queryKey: ['skus'], type: 'active' }),
+      queryClient.refetchQueries({ queryKey: ['chart_inventory'], type: 'active' }),
+      queryClient.refetchQueries({ queryKey: ['history_inventory'], type: 'active' })
+    ])
+    reset()
     reset()
   }
 

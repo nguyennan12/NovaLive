@@ -11,10 +11,6 @@ const inventorySchema = new Schema(
     inven_location: { type: String, default: '' },
     inven_stock: Number,
     inven_reserved: { type: Number, default: 0 },
-    inven_note: { type: String, default: '' },
-    inven_reason: { type: String, default: '' },
-    inven_type: { type: String, enum: ['IN', 'OUT'] },
-
     inven_reservations: [
       {
         orderId: { type: String },
