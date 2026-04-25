@@ -9,7 +9,7 @@ const createProduct = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.CREATED,
     message: 'Create product successfully!',
-    metadata: await spuService.createSpu({ reqBody: req.body, userId: req.user.userId })
+    metadata: await spuService.createSpu({ reqBody: req.body, userId: req.user.userId, userEmail: req.user.email, })
   }).send(res)
 }
 const getOneSku = async (req, res, next) => {

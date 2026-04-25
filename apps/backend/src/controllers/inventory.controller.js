@@ -7,7 +7,12 @@ const addStockToInventory = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Add stocks successfully!',
-    metadata: await inventoryService.addStockToInventory({ shopId: req.user.shopId, reqBody: req.body })
+    metadata: await inventoryService.addStockToInventory({
+      shopId: req.user.shopId,
+      userId: req.user.userId,
+      userEmail: req.user.email,
+      reqBody: req.body
+    })
   }).send(res)
 }
 

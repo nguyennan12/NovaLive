@@ -15,8 +15,9 @@ import { getMinPriceFromSkus, getTotalStockFromSkus } from '#utils/data.js'
 import { validateProductOwnership } from '#helpers/spu.helper.js'
 import { LOW_STOCK_THRESHOLD } from '#utils/constant.js'
 import { skuModel } from '#models/sku.model.js'
+import inventoryService from './inventory.service.js'
 
-const createSpu = async ({ reqBody, userId }) => {
+const createSpu = async ({ reqBody, userId, userEmail }) => {
   const {
     spu_shopId,
     spu_attributes,
@@ -49,22 +50,40 @@ const createSpu = async ({ reqBody, userId }) => {
     spu_quantity: getTotalStockFromSkus(sku_list) || spu_quantity,
   })
 
+  let newSku = null
   //nếu có sku_list thì xử lý tạo sku
   if (newSpu && (sku_list && sku_list.length)) {
-    await skuService.createSku({ spu_id: newSpu._id, sku_list, spu_code: newSpu.spu_code })
+    newSku = await skuService.createSku({
+      spu_id: newSpu._id, sku_list, spu_code: newSpu.spu_code,
+      spu_shopId: newSpu.spu_shopId,
+      userId,
+      userEmail
+    })
   }
   else {
-    await skuModel.create({
+    newSku = await skuModel.create({
       sku_spuId: newSpu._id,
       sku_id: newSpu.spu_code,
       sku_price: newSpu.spu_price,
       sku_stock: newSpu.spu_quantity,
       isPublished: isPublished, isDraft: !isPublished
     })
+    await inventoryService.addStockToInventory({
+      shopId: spu_shopId,
+      userId,
+      userEmail,
+      reqBody: {
+        productId: newSpu._id,
+        skuId: newSku._id,
+        stock: newSpu.spu_quantity,
+        note: 'phiếu nhập kho ban đầu'
+      }
+    })
   }
   if (isPublished === true) {
-    await publishProduct({ productId: newSpu._id, userId })
+    newSpu = await publishProduct({ productId: newSpu._id, userId })
   }
+
   //lưu vào elastic
   await syncProdcutToEs(newSpu._id)
   return newSpu
@@ -75,7 +94,7 @@ const updateProduct = async ({ productId, reqBody, userId }) => {
   const allowedFields = [
     'spu_name', 'spu_thumb', 'spu_description',
     'spu_price', 'spu_category', 'spu_attributes',
-    'spu_variations', 'sku_list', 
+    'spu_variations', 'sku_list',
   ]
   //các bước check business
   const { foundProduct } = await validateProductOwnership({ productId, userId })

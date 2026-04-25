@@ -13,6 +13,7 @@ import { paymentRouter } from './payment.router.js'
 import { livestreamRouter } from './livestream.router.js'
 import { uploadRouter } from './upload.router.js'
 import { addressRouter } from './address.router.js'
+import { InventoryHistoryRouter } from './inventoryHistory.router.js'
 
 const Router = express.Router()
 
@@ -24,6 +25,7 @@ Router.use('/v1/api/attribute', attributeRouter)
 Router.use('/v1/api/category', categoryRouter)
 Router.use('/v1/api/discount', discountRouter)
 Router.use('/v1/api/inventory', inventoryRouter)
+Router.use('/v1/api/inventory-history', InventoryHistoryRouter)
 Router.use('/v1/api/cart', cartRouter)
 Router.use('/v1/api/order', orderRouter)
 Router.use('/v1/api/payment', paymentRouter)

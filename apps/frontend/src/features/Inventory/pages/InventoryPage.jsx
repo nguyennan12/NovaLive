@@ -30,7 +30,6 @@ const InventoryPage = () => {
     placeholderData: (previousData) => previousData
   })
   const skus = data?.items || []
-  console.log("🚀 ~ InventoryPage ~ skus:", skus)
   const totalPages = data?.totalPages || 1
 
   return (

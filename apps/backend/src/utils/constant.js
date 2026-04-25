@@ -15,8 +15,8 @@ export const DOCUMENT_NAME = {
   INVENTORY: 'Inventory',
   ORDER: 'Order',
   LIVESTREAM: 'livestream',
-  ADDRESS: 'Address'
-
+  ADDRESS: 'Address',
+  INVENTORY_HISTORY: 'InventoryHistory'
 }
 
 export const COLLECTION_NAME = {
@@ -35,7 +35,8 @@ export const COLLECTION_NAME = {
   INVENTORY: 'Inventory',
   ORDER: 'Orders',
   LIVESTREAM: 'livestream',
-  ADDRESS: 'Address'
+  ADDRESS: 'Address',
+  INVENTORY_HISTORY: 'InventoryHistories'
 }
 
 

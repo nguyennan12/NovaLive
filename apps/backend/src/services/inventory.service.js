@@ -8,13 +8,14 @@ import { spuModel } from '#models/spu.model.js'
 import { PREFIX } from '#utils/constant.js'
 import converter from '#utils/converter.js'
 import { getTotalStockFromSkus } from '#utils/data.js'
+import inventoryHistoryService from '#services/inventoryHistory.service.js'
 import { StatusCodes } from 'http-status-codes'
 
 //lua script
 const reserveStockScript = fileHelper.loadLuaScript('lua/reserveStock.lua')
 
-const addStockToInventory = async ({ shopId, reqBody }) => {
-  const { productId, skuId, stock, note, reason = '', type } = reqBody
+const addStockToInventory = async ({ shopId, userId, userEmail, reqBody }) => {
+  const { productId, skuId, stock, note, reason = '', type, location = '' } = reqBody
   if (!stock || stock < 0) throw new ApiError(StatusCodes.BAD_REQUEST, 'Stock invalid')
 
   const delta = type === 'OUT' ? -stock : stock
@@ -39,13 +40,29 @@ const addStockToInventory = async ({ shopId, reqBody }) => {
       inven_skuId: skuId,
       inven_note: note,
       inven_reason: reason ? reason : '',
-      inven_type: type
     },
     {
-      $inc: { inven_stock: stock }
+      $inc: { inven_stock: delta }
     },
     { upsert: true, new: true }
   )
+
+  // Lưu lịch sử
+  await inventoryHistoryService.createHistory({
+    shopId,
+    productId,
+    skuId,
+    userId,
+    userEmail,
+    type,
+    quantity: stock,
+    oldStock: newInven.inven_stock - delta,
+    newStock: newInven.inven_stock,
+    reason,
+    note,
+    location
+  })
+
   const prefix = `${PREFIX.INVENTORY_SKU}:${skuId}:stock`
   const availableStock = newInven.inven_stock - newInven.inven_reserved
 

@@ -13,14 +13,28 @@ import _ from 'lodash'
 import { LOW_STOCK_THRESHOLD } from '#utils/constant.js'
 
 
-const createSku = async ({ spu_id, sku_list, spu_code, isPublished }) => {
+const createSku = async ({ spu_id, sku_list, spu_code, isPublished, spu_shopId, userId, userEmail }) => {
   try {
-    const skuList = sku_list.map(sku => {
+    const skuList = sku_list.map(async (sku) => {
       return { ...sku, isPublished: isPublished, isDraft: !isPublished, sku_spuId: spu_id, sku_name: getNameSkuByTierOption(sku.tier_options), sku_id: generateSkuId(spu_code, sku.sku_tier_idx) }
     })
     //create 1 mảng array cái sku
-    const newSku = await skuModel.create(skuList)
-    return newSku
+    const newSkus = await skuModel.create(skuList)
+    const inventoryPromises = newSkus.map((sku) => {
+      return inventoryService.addStockToInventory({
+        shopId: spu_shopId,
+        userId: userId,
+        userEmail: userEmail,
+        reqBody: {
+          productId: sku.sku_spuId,
+          skuId: sku._id,
+          stock: sku.sku_stock,
+          note: 'Phiếu nhập kho ban đầu'
+        }
+      })
+    })
+    await Promise.all(inventoryPromises)
+    return newSkus
   } catch (error) {
     console.log(error.message)
     return []

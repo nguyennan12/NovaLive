@@ -21,7 +21,6 @@ const ProductStockList = ({ loading = false, isStale = false, skus, totalPages, 
     '&.Mui-focused fieldset': { borderColor: '#secondary.main' }
   }
 
-        console.log("🚀 ~ ProductStockList ~ skus:", skus)
   return (
     <SectionCard
       title='Product Stock'
