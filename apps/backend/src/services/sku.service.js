@@ -135,6 +135,80 @@ const getSkusDetails = async (skuIds) => {
   return formattedData
 }
 
+const querySkusList = async ({ page = 1, sort = 'ctime', limit = 50, stock = 'all', keyword = '' }, shopId) => {
+  const skip = (page - 1) * Number(limit)
+  const sortOrder = sort === 'ctime' ? -1 : 1
+
+  const pipeline = [
+    {
+      $match: { isDeleted: false }
+    },
+    {
+      $lookup: {
+        from: 'Spus',
+        localField: 'sku_spuId',
+        foreignField: '_id',
+        as: 'spu'
+      }
+    },
+    { $unwind: '$spu' },
+    {
+      $addFields: {
+        spu_name: '$spu.spu_name',
+        spu_shopId: '$spu.spu_shopId',
+      }
+    }
+  ]
+
+  if (shopId) {
+    pipeline.push({
+      $match: { spu_shopId: converter.toObjectId(shopId) }
+    })
+  }
+
+  if (keyword) {
+    pipeline.push({
+      $match: { spu_name: { $regex: keyword, $options: 'i' } }
+    })
+  }
+
+  if (stock === 'in') {
+    pipeline.push({ $match: { sku_stock: { $gte: LOW_STOCK_THRESHOLD } } })
+  } else if (stock === 'low') {
+    pipeline.push({ $match: { sku_stock: { $gt: 0, $lt: LOW_STOCK_THRESHOLD } } })
+  } else if (stock === 'out') {
+    pipeline.push({ $match: { sku_stock: 0 } })
+  }
+
+  const [result] = await skuModel.aggregate([
+    ...pipeline,
+    {
+      $facet: {
+        metadata: [{ $count: 'totalItems' }],
+        data: [
+          { $sort: { createdAt: sortOrder } },
+          { $skip: skip },
+          { $limit: Number(limit) },
+          {
+            $project: {
+              spu: 0,
+            }
+          }
+        ]
+      }
+    }
+  ])
+
+  const totalItems = result.metadata[0]?.totalItems || 0
+  return {
+    items: result.data,
+    totalItems,
+    totalPages: Math.ceil(totalItems / Number(limit)),
+    currentPage: Number(page),
+    limit: Number(limit)
+  }
+}
+
 export default {
   createSku,
   getOneSku,
@@ -142,4 +216,5 @@ export default {
   updateSkuBySpuId,
   updateSingleSku,
   getSkusDetails,
+  querySkusList
 }

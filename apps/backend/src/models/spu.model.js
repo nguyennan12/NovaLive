@@ -9,7 +9,7 @@ const spuSchema = new Schema({
   spu_description: { type: String },
   spu_slug: { type: String },
   spu_price: { type: Number, required: true, min: [0, 'price invalid'] },
-  spu_quantity: { type: Number, required: true, min: [1, 'price invalid'] },
+  spu_quantity: { type: Number, required: true, min: [0, 'price invalid'] },
   spu_category: [{ type: String, ref: 'Category' }],
   spu_ratingsAvg: {
     type: Number,

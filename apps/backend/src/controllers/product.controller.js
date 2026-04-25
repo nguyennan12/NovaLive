@@ -83,11 +83,11 @@ const getAllProducts = async (req, res, next) => {
     metadata: await spuService.getAllProducts(req.query, req?.user?.shopId)
   }).send(res)
 }
-const getAllSkusWithStock = async (req, res, next) => {
+const querySkusList = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Get list sku successfully!',
-    metadata: await spuService.queryAllProductsWithStockDetails(req.query, req?.user?.shopId)
+    metadata: await skuService.querySkusList(req.query, req?.user?.shopId)
   }).send(res)
 }
 
@@ -119,7 +119,7 @@ export default {
   createProduct,
   getOneSku,
   getAllSkuBySpuId,
-  getAllSkusWithStock,
+  querySkusList,
   updateProduct,
   publishProduct,
   unPublishProduct,

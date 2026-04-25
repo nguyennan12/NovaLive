@@ -3,10 +3,9 @@ import { Box, MenuItem, Pagination, Select, Skeleton, Typography } from '@mui/ma
 import EmptyState from '../shared/EmptyState'
 import SectionCard from '../shared/SectionCard'
 import StatusBadge from '../shared/StatusBadge'
-import { useState } from 'react'
 
 
-const ProductStockList = ({ loading = false, flattenedSkus, totalPages, params, setParams }) => {
+const ProductStockList = ({ loading = false, isStale = false, skus, totalPages, params, setParams }) => {
 
   const handlePageChange = (event, value) => {
     setParams(prev => ({ ...prev, page: value }))
@@ -22,10 +21,15 @@ const ProductStockList = ({ loading = false, flattenedSkus, totalPages, params, 
     '&.Mui-focused fieldset': { borderColor: '#secondary.main' }
   }
 
+        console.log("🚀 ~ ProductStockList ~ skus:", skus)
   return (
     <SectionCard
       title='Product Stock'
-      subtitle={`${flattenedSkus.length} products`}
+      subtitle={`${skus.length} products`}
+      sx={{
+        opacity: isStale ? 0.5 : 1,
+        transition: 'opacity 0.2s ease-in-out'
+      }}
       action={
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Select
@@ -72,12 +76,12 @@ const ProductStockList = ({ loading = false, flattenedSkus, totalPages, params, 
             ))}
           </Box>
         ))
-      ) : flattenedSkus.length === 0 ? (
+      ) : skus.length === 0 ? (
         <EmptyState icon={InventoryRoundedIcon} title='No products found' subtitle='Try changing the filters' />
       ) : (
-        flattenedSkus.map((p) => {
+        skus.map((p) => {
           return <Box
-            key={p.id}
+            key={p._id}
             sx={{
               display: 'grid',
               gridTemplateColumns: '2fr 1fr 1fr 1fr',
@@ -94,25 +98,25 @@ const ProductStockList = ({ loading = false, flattenedSkus, totalPages, params, 
               <Typography sx={{ fontSize: '0.82rem', fontWeight: 600, color: '#2d2d2d', lineHeight: 1.3 }}>
                 {p.spu_name}
               </Typography>
-              <Typography sx={{ fontSize: '0.7rem', color: '#9ca3af' }}>{p.sku_name}</Typography>
+              <Typography sx={{ fontSize: '0.7rem', color: '#9ca3af' }}>{p.sku_name ? p.sku_name : 'No Variation'}</Typography>
             </Box>
             <Typography sx={{ fontSize: '0.78rem', color: '#6b7280', alignSelf: 'center', fontFamily: 'monospace' }}>
-              {p.sku_code !== 'N/A' ? p.sku_code : p.spu_code}
+              {p.sku_id}
             </Typography>
             <Typography
               sx={{
                 fontSize: '0.85rem',
                 fontWeight: 700,
-                color: p.stock <= 0 ? '#ef4444' : p.stock <= 10 ? '#f59e0b' : '#2d2d2d',
+                color: p.sku_stock <= 0 ? '#ef4444' : p.sku_stock <= 10 ? '#f59e0b' : '#2d2d2d',
                 alignSelf: 'center'
               }}
             >
-              {p.stock}
+              {p.sku_stock}
             </Typography>
             <Box sx={{ alignSelf: 'center' }}>
-              <StatusBadge qty={p.stock} />
+              <StatusBadge qty={p.sku_stock} />
             </Box>
-          </Box>;
+          </Box>
         })
       )}
 

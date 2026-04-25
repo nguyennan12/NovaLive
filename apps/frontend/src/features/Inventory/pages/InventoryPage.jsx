@@ -11,8 +11,6 @@ import StockHistory from '../components/InventoryPage/StockHistory'
 import StockInForm from '../components/InventoryPage/StockInForm'
 import StockOutForm from '../components/InventoryPage/StockOutForm'
 import StockOverviewChart from '../components/InventoryPage/StockOverviewChart'
-import { buildFlattenedSkus } from '~/common/utils/builder'
-import { useMemo } from 'react'
 
 
 const InventoryPage = () => {
@@ -26,14 +24,15 @@ const InventoryPage = () => {
 
   const queryString = new URLSearchParams(params).toString()
 
-  const { data = [] } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     queryKey: ['skus', queryString],
-    queryFn: () => getAllProductWithStockAPI(queryString)
+    queryFn: () => getAllProductWithStockAPI(queryString),
+    placeholderData: (previousData) => previousData
   })
   const skus = data?.items || []
+  console.log("🚀 ~ InventoryPage ~ skus:", skus)
   const totalPages = data?.totalPages || 1
 
-  const flattenedSkus = useMemo(() => buildFlattenedSkus(skus), [skus])
   return (
     <Box sx={{
       minHeight: '100vh',
@@ -92,14 +91,21 @@ const InventoryPage = () => {
 
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <StockInForm flattenedSkus={flattenedSkus} setParams={setParams} />
+          <StockInForm skus={skus} setParams={setParams} />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <StockOutForm flattenedSkus={flattenedSkus} />
+          <StockOutForm skus={skus} setParams={setParams} />
         </Grid>
 
         <Grid size={{ xs: 12, lg: 7 }}>
-          <ProductStockList flattenedSkus={flattenedSkus} totalPages={totalPages} params={params} setParams={setParams} />
+          <ProductStockList
+            loading={isLoading}
+            isStale={isPlaceholderData}
+            skus={skus}
+            totalPages={totalPages}
+            params={params}
+            setParams={setParams}
+          />
         </Grid>
         <Grid size={{ xs: 12, lg: 5 }}>
           <ReservedStock />

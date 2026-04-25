@@ -5,12 +5,12 @@ import slugify from 'slugify'
 
 const skuSchema = new Schema({
   sku_id: { type: String, required: true, unique: true },
-  sku_name: { type: String, required: true, unique: true },
+  sku_name: { type: String },
   sku_tier_idx: { type: Array, default: [0] },
   sku_default: { type: Boolean, default: false },
   sku_slug: { type: String, default: '' },
   sku_sort: { type: Number, default: 0 },
-  sku_price: { type: String, required: true },
+  sku_price: { type: Number, required: true },
   sku_stock: { type: Number, default: 0 },
   sku_weight: { type: Number, default: 0 },
   tier_options: { type: Array, default: [] },

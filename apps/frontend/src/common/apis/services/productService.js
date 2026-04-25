@@ -23,7 +23,6 @@ export const deleteProductAPI = async (productId) => {
 }
 
 export const updateProductAPI = async (productId, data) => {
-  console.log(data)
   const response = await authorizedAxiosInstance.patch(`product/${productId}`, data)
   toast.success(`${response.message}`)
   return response.metadata

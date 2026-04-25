@@ -10,7 +10,7 @@ const Router = express.Router()
 Router.get('/search', asyncHandler(productController.searchProduct))
 Router.get('/variation', asyncHandler(productController.getOneSku))
 Router.get('/variations/:spuId', asyncHandler(productController.getAllSkuBySpuId))
-Router.get('/skus', asyncHandler(productController.getAllSkusWithStock))
+Router.get('/skus', asyncHandler(productController.querySkusList))
 Router.get('/', asyncHandler(productController.getAllProducts))
 Router.get('/:productId', asyncHandler(productController.getProductDetail))
 //  === Authentication ===

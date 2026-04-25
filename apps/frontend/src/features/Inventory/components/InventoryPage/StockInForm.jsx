@@ -1,14 +1,11 @@
-import { useState } from 'react'
-import { Box, TextField, Button, MenuItem, Select, InputLabel, FormControl, FormHelperText, Typography, Autocomplete, Alert, Collapse } from '@mui/material'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
-import { PRODUCTS, WAREHOUSES } from '../../../../../mockdata/stockdata'
-import SectionCard from '../shared/SectionCard'
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined'
-import { FormProvider, useForm } from 'react-hook-form'
-import { Controller } from 'react-hook-form'
+import { Autocomplete, Box, Button, FormControl, FormHelperText, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { addInventoryAPI } from '~/common/apis/services/inventoryService'
+import { WAREHOUSES } from '../../../../../mockdata/stockdata'
+import SectionCard from '../shared/SectionCard'
 
 const fieldSx = {
   '& .MuiOutlinedInput-root': {
@@ -24,34 +21,36 @@ const fieldSx = {
 }
 
 
-const StockInForm = ({ flattenedSkus, setParams }) => {
+const StockInForm = ({ skus, setParams }) => {
   const methods = useForm({
     mode: 'onBlur',
     defaultValues: {
       product: null,
       stock: '',
       location: '',
-      note: ''
+      note: '',
+      type: 'IN'
     }
   })
   const { handleSubmit, reset, control } = methods
   const onSubmit = (data) => {
     const { product, ...rest } = data
-
     const payload = {
-      productId: product.spu_id,
-      skuId: product.sku_id,
+      productId: product.sku_spuId,
+      skuId: product._id,
       shopId: '69e364dfdf24f31846f15580',
       ...rest
     }
-    toast.promise(addInventoryAPI(payload), { pending: 'Adding...' })
-    //  reset()
+    toast.promise(addInventoryAPI(payload), {
+      pending: 'Processing...',
+      success: 'Stock adding successfully!',
+      error: 'Failed to add stock'
+    })
+    reset()
   }
-  const onError = (data) => {
+  const onError = () => {
     toast.error('Please check the required fields!')
   }
-
-  const set = (field) => (val) => setForm((f) => ({ ...f, [field]: val }))
 
   return (
     <FormProvider {...methods}>
@@ -70,15 +69,18 @@ const StockInForm = ({ flattenedSkus, setParams }) => {
             name="product"
             control={control}
             rules={{ required: 'Vui lòng chọn sản phẩm' }}
-            render={({ field: { onChange, value, ...field }, fieldState: { error } }) => (
-              <Autocomplete
+            render={({ field: { onChange, value, ...field }, fieldState: { error } }) => {
+              return <Autocomplete
                 {...field}
-                options={flattenedSkus}
+                options={skus}
                 getOptionLabel={(o) => {
-                  const sku = o.sku_code !== 'N/A' ? o.sku_code : o.spu_code
-                  return `${o.spu_name} — ${sku}`
+                  return `${o.spu_name} — ${o.sku_id}`
                 }}
-                onInputChange={(_, value) => setParams(prev => ({ ...prev, keyword: value }))}
+                onInputChange={(_, value, reason) => {
+                  if (reason === 'input' || reason === 'clear') {
+                    setParams(prev => ({ ...prev, keyword: value, page: 1 }))
+                  }
+                }}
                 value={value ?? null}
                 onChange={(_, data) => onChange(data)}
                 renderInput={(params) => (
@@ -101,14 +103,14 @@ const StockInForm = ({ flattenedSkus, setParams }) => {
                           {option.spu_name}
                         </Typography>
                         <Typography sx={{ fontSize: '0.7rem', color: '#9ca3af' }}>
-                          {option.sku_code !== 'N/A' ? option.sku_code : option.spu_code}
+                          {option.sku_id}
                         </Typography>
                       </Box>
                     </Box>
                   )
                 }}
               />
-            )}
+            }}
           />
 
           {/* Quantity */}

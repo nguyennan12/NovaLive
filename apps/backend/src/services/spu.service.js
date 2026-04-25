@@ -14,6 +14,7 @@ import skuService from './sku.service.js'
 import { getMinPriceFromSkus, getTotalStockFromSkus } from '#utils/data.js'
 import { validateProductOwnership } from '#helpers/spu.helper.js'
 import { LOW_STOCK_THRESHOLD } from '#utils/constant.js'
+import { skuModel } from '#models/sku.model.js'
 
 const createSpu = async ({ reqBody, userId }) => {
   const {
@@ -52,6 +53,15 @@ const createSpu = async ({ reqBody, userId }) => {
   if (newSpu && (sku_list && sku_list.length)) {
     await skuService.createSku({ spu_id: newSpu._id, sku_list, spu_code: newSpu.spu_code })
   }
+  else {
+    await skuModel.create({
+      sku_spuId: newSpu._id,
+      sku_id: newSpu.spu_code,
+      sku_price: newSpu.spu_price,
+      sku_stock: newSpu.spu_quantity,
+      isPublished: isPublished, isDraft: !isPublished
+    })
+  }
   if (isPublished === true) {
     await publishProduct({ productId: newSpu._id, userId })
   }
@@ -65,7 +75,7 @@ const updateProduct = async ({ productId, reqBody, userId }) => {
   const allowedFields = [
     'spu_name', 'spu_thumb', 'spu_description',
     'spu_price', 'spu_category', 'spu_attributes',
-    'spu_variations', 'sku_list'
+    'spu_variations', 'sku_list', 
   ]
   //các bước check business
   const { foundProduct } = await validateProductOwnership({ productId, userId })
@@ -213,16 +223,16 @@ const searchProduct = async ({ keyword, category, minPrice, status, stock, sortB
   }
 
   let sortParams = []
-  const orderDirection = sortOrder === 'asc' ? 'asc' : 'desc';
+  const orderDirection = sortOrder === 'asc' ? 'asc' : 'desc'
 
   if (sortBy === 'price') { sortParams.push({ spu_price: orderDirection }) }
-  else if (sortBy === 'time') { sortParams.push({ createdAt: orderDirection }); }
+  else if (sortBy === 'time') { sortParams.push({ createdAt: orderDirection }) }
   else if (sortBy === 'name') { sortParams.push({ 'spu_name.keyword': orderDirection }) }
   else {
     if (keyword) {
-      sortParams.push({ _score: 'desc' });
+      sortParams.push({ _score: 'desc' })
     } else {
-      sortParams.push({ createdAt: 'desc' });
+      sortParams.push({ createdAt: 'desc' })
     }
   }
 
@@ -243,8 +253,8 @@ const searchProduct = async ({ keyword, category, minPrice, status, stock, sortB
     sort: sortParams,
     _source: ['mongo_id', 'spu_thumb', 'spu_name', 'spu_price', 'spu_ratingsAvg', 'spu_category', 'spu_code', 'spu_quantity']
   })
-  const totalItems = typeof result.hits.total === 'object' ? result.hits.total.value : result.hits.total;
-  const totalPages = Math.ceil(totalItems / limit);
+  const totalItems = typeof result.hits.total === 'object' ? result.hits.total.value : result.hits.total
+  const totalPages = Math.ceil(totalItems / limit)
 
   return {
     products: result.hits.hits.map(hit => hit._source),
@@ -252,108 +262,6 @@ const searchProduct = async ({ keyword, category, minPrice, status, stock, sortB
     totalPages,
     currentPage: page,
     limit
-  }
-}
-
-const queryAllProductsWithStockDetails = async ({ page = 1, sort = 'ctime', limit = 50, stock = 'all', keyword = '' }, shopId) => {
-  const LOW_STOCK_THRESHOLD = 10;
-  const skip = (page - 1) * limit;
-  const sortOrder = sort === 'ctime' ? -1 : 1;
-
-  const matchFilter = { isPublished: true, isDeleted: false };
-  if (shopId) {
-    matchFilter.shopId = new mongoose.Types.ObjectId(shopId);
-  }
-
-  const pipeline = [
-    { $match: matchFilter },
-    {
-      $lookup: {
-        from: 'Skus',
-        localField: '_id',
-        foreignField: 'sku_spuId',
-        as: 'skus_array'
-      }
-    },
-    {
-      $addFields: {
-        has_variations: {
-          $gt: [{ $size: { $ifNull: ["$skus_array", []] } }, 0]
-        },
-        total_stock: {
-          $cond: {
-            if: { $eq: [{ $size: { $ifNull: ["$skus_array", []] } }, 0] },
-            then: { $ifNull: ["$spu_quantity", 0] },
-            else: { $sum: "$skus_array.sku_stock" }
-          }
-        },
-
-        variation_stocks: {
-          $map: {
-            input: "$skus_array",
-            as: "sku",
-            in: {
-              sku_id: "$$sku._id",
-              sku_code: "$$sku.sku_id",
-              sku_name: "$$sku.sku_name",
-              stock: "$$sku.sku_stock",
-              attributes: "$$sku.sku_attributes"
-            }
-          }
-        }
-      }
-    }
-  ]
-
-  if (stock === 'in') {
-    pipeline.push({ $match: { total_stock: { $gte: 10 } } });
-  } else if (stock === 'low') {
-    pipeline.push({ $match: { total_stock: { $gt: 0, $lt: LOW_STOCK_THRESHOLD } } });
-  } else if (stock === 'out') {
-    pipeline.push({ $match: { total_stock: 0 } });
-  }
-
-  if (keyword !== '') {
-    pipeline.push({
-      $match: {
-        spu_name: { $regex: keyword, $options: 'i' }
-      }
-    })
-  }
-
-  const [result] = await spuModel.aggregate([
-    ...pipeline,
-    {
-      $facet: {
-        metadata: [{ $count: "totalItems" }],
-        data: [
-          { $sort: { _id: sortOrder } },
-          { $skip: skip },
-          { $limit: Number(limit) },
-          {
-            $project: {
-              _id: 1,
-              spu_name: 1,
-              spu_code: 1,
-              has_variations: 1,
-              total_stock: 1,
-              variation_stocks: 1
-            }
-          }
-        ]
-      }
-    }
-  ]);
-
-  const totalItems = result.metadata[0]?.totalItems || 0
-  console.log("🚀 ~ queryAllProductsWithStockDetails ~ totalItems:", totalItems)
-
-  return {
-    items: result.data,
-    totalItems,
-    totalPages: Math.ceil(totalItems / limit),
-    currentPage: Number(page),
-    limit: Number(limit)
   }
 }
 
@@ -368,7 +276,6 @@ export default {
   getProductDetail,
   deleteProduct,
   searchProduct,
-  queryAllProductsWithStockDetails
 }
 
 

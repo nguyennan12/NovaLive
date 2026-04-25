@@ -7,46 +7,46 @@ import { skuModel } from '#models/sku.model.js'
 import { spuModel } from '#models/spu.model.js'
 import { PREFIX } from '#utils/constant.js'
 import converter from '#utils/converter.js'
+import { getTotalStockFromSkus } from '#utils/data.js'
 import { StatusCodes } from 'http-status-codes'
 
 //lua script
 const reserveStockScript = fileHelper.loadLuaScript('lua/reserveStock.lua')
 
 const addStockToInventory = async ({ shopId, reqBody }) => {
-  const { productId, skuId, stock, note, resason = '' } = reqBody
+  const { productId, skuId, stock, note, reason = '', type } = reqBody
   if (!stock || stock < 0) throw new ApiError(StatusCodes.BAD_REQUEST, 'Stock invalid')
-  const isSkuMode = !!skuId
-  const finalSkuId = skuId || productId
-  //tìm product và sku tương ứng
-  const foundProduct = await spuModel.findById(productId)
-  if (!foundProduct) throw new ApiError(StatusCodes.NOT_FOUND, 'Product does not exists')
 
-  let foundSku = null
-  if (isSkuMode) {
-    foundSku = await skuModel.findOne({
-      sku_spuId: productId,
-      _id: finalSkuId
-    }).lean()
+  const delta = type === 'OUT' ? -stock : stock
+  const foundSku = await skuModel.findOneAndUpdate(
+    { sku_spuId: productId, _id: skuId },
+    { $inc: { sku_stock: delta } },
+    { new: true }
+  )
+  if (!foundSku) throw new ApiError(StatusCodes.NOT_FOUND, 'SKU does not exist')
 
-    if (!foundSku) throw new ApiError(StatusCodes.NOT_FOUND, 'SKU does not exists')
-  }
-
+  // Tính toán lại tổng tồn kho của SPU từ tất cả các SKU
+  const allSkus = await skuModel.find({ sku_spuId: productId }).lean()
+  await spuModel.findByIdAndUpdate(productId, {
+    spu_quantity: getTotalStockFromSkus(allSkus)
+  })
 
   //thêm stock vào inventory
   const newInven = await inventoryModel.findOneAndUpdate(
     {
       inven_shopId: converter.toObjectId(shopId),
       inven_productId: productId,
-      inven_skuId: finalSkuId,
+      inven_skuId: skuId,
       inven_note: note,
-      inven_reason: resason ? resason : ''
+      inven_reason: reason ? reason : '',
+      inven_type: type
     },
     {
       $inc: { inven_stock: stock }
     },
     { upsert: true, new: true }
   )
-  const prefix = `${PREFIX.INVENTORY_SKU}:${finalSkuId}:stock`
+  const prefix = `${PREFIX.INVENTORY_SKU}:${skuId}:stock`
   const availableStock = newInven.inven_stock - newInven.inven_reserved
 
   const ttl = 3600
