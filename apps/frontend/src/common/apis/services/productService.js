@@ -37,3 +37,8 @@ export const queryProductAPI = async (query) => {
   const response = await authorizedAxiosInstance.get(`product/search?${query}`)
   return response.metadata
 }
+
+export const getProductStatsAPI = async () => {
+  const response = await authorizedAxiosInstance.get('product/stats')
+  return response.metadata
+}

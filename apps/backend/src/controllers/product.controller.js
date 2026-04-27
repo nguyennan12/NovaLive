@@ -115,6 +115,14 @@ const searchProduct = async (req, res, next) => {
   }).send(res)
 }
 
+const getProductStats = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get product stats successfully!',
+    metadata: await skuService.getProductStats(req.user.shopId)
+  }).send(res)
+}
+
 export default {
   createProduct,
   getOneSku,
@@ -130,4 +138,5 @@ export default {
   getProductDetail,
   searchProduct,
   updateSingleSku,
+  getProductStats
 }

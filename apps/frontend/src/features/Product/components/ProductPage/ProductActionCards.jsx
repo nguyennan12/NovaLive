@@ -53,7 +53,7 @@ const cardData = [
     btnVariant: 'outlined',
     btnBorderColor: '#f59e0b',
     btnColor: '#f59e0b',
-    path: '/discounts/create'
+    path: '/discount'
   },
   {
     key: 'schedule',

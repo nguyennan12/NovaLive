@@ -61,7 +61,6 @@ const StockOutForm = ({ skus, setParams }) => {
       queryClient.refetchQueries({ queryKey: ['history_inventory'], type: 'active' })
     ])
     reset()
-    reset()
   }
 
   const onError = () => {

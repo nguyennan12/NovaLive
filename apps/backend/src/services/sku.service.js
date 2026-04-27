@@ -223,6 +223,53 @@ const querySkusList = async ({ page = 1, sort = 'ctime', limit = 50, stock = 'al
   }
 }
 
+const getProductStats = async (shopId) => {
+  const shopObjectId = converter.toObjectId(shopId)
+
+  const totalProducts = await spuModel.countDocuments({ spu_shopId: shopObjectId, isDeleted: false })
+
+  const [skuStats] = await skuModel.aggregate([
+    {
+      $match: { isDeleted: false }
+    },
+    {
+      $lookup: {
+        from: 'Spus',
+        localField: 'sku_spuId',
+        foreignField: '_id',
+        as: 'spu'
+      }
+    },
+    { $unwind: '$spu' },
+    { $match: { 'spu.spu_shopId': shopObjectId } },
+    {
+      $group: {
+        _id: null,
+        lowStockCount: {
+          $sum: {
+            $cond: [
+              { $and: [{ $gt: ['$sku_stock', 0] }, { $lt: ['$sku_stock', LOW_STOCK_THRESHOLD] }] },
+              1,
+              0
+            ]
+          }
+        },
+        outOfStockCount: {
+          $sum: {
+            $cond: [{ $eq: ['$sku_stock', 0] }, 1, 0]
+          }
+        }
+      }
+    }
+  ])
+
+  return {
+    totalProducts,
+    lowStockCount: skuStats?.lowStockCount || 0,
+    outOfStockCount: skuStats?.outOfStockCount || 0
+  }
+}
+
 export default {
   createSku,
   getOneSku,
@@ -230,5 +277,6 @@ export default {
   updateSkuBySpuId,
   updateSingleSku,
   getSkusDetails,
-  querySkusList
+  querySkusList,
+  getProductStats
 }

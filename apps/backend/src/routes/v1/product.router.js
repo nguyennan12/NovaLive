@@ -16,6 +16,7 @@ Router.get('/:productId', asyncHandler(productController.getProductDetail))
 //  === Authentication ===
 Router.use(authentication)
 // === Shop ===
+Router.get('/stats', asyncHandler(productController.getProductStats))
 Router.get('/me/public', asyncHandler(productController.getPublishedProduct))
 Router.get('/me/draft', asyncHandler(productController.getDraftProduct))
 

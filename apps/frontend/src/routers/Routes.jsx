@@ -7,7 +7,7 @@ import ProductFormPage from '~/features/Product/pages/ProductFormPage'
 import DashboardShop from '~/common/components/layout/DashBoard/DashBoardShop'
 import ProductsPage from '~/features/Product/pages/ProductPage'
 import InventoryPage from '~/features/Inventory/pages/InventoryPage'
-// import DiscountPage from '~/features/Discount/pages/DiscountPage'
+import { DiscountPage } from '~/features/Discount/pages/DiscountPage'
 
 const AppRoutes = () => {
   return (
@@ -24,7 +24,7 @@ const AppRoutes = () => {
       <Route path="/products/form" element={<ProductFormPage />} />
       <Route path="/products/form/:id" element={<ProductFormPage />} />
       <Route path='/inventory' element={<InventoryPage />} />
-      {/* <Route path='/discount' element={<DiscountPage />} /> */}
+      <Route path='/discount' element={<DiscountPage />} />
       <Route path='/dashboard/shop' element={<DashboardShop />}>
         <Route index element={<Box>dashboard</Box>} />
         <Route path="products" element={<ProductsPage />} />

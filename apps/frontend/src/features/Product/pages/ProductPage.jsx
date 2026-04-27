@@ -3,6 +3,9 @@ import ProductActionCards from '../components/ProductPage/ProductActionCards'
 import ProductFilterBar from '../components/ProductPage/ProductFilterBar'
 import ProductList from '../components/ProductPage/ProductList'
 import { FormProvider, useForm } from 'react-hook-form'
+import { useQuery } from '@tanstack/react-query'
+import { getProductStatsAPI } from '~/common/apis/services/productService'
+import { MOCK_DISCOUNTS } from '~/../mockdata/discount'
 
 const ProductsPage = () => {
   const methods = useForm({
@@ -15,10 +18,30 @@ const ProductsPage = () => {
     }
   })
 
+  const { data: serverStats, isLoading } = useQuery({
+    queryKey: ['products_stats'],
+    queryFn: () => getProductStatsAPI()
+  })
+
+  const stats = {
+    totalProducts: serverStats?.totalProducts || 0,
+    lowStockCount: serverStats?.lowStockCount || 0,
+    outOfStockCount: serverStats?.outOfStockCount || 0,
+    addedThisWeek: 0,
+    activeDiscounts: MOCK_DISCOUNTS.filter(d => d.status === 'active').length,
+    endingSoonDiscounts: MOCK_DISCOUNTS.filter(d => d.status === 'active').length,
+    nextEventDate: 'Oct 30',
+    nextEventTitle: 'Flash Sale',
+    daysRemaining: 5
+  }
+
   return (
     <FormProvider {...methods}>
-      <Box>
-        <Box sx={{ mb: 3 }}>
+      {/* 1. Biến Box tổng thành Flex Column, chiếm 100% chiều cao component cha */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+
+        {/* Header - flexShrink: 0 để khối này không bao giờ bị bóp nhỏ lại */}
+        <Box sx={{ mb: 3, flexShrink: 0 }}>
           <Typography
             sx={{
               fontSize: '1.25rem',
@@ -34,12 +57,21 @@ const ProductsPage = () => {
           </Typography>
         </Box>
 
-        <ProductActionCards />
-        <ProductFilterBar />
-        <ProductList />
+        {/* Các Component phía trên cũng không được bóp nhỏ */}
+        <Box sx={{ flexShrink: 0 }}>
+          <ProductActionCards stats={stats} loading={isLoading} />
+        </Box>
+
+        <Box sx={{ flexShrink: 0 }}>
+          <ProductFilterBar />
+        </Box>
+        <Box sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <ProductList />
+        </Box>
+
       </Box>
     </FormProvider>
   )
 }
 
-export default ProductsPage
+export default ProductsPage
