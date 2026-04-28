@@ -10,11 +10,11 @@ const CreateLiveForm = ({ editData, onCancelEdit }) => {
   const isEditing = !!editData
 
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
-    defaultValues: isEditing
+    values: isEditing
       ? {
-        title: editData.title,
-        scheduledAt: editData.scheduledAt ? editData.scheduledAt.slice(0, 16) : '',
-        description: editData.description || ''
+        title: editData.live_title,
+        scheduledAt: editData.live_scheduled_at ? editData.live_scheduled_at.slice(0, 16) : '',
+        description: editData.live_description || ''
       }
       : DEFAULT_VALUES
   })

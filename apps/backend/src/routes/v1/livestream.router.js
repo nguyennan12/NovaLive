@@ -18,5 +18,6 @@ Router.patch('/:liveId/unpin', asyncHandler(livestreamController.unpinProduct))
 Router.post('/:liveId/product', asyncHandler(livestreamController.addProductToLiveSession))
 Router.patch('/:liveId/cancel', asyncHandler(livestreamController.cancelLiveSession))
 Router.get('/history', asyncHandler(livestreamController.getHistoryLiveByShop))
+Router.get('/upcomming', asyncHandler(livestreamController.getUpommingLiveSessions))
 
 export const livestreamRouter = Router

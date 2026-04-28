@@ -64,7 +64,7 @@ const LiveManagerPage = () => {
 
       {/* History table */}
       <LiveHistoryTable />
-    </Box>
+    </Box >
   )
 }
 

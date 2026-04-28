@@ -80,6 +80,13 @@ const getHistoryLiveByShop = async (req, res, next) => {
     metadata: await livestreamService.getHistoryLiveByShop({ shopId: req.user.shopId, ...req.query })
   }).send(res)
 }
+const getUpommingLiveSessions = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get Live upcomming successfully!',
+    metadata: await livestreamService.getUpommingLiveSessions({ shopId: req.user.shopId, ...req.query })
+  }).send(res)
+}
 
 export default {
   createLiveSession,
@@ -92,5 +99,6 @@ export default {
   addProductToLiveSession,
   getHistoryLiveByShop,
   updateLiveSession,
-  cancelLiveSession
+  cancelLiveSession,
+  getUpommingLiveSessions
 }

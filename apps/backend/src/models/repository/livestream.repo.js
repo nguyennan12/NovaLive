@@ -33,5 +33,5 @@ export default {
   findLiveByIdAndType,
   findLiveByIdAndShopId,
   addProductToLiveSession,
-  findAllLiveSession
+  findAllLiveSession,
 }

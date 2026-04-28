@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Button, Skeleton, Typography } from '@mui/material'
+import { Box, Button, Skeleton, Typography, Divider } from '@mui/material'
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded'
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
@@ -10,16 +10,17 @@ import ConfirmDialog from '~/common/components/common/form/ConfirmDialog'
 import SectionCard from '~/features/Inventory/components/shared/SectionCard'
 import LiveStatusBadge from '../shared/LiveStatusBadge'
 import { useCancelSession, useStartSession, useUpcomingSession } from '../../hooks/useLiveSessions'
+import { formatDate } from '~/common/utils/formatters'
 
 const UpcomingLiveCard = ({ onEdit }) => {
   const navigate = useNavigate()
-  const [cancelOpen, setCancelOpen] = useState(false)
+  const [sessionToCancel, setSessionToCancel] = useState(null)
 
-  const { data: session, isLoading } = useUpcomingSession()
+  const { data: sessions = [], isLoading } = useUpcomingSession()
   const startSession = useStartSession()
   const cancelSession = useCancelSession()
 
-  const handleStart = async () => {
+  const handleStart = async (session) => {
     if (!session) return
     await toast.promise(
       startSession.mutateAsync(session._id),
@@ -29,11 +30,12 @@ const UpcomingLiveCard = ({ onEdit }) => {
   }
 
   const handleConfirmCancel = async () => {
+    if (!sessionToCancel) return
     await toast.promise(
-      cancelSession.mutateAsync(session._id),
+      cancelSession.mutateAsync(sessionToCancel._id),
       { pending: 'Đang hủy...', success: 'Phiên live đã bị hủy', error: 'Hủy thất bại' }
     )
-    setCancelOpen(false)
+    setSessionToCancel(null)
   }
 
   if (isLoading) {
@@ -44,7 +46,7 @@ const UpcomingLiveCard = ({ onEdit }) => {
     )
   }
 
-  if (!session) {
+  if (sessions.length === 0) {
     return (
       <SectionCard title='Phiên Live Sắp Tới' sx={{ height: '100%' }}>
         <Box sx={{ textAlign: 'center', py: 5 }}>
@@ -61,83 +63,98 @@ const UpcomingLiveCard = ({ onEdit }) => {
   }
 
   return (
-    <>
-      <SectionCard title='Phiên Live Sắp Tới' subtitle='Phiên được lên lịch gần nhất' sx={{ height: '100%' }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
-            <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: '#1e293b', flex: 1, lineHeight: 1.3 }}>
-              {session.title}
-            </Typography>
-            <LiveStatusBadge status={session.status} />
-          </Box>
+    <SectionCard
+      title='Phiên Live Sắp Tới'
+      subtitle='Đã lên lịch'
+      sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 3,
+          overflowY: 'auto',
+          maxHeight: '240px',
+          pr: 1.5,
+          pb: 1,
+          '&::-webkit-scrollbar': {
+            width: '6px'
+          }
+        }}
+      >
+        {sessions.map((session, index) => (
+          <Box key={session._id} sx={{ bgcolor: 'background.paper', border: '0.5px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Box sx={{ bgcolor: 'grey.50', px: 1.75, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '0.5px solid', borderColor: 'divider' }}>
+              <Typography sx={{ fontSize: '0.68rem', fontWeight: 600, color: 'text.disabled', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                Sắp diễn ra
+              </Typography>
+              <LiveStatusBadge status={session.live_status} />
+            </Box>
 
-          {session.description && (
-            <Typography sx={{ fontSize: '0.82rem', color: '#64748b', lineHeight: 1.55 }}>
-              {session.description}
-            </Typography>
-          )}
+            {/* Title + description */}
+            <Box sx={{ px: 1.75, pt: 1.75, pb: 1.5 }}>
+              <Typography sx={{ fontWeight: 500, fontSize: '0.94rem', color: 'text.primary', lineHeight: 1.35, mb: 0.5 }}>
+                {session.live_title}
+              </Typography>
+              {session.live_description && (
+                <Typography sx={{ fontSize: '0.81rem', color: 'text.secondary', lineHeight: 1.5 }}>
+                  {session.live_description}
+                </Typography>
+              )}
+            </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CalendarMonthRoundedIcon sx={{ fontSize: 15, color: '#94a3b8', flexShrink: 0 }} />
-            <Typography sx={{ fontSize: '0.82rem', color: '#64748b' }}>
-              {new Date(session.scheduledAt).toLocaleString('vi-VN', {
-                dateStyle: 'medium',
-                timeStyle: 'short'
-              })}
-            </Typography>
-          </Box>
+            {/* Date + live code */}
+            <Box sx={{ px: 1.75, pb: 1.5, display: 'flex', alignItems: 'center', gap: 0.75, borderBottom: '0.5px solid', borderColor: 'divider' }}>
+              <CalendarMonthRoundedIcon sx={{ fontSize: 13, color: 'text.disabled', flexShrink: 0 }} />
+              <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
+                {formatDate(session.live_schedule_at)}
+              </Typography>
+              <Typography sx={{ ml: 'auto', fontSize: '0.7rem', color: 'text.disabled', fontFamily: 'monospace' }}>
+                {session.live_code}
+              </Typography>
+            </Box>
 
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 'auto', pt: 1 }}>
-            <Button
-              variant='contained'
-              size='small'
-              startIcon={<PlayArrowRoundedIcon />}
-              onClick={handleStart}
-              disableElevation
-              disabled={startSession.isPending}
-              sx={{
-                background: 'linear-gradient(90deg, #74a2ffff, #69aedc, #8acdde)',
-                fontWeight: 600,
-                borderRadius: '8px',
-                flex: 1,
-                color: 'white'
-              }}
-            >
-              Bắt Đầu
-            </Button>
-            <Button
-              variant='outlined'
-              size='small'
-              startIcon={<EditRoundedIcon />}
-              onClick={() => onEdit?.(session)}
-              sx={{ borderColor: '#e2e8f0', color: '#64748b', fontWeight: 600, borderRadius: '8px' }}
-            >
-              Sửa
-            </Button>
-            <Button
-              variant='outlined'
-              size='small'
-              startIcon={<CancelRoundedIcon />}
-              onClick={() => setCancelOpen(true)}
-              sx={{ borderColor: '#fecaca', color: '#ef4444', fontWeight: 600, borderRadius: '8px' }}
-            >
-              Hủy
-            </Button>
+            {/* Actions */}
+            <Box sx={{ px: 1.75, py: 1.25, display: 'flex', gap: 1 }}>
+              <Button
+                variant="contained" size="small" startIcon={<PlayArrowRoundedIcon />}
+                onClick={() => handleStart(session)}
+                disableElevation disabled={startSession.isPending}
+                sx={{ flex: 1, background: 'linear-gradient(90deg, #74a2ffff, #69aedc, #8acdde)', fontWeight: 600, borderRadius: '8px', fontSize: '0.81rem', color: '#fff' }}
+              >
+                Bắt đầu
+              </Button>
+              <Button
+                variant="outlined" size="small" startIcon={<EditRoundedIcon />}
+                onClick={() => onEdit?.(session)}
+                sx={{ borderColor: 'divider', color: 'text.secondary', fontWeight: 500, borderRadius: '8px', fontSize: '0.81rem' }}
+              >
+                Sửa
+              </Button>
+              <Button
+                variant="outlined" size="small" startIcon={<CancelRoundedIcon />}
+                onClick={() => setSessionToCancel(session)}
+                sx={{ borderColor: 'error.light', color: 'error.main', fontWeight: 500, borderRadius: '8px', fontSize: '0.81rem' }}
+              >
+                Hủy
+              </Button>
+            </Box>
+            {index !== sessions.length - 1 && (<Divider sx={{ mt: 3 }} />)}
           </Box>
-        </Box>
-      </SectionCard>
+        ))}
+      </Box>
 
       <ConfirmDialog
-        open={cancelOpen}
+        open={Boolean(sessionToCancel)}
         title='Hủy phiên live?'
-        content={`Bạn có chắc muốn hủy phiên "${session.title}"? Hành động này không thể hoàn tác.`}
+        content={`Bạn có chắc muốn hủy phiên "${sessionToCancel?.live_title}"? Hành động này không thể hoàn tác.`}
         confirmText='Hủy phiên live'
         cancelText='Giữ lại'
         isLoading={cancelSession.isPending}
         onConfirm={handleConfirmCancel}
-        onClose={() => setCancelOpen(false)}
+        onClose={() => setSessionToCancel(null)}
       />
-    </>
+    </SectionCard>
   )
 }
 

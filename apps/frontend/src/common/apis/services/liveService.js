@@ -21,7 +21,6 @@ export const getActiveSessionsAPI = async (params) => {
   return response.metadata
 }
 
-
 export const updateLiveSessionAPI = async (liveId, data) => {
   const response = await authorizedAxiosInstance.patch(`livestream/${liveId}`, data)
   return response.metadata
@@ -32,23 +31,20 @@ export const cancelLiveSessionAPI = async (liveId) => {
   return response.metadata
 }
 
-export const addProductToLiveSession = async (liveId) => {
+export const addProductToLiveSessionAPI = async (liveId) => {
   const response = await authorizedAxiosInstance.post(`livestream/${liveId}/product`)
   return response.metadata
 }
 
-// --- Live Manager APIs (mock implementations — replace with real endpoints when backend is ready) ---
+export const getLiveHistoryAPI = async (params) => {
+  const response = await authorizedAxiosInstance.get(`livestream/history?${params}`)
+  return response.metadata
+}
 
-const MOCK_HISTORY = [
-  { _id: 's1', title: 'Flash Sale Mùa Hè', scheduledAt: '2026-04-20T10:00:00Z', endedAt: '2026-04-20T12:00:00Z', duration: 7200, viewers: 450, orders: 38, revenue: 5200000, status: 'ended', description: 'Giảm giá toàn bộ sản phẩm mùa hè lên tới 50%.' },
-  { _id: 's2', title: 'Ra Mắt Sản Phẩm Mới', scheduledAt: '2026-04-15T14:00:00Z', endedAt: '2026-04-15T15:30:00Z', duration: 5400, viewers: 280, orders: 21, revenue: 3800000, status: 'ended', description: '' },
-  { _id: 's3', title: 'Khuyến Mãi Cuối Tuần', scheduledAt: '2026-04-12T09:00:00Z', endedAt: '2026-04-12T11:00:00Z', duration: 7200, viewers: 520, orders: 55, revenue: 8100000, status: 'ended', description: '' },
-  { _id: 's4', title: 'Summer Collection Live', scheduledAt: '2026-04-08T19:00:00Z', endedAt: '2026-04-08T21:00:00Z', duration: 7200, viewers: 190, orders: 14, revenue: 2300000, status: 'ended', description: '' },
-  { _id: 's5', title: 'Sale 30/4 Đặc Biệt', scheduledAt: '2026-04-05T15:00:00Z', endedAt: null, duration: null, viewers: 0, orders: 0, revenue: 0, status: 'cancelled', description: '' },
-  { _id: 's6', title: 'Livestream Hàng Mới', scheduledAt: '2026-03-28T10:00:00Z', endedAt: '2026-03-28T11:30:00Z', duration: 5400, viewers: 340, orders: 29, revenue: 4150000, status: 'ended', description: '' },
-  { _id: 's7', title: 'Giảm Giá Sốc', scheduledAt: '2026-03-22T14:00:00Z', endedAt: '2026-03-22T15:45:00Z', duration: 6300, viewers: 610, orders: 67, revenue: 9700000, status: 'ended', description: '' },
-  { _id: 's8', title: 'Flash Sale Thứ 6', scheduledAt: '2026-03-14T20:00:00Z', endedAt: '2026-03-14T21:30:00Z', duration: 5400, viewers: 230, orders: 18, revenue: 2900000, status: 'ended', description: '' }
-]
+export const getUpommingLiveSessionsAPI = async () => {
+  const response = await authorizedAxiosInstance.get('livestream/upcomming')
+  return response.metadata
+}
 
 export const getLiveStatsAPI = async () => ({
   totalSessions: 24,
@@ -58,10 +54,6 @@ export const getLiveStatsAPI = async () => ({
   avgOrderValue: 285000
 })
 
-export const getLiveHistoryAPI = async (params) => {
-  const response = await authorizedAxiosInstance.get(`livestream/history?${params}`)
-  return response.metadata
-}
 
 const REVENUE_DATA = {
   week: [

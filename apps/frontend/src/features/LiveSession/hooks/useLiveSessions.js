@@ -1,23 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
 import {
   cancelLiveSessionAPI,
   createLiveSessionAPI,
   getLiveHistoryAPI,
   getLiveRevenueChartAPI,
   getLiveStatsAPI,
+  getUpommingLiveSessionsAPI,
   startLiveAPI,
   updateLiveSessionAPI
 } from '~/common/apis/services/liveService'
-
-const UPCOMING_MOCK = {
-  _id: 'upcoming1',
-  title: 'Flash Sale Tháng 5',
-  scheduledAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-  description: 'Giảm đến 50% toàn bộ sản phẩm mùa hè! Đừng bỏ lỡ.',
-  thumbnail: null,
-  status: 'scheduled'
-}
 
 export const useLiveStats = () =>
   useQuery({
@@ -29,7 +20,7 @@ export const useLiveStats = () =>
 export const useUpcomingSession = () =>
   useQuery({
     queryKey: ['live', 'upcoming'],
-    queryFn: async () => UPCOMING_MOCK,
+    queryFn: async () => getUpommingLiveSessionsAPI(),
     staleTime: 30 * 1000
   })
 

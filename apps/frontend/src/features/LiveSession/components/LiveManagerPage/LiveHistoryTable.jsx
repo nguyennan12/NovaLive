@@ -4,7 +4,7 @@ import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import { Box, Collapse, IconButton, MenuItem, Pagination, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { useState } from 'react'
-import { formatDate, formatDuration, formatLiveDurationClock, formatVND } from '~/common/utils/formatters'
+import { formatDate, formatLiveDurationClock, formatVND } from '~/common/utils/formatters'
 import SectionCard from '~/features/Inventory/components/shared/SectionCard'
 import { useSessionHistory } from '../../hooks/useLiveSessions'
 import LiveStatusBadge from '../shared/LiveStatusBadge'
@@ -92,7 +92,7 @@ const SessionRow = ({ session }) => {
 
         </TableCell>
         <TableCell sx={{ fontSize: '0.8rem', color: '#64748b', whiteSpace: 'nowrap' }}>
-          {formatDate(session.live_scheduledAt)}
+          {formatDate(session.live_schedule_at)}
         </TableCell>
         <TableCell sx={{ fontSize: '0.8rem', color: '#64748b' }}>
           {formatLiveDurationClock(session.live_actual_start, session.live_actual_end)}
@@ -134,9 +134,7 @@ const LiveHistoryTable = () => {
   const params = { page, limit, status }
 
   const queryString = new URLSearchParams(params).toString()
-  console.log("🚀 ~ LiveHistoryTable ~ queryString:", queryString)
   const { sessions, totalPages } = useSessionHistory(queryString)
-  console.log("🚀 ~ LiveHistoryTable ~ sessions:", sessions)
 
   return (
     <SectionCard title='Lịch Sử Phiên Live' subtitle='Danh sách các buổi live đã diễn ra'
