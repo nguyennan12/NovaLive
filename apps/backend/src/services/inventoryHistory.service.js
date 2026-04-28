@@ -97,18 +97,15 @@ const getChartDataByShop = async ({ shopId, period = 'today' }) => {
 
   switch (period) {
     case 'week':
-      // 7 ngày qua
       startDate.setDate(startDate.getDate() - 7)
       format = '%Y-%m-%d'
       break
     case 'month':
-      // 28 ngày qua
       startDate.setDate(startDate.getDate() - 28)
       format = 'Wk %V'
       break
     case 'today':
     default:
-      // Từ 00:00 hôm nay
       startDate.setHours(0, 0, 0, 0)
       format = '%H:00'
       break

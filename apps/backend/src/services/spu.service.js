@@ -167,8 +167,8 @@ const getDraftProduct = async ({ userId, limit = 50, page = 1 }) => {
 }
 
 const getAllProducts = async ({ limit = 50, sort = 'ctime', page = 1 }, shopId) => {
-  const filter = { isPublished: true, isDeleted: false, ...(shopId && { shopId }) }
-  const select = ['spu_name', 'spu_code', 'spu_price', 'spu_thumb', 'spu_quantity']
+  const filter = { isPublished: true, isDeleted: false, ...(shopId && { shopId }), spu_quantity: { $gt: 0 } }
+  const select = ['spu_name', 'spu_code', 'spu_price', 'spu_thumb', 'spu_quantity', 'is_flash_sale']
   const limitNumber = Number(limit)
   const pageNumber = Number(page)
   const { products, totalItems } = await spuRepo.findAllProducts({ limit: limitNumber, sort, page: pageNumber, filter, select })

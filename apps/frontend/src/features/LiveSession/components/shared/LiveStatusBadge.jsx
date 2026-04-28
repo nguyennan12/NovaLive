@@ -4,7 +4,7 @@ const STATUS_CONFIG = {
   scheduled: { label: 'scheduled', bg: '#f0fbfdff', text: '#2c8ae8ff' },
   live: { label: 'live', bg: '#f0fdf4', text: '#15803d' },
   ended: { label: 'ended', bg: '#fdf8f0ff', text: '#f1aa27ff' },
-  cancelled: { label: 'canceled', bg: '#fdf0f0ff', text: '#e82f2cff' }
+  cancelled: { label: 'cancelled', bg: '#fdf0f0ff', text: '#e82f2cff' }
 }
 
 const LiveStatusBadge = ({ status, size = 'small' }) => {

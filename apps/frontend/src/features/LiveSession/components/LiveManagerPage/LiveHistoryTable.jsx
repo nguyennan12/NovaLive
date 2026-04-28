@@ -9,57 +9,59 @@ import SectionCard from '~/features/Inventory/components/shared/SectionCard'
 import { useSessionHistory } from '../../hooks/useLiveSessions'
 import LiveStatusBadge from '../shared/LiveStatusBadge'
 
-const ExpandedDetail = ({ session }) => (
-  <TableRow>
-    <TableCell colSpan={7} sx={{ p: 0, border: 0 }}>
-      <Collapse in unmountOnExit>
-        <Box
-          sx={{
-            px: 3,
-            py: 2,
-            bgcolor: '#f8faff',
-            borderBottom: '1px solid #eeeeee',
-            display: 'flex',
-            gap: 4,
-            flexWrap: 'wrap',
-            alignItems: 'flex-start'
-          }}
-        >
-          {session.description && (
-            <Box sx={{ flex: 1, minWidth: 160 }}>
-              <Typography sx={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700, mb: 0.5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Mô tả
-              </Typography>
-              <Typography sx={{ fontSize: '0.82rem', color: '#64748b', lineHeight: 1.5 }}>
-                {session.live_description}
-              </Typography>
-            </Box>
-          )}
-          <Box sx={{ display: 'flex', gap: 3 }}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center' }}>
-                <PeopleOutlineRoundedIcon sx={{ fontSize: 16, color: '#8b5cf6' }} />
-                <Typography sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#8b5cf6' }}>
-                  {session?.live_metrics?.peak_viewers}
+const ExpandedDetail = ({ session }) => {
+  return (
+    <TableRow>
+      <TableCell colSpan={7} sx={{ p: 0, border: 0 }}>
+        <Collapse in unmountOnExit>
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              bgcolor: '#f8faff',
+              borderBottom: '1px solid #eeeeee',
+              display: 'flex',
+              gap: 4,
+              flexWrap: 'wrap',
+              alignItems: 'flex-start'
+            }}
+          >
+            {session.description && (
+              <Box sx={{ flex: 1, minWidth: 160 }}>
+                <Typography sx={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700, mb: 0.5, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Mô tả
+                </Typography>
+                <Typography sx={{ fontSize: '0.82rem', color: '#64748b', lineHeight: 1.5 }}>
+                  {session.live_description}
                 </Typography>
               </Box>
-              <Typography sx={{ fontSize: '0.7rem', color: '#94a3b8' }}>Lượt xem</Typography>
-            </Box>
-            <Box sx={{ textAlign: 'center' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center' }}>
-                <ShoppingBagOutlinedIcon sx={{ fontSize: 16, color: '#f59e0b' }} />
-                <Typography sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#f59e0b' }}>
-                  {session?.live_metrics?.total_orders}
-                </Typography>
+            )}
+            <Box sx={{ display: 'flex', gap: 3 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center' }}>
+                  <PeopleOutlineRoundedIcon sx={{ fontSize: 16, color: '#8b5cf6' }} />
+                  <Typography sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#8b5cf6' }}>
+                    {session?.live_metrics?.peak_viewers}
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontSize: '0.7rem', color: '#94a3b8' }}>Lượt xem</Typography>
               </Box>
-              <Typography sx={{ fontSize: '0.7rem', color: '#94a3b8' }}>Đơn hàng</Typography>
+              <Box sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center' }}>
+                  <ShoppingBagOutlinedIcon sx={{ fontSize: 16, color: '#f59e0b' }} />
+                  <Typography sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#f59e0b' }}>
+                    {session?.live_metrics?.total_orders}
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontSize: '0.7rem', color: '#94a3b8' }}>Đơn hàng</Typography>
+              </Box>
             </Box>
           </Box>
-        </Box>
-      </Collapse>
-    </TableCell>
-  </TableRow>
-)
+        </Collapse>
+      </TableCell>
+    </TableRow>
+  )
+}
 
 const SessionRow = ({ session }) => {
   const [open, setOpen] = useState(false)

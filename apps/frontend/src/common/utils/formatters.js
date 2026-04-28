@@ -67,3 +67,10 @@ export const formatLiveDurationClock = (start, end) => {
 
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
+
+
+export const formatSold = (n) => {
+  if (!n) return '0'
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`
+  return `${n}`
+}

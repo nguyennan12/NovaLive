@@ -32,7 +32,7 @@ export const useLiveHost = ({ liveId, userId }) => {
     }
   }, [])
 
-  //useCallback la re-render theo 1 dieu kien nao do thay doi, kh render lien tuc
+
   const startLive = useCallback(async () => {
     if (!liveId || !userId) return
     setStatus('starting')

@@ -10,7 +10,7 @@ const orderSchema = new Schema(
       totalPrice: { type: Number, default: 0 },
       totalDiscount: { type: Number, default: 0 },
       feeShip: { type: Number, default: 0 },
-      finalCheckoutL: { type: Number, default: 0 }
+      finalCheckout: { type: Number, default: 0 }
     },
     order_shipping: {
       street: String,

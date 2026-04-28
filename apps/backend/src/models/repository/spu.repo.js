@@ -64,6 +64,13 @@ const searchProducts = async ({ keySearch }) => {
   return results
 }
 
+const incrementProductSold = async (productId, quantity) => {
+  return await spuModel.findOneAndUpdate(
+    { _id: converter.toObjectId(productId) },
+    { $inc: { total_sold: quantity } }
+  )
+}
+
 export default {
   findBySpuCode,
   findBySpuId,
@@ -73,5 +80,6 @@ export default {
   deleteProduct,
   searchProducts,
   findProductByIds,
-  findProductById
+  findProductById,
+  incrementProductSold
 }

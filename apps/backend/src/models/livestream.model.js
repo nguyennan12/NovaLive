@@ -11,7 +11,7 @@ const livestreamSchema = new Schema({
   live_streamerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   live_thumb: { type: String },
 
-  live_status: { type: String, enum: ['scheduled', 'live', 'ended', 'canceled'], default: 'scheduled' },
+  live_status: { type: String, enum: ['scheduled', 'live', 'ended', 'cancelled'], default: 'scheduled' },
 
   live_products: [{
     productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },

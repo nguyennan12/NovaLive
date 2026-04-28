@@ -11,6 +11,7 @@ const spuSchema = new Schema({
   spu_price: { type: Number, required: true, min: [0, 'price invalid'] },
   spu_quantity: { type: Number, required: true, min: [0, 'price invalid'] },
   spu_category: [{ type: String, ref: 'Category' }],
+  total_sold: { type: Number, default: 0 },
   spu_ratingsAvg: {
     type: Number,
     min: [1, 'Rating must be above 1.0'],

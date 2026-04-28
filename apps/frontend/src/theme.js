@@ -11,6 +11,32 @@ const theme = extendTheme({
     chatInputHeight: CHAT_INPUT_HEIGHT,
     mainContentHeight: MAIN_CONTENT_HEIGHT
   },
+
+
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: '#fafafa',
+          contrastText: '#2d2d2d'
+        },
+        secondary: {
+          main: '#539bffff',
+          contrastText: '#e6efff'
+        },
+        third: {
+          main: '#8b5cf6',
+          contrastText: '#e6efff'
+        },
+        fourth: {
+          main: '#f59e0b',
+          contrastText: '#e6efff'
+        },
+        divider: '#eeeeee'
+      }
+    }
+  },
+
   customStyles: {
     discountForm: {
       inputSx: {
@@ -44,30 +70,6 @@ const theme = extendTheme({
         textTransform: 'uppercase',
         color: 'text.secondary',
         mb: 0.5
-      }
-    }
-  },
-
-  colorSchemes: {
-    light: {
-      palette: {
-        primary: {
-          main: '#fafafa',
-          contrastText: '#2d2d2d'
-        },
-        secondary: {
-          main: '#3485f7',
-          contrastText: '#e6efff'
-        },
-        third: {
-          main: '#8b5cf6',
-          contrastText: '#e6efff'
-        },
-        fourth: {
-          main: '#f59e0b',
-          contrastText: '#e6efff'
-        },
-        divider: '#eeeeee'
       }
     }
   },

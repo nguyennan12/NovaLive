@@ -6,6 +6,7 @@ import { sortObject } from '#helpers/object.helper.js'
 import orderModel from '#models/order.model.js'
 import inventoryService from './inventory.service.js'
 import orderRepo from '#models/repository/order.repo.js'
+import spuRepo from '#models/repository/spu.repo.js'
 
 const createPaymentUrl = async ({ reqBody, ipAddr }) => {
   const { orderId, amount, bankCode, language } = reqBody
@@ -79,7 +80,8 @@ const vnpayIpn = async (vnp_Params) => {
     if (rspCode === '00') {
       await Promise.all([
         orderRepo.changeStatusOrder({ orderId: orderId, statusOrder: 'processing', statusPayment: 'paid' }),
-        inventoryService.confirmDeductStock(orderId, items)
+        inventoryService.confirmDeductStock(orderId, items),
+        spuRepo.incrementProductSold(order.order_products.prodcutId, order.order_products.quantity)
       ])
       console.log(`[VNPAY] Đơn ${orderId} thanh toán THÀNH CÔNG. Đã trừ kho!`)
     } else {
