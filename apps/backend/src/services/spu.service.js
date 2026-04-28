@@ -1,3 +1,4 @@
+/* eslint-disable no-lonely-if */
 import ApiError from '#core/error.response.js'
 import { ElasticClient } from '#database/init.elasticsearch.js'
 import { validateAndNormalizeAttributes } from '#helpers/attribute.help.js'

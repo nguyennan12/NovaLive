@@ -2,20 +2,7 @@
 import { inventoryHistoryModel } from '#models/inventoryHistory.model.js'
 import converter from '#utils/converter.js'
 
-const createHistory = async ({
-  shopId,
-  productId,
-  skuId,
-  userId,
-  userEmail,
-  type,
-  quantity,
-  oldStock,
-  newStock,
-  reason,
-  note,
-  location
-}) => {
+const createHistory = async ({ shopId, productId, skuId, userId, userEmail, type, quantity, oldStock, newStock, reason, note, location }) => {
   return await inventoryHistoryModel.create({
     inven_shopId: converter.toObjectId(shopId),
     inven_productId: converter.toObjectId(productId),

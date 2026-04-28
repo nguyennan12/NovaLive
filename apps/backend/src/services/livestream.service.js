@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import ApiError from '#core/error.response.js'
 import { redisClient } from '#database/init.redis.js'
 import livestreamModel from '#models/livestream.model.js'
@@ -214,6 +215,104 @@ const getHistoryLiveByShop = async ({ shopId, limit = 50, page = 1, status = 'al
   }
 }
 
+const getLiveStats = async ({ shopId }) => {
+  const [stats] = await livestreamModel.aggregate([
+    {
+      $match: {
+        live_shopId: converter.toObjectId(shopId),
+        live_status: { $in: ['live', 'ended'] }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        total_sessions: { $sum: 1 },
+        total_revenue: { $sum: '$live_metrics.total_revenue' },
+        total_orders: { $sum: '$live_metrics.total_orders' },
+        avg_viewers: { $avg: '$live_metrics.peak_viewers' },
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        total_sessions: 1,
+        total_revenue: 1,
+        avg_viewers: { $round: ['$avg_viewers', 0] },
+        avg_order_value: {
+          $cond: [
+            { $gt: ['$total_orders', 0] },
+            { $round: [{ $divide: ['$total_revenue', '$total_orders'] }, 0] },
+            0
+          ]
+        }
+      }
+    }
+  ])
+
+  return stats ?? {
+    total_sessions: 0,
+    total_revenue: 0,
+    avg_viewers: 0,
+    avg_order_value: 0
+  }
+}
+
+const getLiveRevenueChart = async ({ shopId, period = 'week' }) => {
+  const shopObjectId = converter.toObjectId(shopId)
+  const TIMEZONE = '+07:00'
+
+  const getAggregation = (startDate, format) => [
+    {
+      $match: {
+        live_shopId: shopObjectId,
+        live_status: { $in: ['live', 'ended'] },
+        ...(startDate && { live_actual_start: { $gte: startDate } })
+      }
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format, date: '$live_actual_start', timezone: TIMEZONE } },
+        revenue: { $sum: '$live_metrics.total_revenue' },
+        viewers: { $max: '$live_metrics.peak_viewers' }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        label: '$_id',
+        revenue: 1,
+        viewers: 1
+      }
+    },
+    { $sort: { label: 1 } }
+  ]
+
+  let startDate = new Date()
+  let format = ''
+
+  switch (period) {
+    case 'week':
+      startDate.setDate(startDate.getDate() - 7)
+      format = '%Y-%m-%d'
+      break
+    case 'month':
+      startDate.setDate(startDate.getDate() - 30)
+      format = 'Wk %V'
+      break
+    case 'all':
+      startDate = null
+      format = '%Y-%m'
+      break
+    default:
+      startDate.setDate(startDate.getDate() - 7)
+      format = '%Y-%m-%d'
+  }
+
+  const chartData = await livestreamModel.aggregate(getAggregation(startDate, format))
+
+  return chartData
+}
+
 
 export default {
   createLiveSession,
@@ -227,5 +326,7 @@ export default {
   updateLiveSession,
   cancelLiveSession,
   getHistoryLiveByShop,
-  getUpommingLiveSessions
+  getUpommingLiveSessions,
+  getLiveStats,
+  getLiveRevenueChart
 }

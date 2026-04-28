@@ -1,9 +1,8 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
-import Overlay from './Overlay/Overlay'
-import { useLivePlayer } from '~/features/Live/hooks/useLivePlayer'
-
+import Overlay from '../Overlay/Overlay'
+import { useLivePlayer } from '../../hooks/useLivePlayer'
 const LivePlayer = ({ liveId, userId }) => {
 
   const { videoRef, status } = useLivePlayer({ liveId, userId })

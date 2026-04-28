@@ -225,9 +225,7 @@ const querySkusList = async ({ page = 1, sort = 'ctime', limit = 50, stock = 'al
 
 const getProductStats = async (shopId) => {
   const shopObjectId = converter.toObjectId(shopId)
-
   const totalProducts = await spuModel.countDocuments({ spu_shopId: shopObjectId, isDeleted: false })
-
   const [skuStats] = await skuModel.aggregate([
     {
       $match: { isDeleted: false }

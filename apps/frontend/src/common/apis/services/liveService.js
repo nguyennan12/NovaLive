@@ -46,13 +46,10 @@ export const getUpommingLiveSessionsAPI = async () => {
   return response.metadata
 }
 
-export const getLiveStatsAPI = async () => ({
-  totalSessions: 24,
-  currentLive: 1,
-  totalRevenue: 48500000,
-  avgViewers: 312,
-  avgOrderValue: 285000
-})
+export const getLiveStatsAPI = async () => {
+  const response = await authorizedAxiosInstance.get('livestream/stats')
+  return response.metadata
+}
 
 
 const REVENUE_DATA = {
@@ -84,3 +81,8 @@ const REVENUE_DATA = {
 }
 
 export const getLiveRevenueChartAPI = async (period) => REVENUE_DATA[period] ?? REVENUE_DATA.week
+
+// export const getLiveRevenueChartAPI = async (period) => {
+//   const response = await authorizedAxiosInstance.get(`livestream/chart?period=${period}`)
+//   return response.metadata
+// }

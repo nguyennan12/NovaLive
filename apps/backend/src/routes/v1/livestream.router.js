@@ -19,5 +19,7 @@ Router.post('/:liveId/product', asyncHandler(livestreamController.addProductToLi
 Router.patch('/:liveId/cancel', asyncHandler(livestreamController.cancelLiveSession))
 Router.get('/history', asyncHandler(livestreamController.getHistoryLiveByShop))
 Router.get('/upcomming', asyncHandler(livestreamController.getUpommingLiveSessions))
+Router.get('/stats', asyncHandler(livestreamController.getLiveStats))
+Router.get('/chart', asyncHandler(livestreamController.getLiveRevenueChart))
 
 export const livestreamRouter = Router

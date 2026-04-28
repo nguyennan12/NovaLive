@@ -87,6 +87,20 @@ const getUpommingLiveSessions = async (req, res, next) => {
     metadata: await livestreamService.getUpommingLiveSessions({ shopId: req.user.shopId, ...req.query })
   }).send(res)
 }
+const getLiveStats = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get Live stats successfully!',
+    metadata: await livestreamService.getLiveStats({ shopId: req.user.shopId })
+  }).send(res)
+}
+const getLiveRevenueChart = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get Live Chart successfully!',
+    metadata: await livestreamService.getLiveRevenueChart({ shopId: req.user.shopId, ...req.query })
+  }).send(res)
+}
 
 export default {
   createLiveSession,
@@ -100,5 +114,7 @@ export default {
   getHistoryLiveByShop,
   updateLiveSession,
   cancelLiveSession,
-  getUpommingLiveSessions
+  getUpommingLiveSessions,
+  getLiveStats,
+  getLiveRevenueChart
 }

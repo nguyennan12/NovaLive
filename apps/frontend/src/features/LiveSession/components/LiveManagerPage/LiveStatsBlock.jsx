@@ -89,7 +89,7 @@ const LiveStatsBlock = () => {
       iconColor: '#3485f7',
       iconBg: '#eff6ff',
       label: 'Tổng Phiên Live',
-      value: stats.totalSessions,
+      value: stats.total_sessions,
       sub: 'phiên'
     },
     {
@@ -97,7 +97,7 @@ const LiveStatsBlock = () => {
       iconColor: '#10b981',
       iconBg: '#ecfdf5',
       label: 'Doanh Thu Live',
-      value: formatVND(stats.totalRevenue),
+      value: formatVND(stats.total_revenue),
       sub: ''
     },
     {
@@ -105,7 +105,7 @@ const LiveStatsBlock = () => {
       iconColor: '#8b5cf6',
       iconBg: '#f5f3ff',
       label: 'Lượt Xem TB',
-      value: stats.avgViewers,
+      value: stats.avg_viewers,
       sub: 'người/phiên'
     },
     {
@@ -113,7 +113,7 @@ const LiveStatsBlock = () => {
       iconColor: '#f59e0b',
       iconBg: '#fffaf4',
       label: 'Giá Trị ĐH TB',
-      value: formatVND(stats.avgOrderValue),
+      value: formatVND(stats.avg_order_value),
       sub: ''
     }
   ]

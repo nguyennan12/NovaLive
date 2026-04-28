@@ -1,8 +1,8 @@
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/common/redux/user/userSlice'
-import { LiveFeed } from '../components/LiveFeed'
-import AppBar from '~/common/components/layout/AppBar/AppBar'
-const Live = () => {
+import { LiveFeed } from '../components/LiveFeedPage/LiveFeed'
+
+const LiveFeedPage = () => {
   const currentUser = useSelector(selectCurrentUser)
   return <>
     <LiveFeed userId={currentUser._id} />
@@ -10,4 +10,4 @@ const Live = () => {
 
 }
 
-export default Live
+export default LiveFeedPage

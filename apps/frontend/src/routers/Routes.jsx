@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import { Routes, Route } from 'react-router-dom'
 import Auth from '~/features/Auth/pages/Auth'
-import Live from '~/features/Live/pages/Live'
+import LiveFeedPage from '~/features/LiveSession/pages/LiveFeedPage'
 import ShopLive from '~/features/Shop/pages/ShopLive'
 import ProductFormPage from '~/features/Product/pages/ProductFormPage'
 import DashboardShop from '~/common/components/layout/DashBoard/DashBoardShop'
@@ -21,7 +21,7 @@ const AppRoutes = () => {
       <Route path='/register' element={<Auth />} />
       <Route path='/verify' element={<Auth />} />
       {/* LIVE */}
-      <Route path='/live' element={<Live />} />
+      <Route path='/live' element={<LiveFeedPage />} />
       <Route path='/shop/live/:liveId' element={<ShopLive />} />
       {/* PRODUCT */}
       <Route path="/products/form" element={<ProductFormPage />} />

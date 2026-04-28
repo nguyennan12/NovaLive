@@ -82,10 +82,10 @@ const SessionRow = ({ session }) => {
         <TableCell>
           <Box>
             <Typography sx={{
-              fontWeight: 600, color: '#1e293b', fontSize: '0.82rem', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+              fontWeight: 600, color: 'secondary.main', fontSize: '0.82rem', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
             }}>{session.live_title}</Typography>
             <Typography sx={{
-              fontWeight: 500, color: '#808080ff', fontSize: '0.7rem', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+              fontWeight: 500, color: '#a5a5a5ff', fontSize: '0.7rem', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
             }}>{session.live_code}</Typography>
 
           </Box>
