@@ -8,7 +8,7 @@ import DashboardShop from '~/common/components/layout/DashBoard/DashBoardShop'
 import ProductsPage from '~/features/Product/pages/ProductPage'
 import InventoryPage from '~/features/Inventory/pages/InventoryPage'
 import { DiscountPage } from '~/features/Discount/pages/DiscountPage'
-// import LiveManagerPage from '~/features/Live/pages/LiveManagerPage'
+import LiveManagerPage from '~/features/LiveSession/pages/LiveManagerPage'
 import { HomePage } from '~/features/Home/pages/HomePage'
 
 const AppRoutes = () => {
@@ -33,7 +33,7 @@ const AppRoutes = () => {
         <Route path="products" element={<ProductsPage />} />
         <Route path="orders" element={<Box>Orders</Box>} />
         <Route path="customers" element={<Box>customers</Box>} />
-        {/* <Route path="live" element={<LiveManagerPage />} /> */}
+        <Route path="live" element={<LiveManagerPage />} />
         <Route path="analytics" element={<Box>analytics</Box>} />
         <Route path="finance" element={<Box>finance</Box>} />
       </Route>

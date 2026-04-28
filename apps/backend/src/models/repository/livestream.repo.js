@@ -5,6 +5,33 @@ const findLiveByIdAndType = async (liveId, type) => {
   return await livestreamModel.findOne({ _id: converter.toObjectId(liveId), live_status: type }).lean()
 }
 
+const findLiveByIdAndShopId = async (liveId, shopId) => {
+  return await livestreamModel.findOnd({ _id: converter.toObjectId(liveId), live_shopId: converter.toObjectId(shopId) }).lean()
+}
+
+const addProductToLiveSession = async (liveId, products) => {
+  return await livestreamModel.findOneAndUpdate(
+    { _id: converter.toObjectId(liveId), live_status: 'active' },
+    {
+      $push: {
+        live_products: products
+      }
+    },
+    { returnDocument: 'after' }
+  )
+}
+
+const findAllLiveSession = async ({ skip, limit, filter }) => {
+  return livestreamModel.find(filter)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean()
+}
+
 export default {
-  findLiveByIdAndType
+  findLiveByIdAndType,
+  findLiveByIdAndShopId,
+  addProductToLiveSession,
+  findAllLiveSession
 }

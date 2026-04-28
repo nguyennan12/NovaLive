@@ -10,38 +10,13 @@ import socketService from './socket.service.js'
 import agoraHelper from '#helpers/agora.helper.js'
 import livestreamRepo from '#models/repository/livestream.repo.js'
 
-const createLiveSession = async ({ userId, reqBody }) => {
-  const { title, description, products, shopId } = reqBody
-  const skuIds = products.flatMap(p => p.skus.map(s => s.sku_id))
-  const foundSkus = await skuService.getSkusDetails(skuIds)
+const createLiveSession = async ({ userId, reqBody, shopId }) => {
+  const { title, description, scheduleAt } = reqBody
 
-  const liveProducts = products.map(reqProduct => {
-    const skus = reqProduct.skus.map(reqSku => {
-      const foundSku = foundSkus.find(s => s.sku_id === reqSku.sku_id)
-      if (!foundSku) throw new ApiError(StatusCodes.BAD_REQUEST, `SKU ${reqSku.sku_id} not found`)
-
-      return {
-        skuId: foundSku.sku_id,
-        sku_name: foundSku.sku_attributes,
-        original_price: foundSku.sku_price,
-        live_price: reqSku.live_price,
-      }
-    })
-
-    const firstSku = foundSkus.find(s => s.product_id === reqProduct.spu_id)
-
-    return {
-      productId: firstSku.product_id,
-      name: firstSku.product_name,
-      thumb: firstSku.sku_image,
-      is_featured: reqProduct.is_featured || false,
-      skus,
-    }
-  })
   const newLive = await livestreamModel.create({
     live_title: title,
     live_description: description,
-    live_products: liveProducts,
+    live_schedule_at: scheduleAt,
     live_streamerId: userId,
     live_code: generateLiveId(),
     live_shopId: shopId
@@ -153,6 +128,88 @@ const unpinProduct = async ({ userId, liveId }) => {
   )
 }
 
+const addProductToLiveSession = async ({ products, liveId, shopId }) => {
+
+  const skuIds = products.flatMap(p => p.skus.map(s => s.sku_id))
+  const [foundLive, foundSkus] = await Promise.all([
+    livestreamRepo.findLiveByIdAndShopId(liveId, shopId),
+    skuService.getSkusDetails(skuIds)
+  ])
+  if (!foundLive) throw new ApiError(StatusCodes.BAD_REQUEST, 'Live does not existss!')
+
+  const liveProducts = products.map(reqProduct => {
+    const skus = reqProduct.skus.map(reqSku => {
+      const foundSku = foundSkus.find(s => s.sku_id === reqSku.sku_id)
+      if (!foundSku) throw new ApiError(StatusCodes.BAD_REQUEST, `SKU ${reqSku.sku_id} not found`)
+
+      return {
+        skuId: foundSku.sku_id,
+        sku_name: foundSku.sku_attributes,
+        original_price: foundSku.sku_price,
+        live_price: reqSku.live_price,
+      }
+    })
+    const firstSku = foundSkus.find(s => s.product_id === reqProduct.spu_id)
+    return {
+      productId: firstSku.product_id,
+      name: firstSku.product_name,
+      thumb: firstSku.sku_image,
+      is_featured: reqProduct.is_featured || false,
+      skus,
+    }
+  })
+
+  return await livestreamRepo.addProductToLiveSession(foundLive._id, liveProducts)
+}
+
+const updateLiveSession = async ({ liveId, reqBody }) => {
+  const foundLive = await livestreamRepo.findLiveByIdAndType(liveId, 'scheduled')
+  if (!foundLive) throw new ApiError(StatusCodes.BAD_REQUEST, 'Live does not existss!')
+
+  const allowedFields = ['live_title', 'live_description', 'live_scheduledAt']
+  const updateData = {}
+  Object.keys(reqBody).forEach(key => {
+    if (allowedFields.includes(key) && reqBody[key] !== undefined) {
+      updateData[key] = reqBody[key]
+    }
+  })
+  await livestreamModel.findOneAndUpdate(
+    { _id: foundLive._id },
+    { $set: updateData },
+    { returnDocument: 'after' }
+  ).lean()
+}
+
+const cancelLiveSession = async ({ liveId }) => {
+  const foundLive = await livestreamRepo.findLiveByIdAndType(liveId, 'scheduled')
+  if (!foundLive) throw new ApiError(StatusCodes.BAD_REQUEST, 'Live does not existss!')
+
+  await livestreamModel.findOneAndUpdate(
+    { _id: foundLive._id },
+    { $set: { live_status: 'canceled' } },
+    { returnDocument: 'after' }
+  ).lean()
+}
+
+const getHistoryLiveByShop = async ({ shopId, limit = 50, page = 1, status = 'all' }) => {
+  const skip = (page - 1) * limit
+  const filter = { live_shopId: converter.toObjectId(shopId) }
+
+  if (status !== 'all') filter.live_status = status
+  console.log("🚀 ~ getHistoryLiveByShop ~ filter:", filter)
+  const [lives, totalItems] = await Promise.all([
+    livestreamRepo.findAllLiveSession({ skip, limit, filter }),
+    livestreamModel.countDocuments({ live_shopId: converter.toObjectId(shopId) })
+  ])
+  return {
+    lives,
+    totalItems,
+    totalPages: Math.ceil(totalItems / limit),
+    currentPage: Number(page)
+  }
+}
+
+
 export default {
   createLiveSession,
   startLive,
@@ -160,5 +217,9 @@ export default {
   endLive,
   pinProduct,
   unpinProduct,
-  getActiveSessions
+  getActiveSessions,
+  addProductToLiveSession,
+  updateLiveSession,
+  cancelLiveSession,
+  getHistoryLiveByShop
 }

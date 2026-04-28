@@ -11,7 +11,7 @@ const livestreamSchema = new Schema({
   live_streamerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   live_thumb: { type: String },
 
-  live_status: { type: String, enum: ['scheduled', 'active', 'ended'], default: 'scheduled' },
+  live_status: { type: String, enum: ['scheduled', 'live', 'ended', 'canceled'], default: 'scheduled' },
 
   live_products: [{
     productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
@@ -29,6 +29,7 @@ const livestreamSchema = new Schema({
     total_orders: { type: Number, default: 0 },
     total_revenue: { type: Number, default: 0 } //doanh thu
   },
+  live_schedule_at: { type: Date },
   live_actual_start: { type: Date },
   live_actual_end: { type: Date }
 }, {

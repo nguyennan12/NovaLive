@@ -50,3 +50,20 @@ export const formatStringToSlug = (text) => {
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
 }
+
+export const formatLiveDurationClock = (start, end) => {
+  if (!start) return '—'
+
+  const s = new Date(start)
+  const e = end ? new Date(end) : new Date()
+
+  let totalSeconds = Math.max(0, Math.floor((e - s) / 1000))
+
+  const hours = Math.floor(totalSeconds / 3600)
+  totalSeconds %= 3600
+
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+}
