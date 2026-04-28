@@ -38,7 +38,7 @@ export const getStockStatus = (stock) => {
 }
 
 export const formatStringToSlug = (text) => {
-  if (!text) return '';
+  if (!text) return ''
 
   return text
     .toLowerCase()
@@ -48,5 +48,5 @@ export const formatStringToSlug = (text) => {
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-};
+    .replace(/-+/g, '-')
+}

@@ -17,10 +17,10 @@ const StatCard = ({ icon: Icon, iconColor, iconBg, label, value, valueColor, sub
     borderRadius: '16px',
     boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
     transition: 'all 0.2s ease-in-out',
-    height: '100%', // Đảm bảo card stretch đầy ô lưới
+    height: '100%',
     '&:hover': {
       boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
-      transform: 'translateY(-3px)', // Nẩy cao hơn một chút
+      transform: 'translateY(-3px)',
       borderColor: iconColor + '44'
     }
   }}>
@@ -70,12 +70,13 @@ export const DiscountStat = ({ stats }) => (
         icon={LocalOfferRoundedIcon}
         iconColor='#3b82f6' iconBg='#eff6ff'
         label='Tổng discount' value={stats.total} sub='mã'
+        valueColor='#3b82f6'
       />
       <StatCard
         icon={LocalShippingRoundedIcon}
-        iconColor='#c026d3' iconBg='#fdf4ff'
+        iconColor='#f59e0b' iconBg='#fffaf4'
         label='Free Ship' value={stats.freeship} sub='ưu đãi'
-        valueColor='#c026d3'
+        valueColor='#f59e0b'
       />
       <StatCard
         icon={CheckCircleOutlineRoundedIcon}

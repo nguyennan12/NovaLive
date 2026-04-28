@@ -11,6 +11,42 @@ const theme = extendTheme({
     chatInputHeight: CHAT_INPUT_HEIGHT,
     mainContentHeight: MAIN_CONTENT_HEIGHT
   },
+  customStyles: {
+    discountForm: {
+      inputSx: {
+        '& .MuiOutlinedInput-root': {
+          '& fieldset': { borderColor: 'secondary.main' },
+          '&:hover fieldset': { borderColor: 'secondary.main' },
+          '&.Mui-focused fieldset': { borderColor: 'secondary.main' }
+        },
+        '& label.Mui-focused': { color: 'secondary.main' }
+      },
+      dateSx: {
+        '& .MuiOutlinedInput-root': {
+          '& fieldset': { borderColor: 'secondary.main' },
+          '&:hover fieldset': { borderColor: 'secondary.main' },
+          '&.Mui-focused fieldset': { borderColor: 'secondary.main' }
+        },
+        '& label.Mui-focused': { color: 'secondary.main' },
+        '& input[type="date"]::-webkit-calendar-picker-indicator': { opacity: 0.4, cursor: 'pointer' },
+        '& label': {
+          background: '#fff',
+          padding: '0 4px',
+          marginLeft: '-2px',
+          color: 'text.secondary',
+          '&.Mui-focused': { color: 'secondary.main' }
+        }
+      },
+      sectionLabel: {
+        fontSize: '0.65rem',
+        fontWeight: 800,
+        letterSpacing: '0.09em',
+        textTransform: 'uppercase',
+        color: 'text.secondary',
+        mb: 0.5
+      }
+    }
+  },
 
   colorSchemes: {
     light: {

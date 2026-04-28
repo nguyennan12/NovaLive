@@ -8,12 +8,15 @@ import DashboardShop from '~/common/components/layout/DashBoard/DashBoardShop'
 import ProductsPage from '~/features/Product/pages/ProductPage'
 import InventoryPage from '~/features/Inventory/pages/InventoryPage'
 import { DiscountPage } from '~/features/Discount/pages/DiscountPage'
+// import LiveManagerPage from '~/features/Live/pages/LiveManagerPage'
+import { HomePage } from '~/features/Home/pages/HomePage'
 
 const AppRoutes = () => {
   return (
     <Routes>
+      <Route path="/" element={<HomePage />} />
       {/* AUTH */}
-      <Route path="/" element={<Box> he</Box>} />
+
       <Route path='/login' element={<Auth />} />
       <Route path='/register' element={<Auth />} />
       <Route path='/verify' element={<Auth />} />
@@ -30,7 +33,7 @@ const AppRoutes = () => {
         <Route path="products" element={<ProductsPage />} />
         <Route path="orders" element={<Box>Orders</Box>} />
         <Route path="customers" element={<Box>customers</Box>} />
-        <Route path="live" element={<Box>live</Box>} />
+        {/* <Route path="live" element={<LiveManagerPage />} /> */}
         <Route path="analytics" element={<Box>analytics</Box>} />
         <Route path="finance" element={<Box>finance</Box>} />
       </Route>

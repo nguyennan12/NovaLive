@@ -1,8 +1,7 @@
-import { Box, TextField, Select, MenuItem, InputAdornment, Typography, Button } from '@mui/material'
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
 import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded'
+import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
+import { Box, InputAdornment, MenuItem, Select, TextField } from '@mui/material'
 
 const selectSx = {
   fontSize: '0.8rem',
@@ -21,8 +20,7 @@ const selectSx = {
 
 export const DiscountFilterBar = ({
   search, status, type, category,
-  onSearchChange, onStatusChange, onTypeChange, onCategoryChange,
-  onCreateClick, formOpen
+  onSearchChange, onStatusChange, onTypeChange, onCategoryChange
 }) => (
   <Box sx={{
     display: 'flex', alignItems: 'center', gap: 2, mb: 3,
@@ -58,7 +56,7 @@ export const DiscountFilterBar = ({
     <Select value={category} onChange={(e) => onCategoryChange(e.target.value)} size='small' sx={{ ...selectSx }}>
       <MenuItem value='all' sx={{ fontSize: '0.8rem' }}>Tất cả loại</MenuItem>
       <MenuItem value='product' sx={{ fontSize: '0.8rem', display: 'flex', gap: 1 }}> <LocalOfferRoundedIcon sx={{ fontSize: '0.9rem', color: '#3b82f6' }} />Sản phẩm</MenuItem>
-      <MenuItem value='freeship' sx={{ fontSize: '0.8rem', display: 'flex', gap: 1 }}>< LocalShippingRoundedIcon sx={{ fontSize: '0.9rem', color: '#c026d3' }} /> Free Ship</MenuItem>
+      <MenuItem value='freeship' sx={{ fontSize: '0.8rem', display: 'flex', gap: 1 }}>< LocalShippingRoundedIcon sx={{ fontSize: '0.9rem', color: '#f59e0b' }} /> Free Ship</MenuItem>
     </Select>
 
     {/* Status */}

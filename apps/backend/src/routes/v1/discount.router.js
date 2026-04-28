@@ -8,6 +8,7 @@ import { createDiscountSchema, updateDiscountSchema } from '#models/dtos/discoun
 const Router = express.Router()
 
 Router.get('/', asyncHandler(discountController.getAllDiscount))
+Router.get('/query', asyncHandler(discountController.queryDiscounts))
 Router.get('/shop/:shopId', asyncHandler(discountController.getAllDiscountOfShop))
 Router.get('/products/:discountCode', asyncHandler(discountController.getProductsByDiscount))
 

@@ -2,9 +2,10 @@ import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
-import { Alert, Box, Breadcrumbs, Button, Link, Snackbar, Typography } from '@mui/material'
+import { Box, Breadcrumbs, Button, Link, Typography } from '@mui/material'
 import { useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { DiscountForm } from '../components/DiscountPage/DiscountForm'
 import { DiscountList } from '../components/DiscountPage/DiscountList'
 import { DiscountStat } from '../components/DiscountPage/DiscountStat'
@@ -20,7 +21,7 @@ export const DiscountPage = () => {
   const [categoryFilter, setCategoryFilter] = useState('all')
   const search = useDebounce(searchInput, 280)
 
-  const { filtered, stats, addDiscount, updateDiscount, deleteDiscount } =
+  const { filtered, stats, addDiscount, updateDiscount, deleteDiscount, isLoading, isFetching, isMutating } =
     useDiscounts(search, statusFilter, typeFilter, categoryFilter)
 
   const [editData, setEditData] = useState(null)
@@ -30,27 +31,50 @@ export const DiscountPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const handleFormSubmit = (data) => {
-    if (editData) {
-      updateDiscount(editData.id, data)
-      showToast('Đã cập nhật discount!', 'success')
-    } else {
-      addDiscount(data)
-      showToast('Tạo discount thành công!', 'success')
+  const handleFormSubmit = async (data) => {
+    const getErrorMessage = (error) => error?.response?.data?.message || error?.message || 'Request failed'
+
+    try {
+      const actionPromise = editData
+        ? updateDiscount(editData, data)
+        : addDiscount(data)
+
+      await toast.promise(actionPromise, {
+        pending: editData ? 'Đang cập nhật discount...' : 'Đang tạo discount...',
+        success: editData ? 'Đã cập nhật discount!' : 'Tạo discount thành công!',
+        error: {
+          render({ data: error }) {
+            return getErrorMessage(error)
+          }
+        }
+      })
+
+      setEditData(null)
+    } catch {
+      // Error toast is already handled by toast.promise
     }
-    setEditData(null)
   }
 
   const [deleteTarget, setDeleteTarget] = useState(null)
-  const handleDeleteConfirm = () => {
-    deleteDiscount(deleteTarget.id)
-    setDeleteTarget(null)
-    showToast('Đã xoá discount.', 'info')
-  }
+  const handleDeleteConfirm = async () => {
+    const getErrorMessage = (error) => error?.response?.data?.message || error?.message || 'Request failed'
 
-  const [toast, setToast] = useState({ open: false, msg: '', severity: 'success' })
-  const showToast = (msg, severity = 'success') => setToast({ open: true, msg, severity })
-  const closeToast = () => setToast((t) => ({ ...t, open: false }))
+    try {
+      await toast.promise(deleteDiscount(deleteTarget), {
+        pending: 'Đang xoá discount...',
+        success: 'Đã xoá discount.',
+        error: {
+          render({ data: error }) {
+            return getErrorMessage(error)
+          }
+        }
+      })
+
+      setDeleteTarget(null)
+    } catch {
+      // Error toast is already handled by toast.promise
+    }
+  }
 
   const hasFilter = !!searchInput || statusFilter !== 'all' || typeFilter !== 'all' || categoryFilter !== 'all'
   const handleCancel = () => setEditData(null)
@@ -120,6 +144,7 @@ export const DiscountPage = () => {
               size="small"
               startIcon={<CloseIcon sx={{ fontSize: '14px !important' }} />}
               onClick={handleCancel}
+              disabled={isMutating}
               sx={{
                 borderRadius: 2, fontSize: '0.78rem', fontWeight: 600,
                 borderColor: 'divider', color: 'text.secondary',
@@ -134,6 +159,7 @@ export const DiscountPage = () => {
               variant="contained"
               size="small"
               startIcon={<SaveOutlinedIcon sx={{ fontSize: '14px !important' }} />}
+              disabled={isMutating}
               disableElevation
               sx={{
                 borderRadius: 2, fontSize: '0.78rem', fontWeight: 700,
@@ -165,7 +191,7 @@ export const DiscountPage = () => {
         />
         <DiscountList
           discounts={filtered}
-          loading={false}
+          loading={isLoading || isFetching}
           hasFilter={hasFilter}
           onEdit={handleEditClick}
           onDelete={setDeleteTarget}
@@ -179,18 +205,6 @@ export const DiscountPage = () => {
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTarget(null)}
       />
-
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={3000}
-        onClose={closeToast}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert onClose={closeToast} severity={toast.severity}
-          sx={{ borderRadius: '10px', fontSize: '0.82rem', fontWeight: 500 }}>
-          {toast.msg}
-        </Alert>
-      </Snackbar>
     </Box>
   )
 }

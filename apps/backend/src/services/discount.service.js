@@ -44,6 +44,10 @@ const getAllDiscount = async ({ scope = '', limit = 30, offset = 0 }) => {
   return await discountRepo.findAllDiscountByType({ scope, limit, offset })
 }
 
+const queryDiscounts = async ({ page = 1, limit = 20, scope = '', search = '', status = 'all', type = 'all', target = 'all' }) => {
+  return await discountRepo.queryDiscounts({ page, limit, scope, search, status, type, target })
+}
+
 const getAllDiscountOfShop = async (shopId, limit = 30, offset = 0) => {
   return await discountModel.find({ discount_shopId: converter.toObjectId(shopId), discount_is_active: true })
     .sort({ createdAt: -1 })
@@ -121,6 +125,7 @@ const getDiscountAmout = async ({ userId, reqBody }) => {
 export default {
   craeteDiscount,
   getAllDiscount,
+  queryDiscounts,
   getAllDiscountOfShop,
   getProductsByDiscount,
   deleteDiscount,

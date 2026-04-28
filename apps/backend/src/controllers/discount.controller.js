@@ -17,6 +17,13 @@ const getAllDiscount = async (req, res, next) => {
     metadata: await discountService.getAllDiscount(req.query)
   }).send(res)
 }
+const queryDiscounts = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Query discount successfully!',
+    metadata: await discountService.queryDiscounts(req.query)
+  }).send(res)
+}
 const getAllDiscountOfShop = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
@@ -35,7 +42,7 @@ const updateDiscount = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Update discount successfully!',
-    metadata: await discountService.updateDiscount({ discountCodeL: req.params.discountCode, reqBody: req.body })
+    metadata: await discountService.updateDiscount({ discountCode: req.params.discountCode, reqBody: req.body })
   }).send(res)
 }
 const deleteDiscount = async (req, res, next) => {
@@ -66,6 +73,7 @@ const getDiscountAmout = async (req, res, next) => {
 export default {
   craeteDiscount,
   getAllDiscount,
+  queryDiscounts,
   getAllDiscountOfShop,
   getProductsByDiscount,
   updateDiscount,

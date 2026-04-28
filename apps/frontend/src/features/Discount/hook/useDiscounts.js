@@ -1,11 +1,20 @@
-import { useState, useMemo } from 'react'
-import { MOCK_DISCOUNTS } from '../../../../mockdata/discount'
+import { useMemo } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  createDiscountAPI,
+  deleteDiscountAPI,
+  getAllDiscountAPI,
+  queryDiscountAPI,
+  updateDiscountAPI
+} from '~/common/apis/services/discountService'
 
 const toDateKey = (value) => {
   if (!value) return ''
   const date = new Date(value)
   return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10)
 }
+
+const safeArray = (value) => (Array.isArray(value) ? value : [])
 
 const normalizeDiscount = (discount) => {
   const startDateRaw = discount.discount_start_date ?? discount.startDate ?? ''
@@ -15,7 +24,7 @@ const normalizeDiscount = (discount) => {
   const isExpired = startDateRaw && endDateRaw ? new Date(endDateRaw).getTime() < Date.now() : false
 
   return {
-    id: discount.id ?? discount._id ?? `d${Date.now()}`,
+    id: discount.id ?? discount._id ?? discount.discount_code ?? `d${Date.now()}`,
     name: discount.name ?? discount.discount_name ?? '',
     code: discount.code ?? discount.discount_code ?? null,
     category: discount.category ?? (discount.discount_target === 'shipping' ? 'freeship' : 'product'),
@@ -27,43 +36,96 @@ const normalizeDiscount = (discount) => {
     usageLimit: discount.usageLimit ?? discount.discount_max_uses ?? '',
     usedCount: discount.usedCount ?? discount.discount_uses_count ?? 0,
     minOrder: discount.minOrder ?? discount.discount_min_value ?? 0,
-    description: discount.description ?? discount.discount_description ?? '',
+    description: discount.description ?? discount.discount_description ?? ''
   }
 }
 
 export const useDiscounts = (search = '', statusFilter = 'all', typeFilter = 'all', categoryFilter = 'all') => {
-  const [discounts, setDiscounts] = useState(MOCK_DISCOUNTS.map(normalizeDiscount))
+  const queryClient = useQueryClient()
 
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase()
-    return discounts.filter((d) => {
-      const matchSearch = !q ||
-        d.name.toLowerCase().includes(q) ||
-        (d.code && d.code.toLowerCase().includes(q))
-      const matchStatus = statusFilter === 'all' || d.status === statusFilter
-      const matchType = typeFilter === 'all' || d.type === typeFilter
-      const matchCategory = categoryFilter === 'all' || d.category === categoryFilter
-      return matchSearch && matchStatus && matchType && matchCategory
-    })
-  }, [discounts, search, statusFilter, typeFilter, categoryFilter])
+  const listQueryParams = useMemo(() => {
+    const params = {
+      limit: 20,
+      page: 1
+    }
+    if (search?.trim()) params.search = search.trim()
+    if (statusFilter !== 'all') params.status = statusFilter
+    if (typeFilter !== 'all') params.type = typeFilter === 'fixed' ? 'fixed_amount' : typeFilter
+    if (categoryFilter !== 'all') params.target = categoryFilter === 'freeship' ? 'shipping' : categoryFilter
+    return params
+  }, [search, statusFilter, typeFilter, categoryFilter])
+
+  const {
+    data: filtered = [],
+    isLoading,
+    isFetching,
+    error
+  } = useQuery({
+    queryKey: ['discounts', 'list', listQueryParams],
+    queryFn: () => queryDiscountAPI(listQueryParams),
+    placeholderData: (previousData) => previousData,
+    staleTime: 20 * 1000,
+    select: (raw) => safeArray(raw?.items).map(normalizeDiscount)
+  })
+
+  const { data: allDiscounts = [] } = useQuery({
+    queryKey: ['discounts', 'stats'],
+    queryFn: () => getAllDiscountAPI({ limit: 100, page: 1 }),
+    staleTime: 20 * 1000,
+    select: (raw) => safeArray(raw).map(normalizeDiscount)
+  })
 
   const stats = useMemo(() => ({
-    total: discounts.length,
-    active: discounts.filter((d) => d.status === 'active').length,
-    draft: discounts.filter((d) => d.status === 'draft').length,
-    expired: discounts.filter((d) => d.status === 'expired').length,
-    freeship: discounts.filter((d) => d.category === 'freeship').length,
-    product: discounts.filter((d) => d.category === 'product').length
-  }), [discounts])
+    total: allDiscounts.length,
+    active: allDiscounts.filter((d) => d.status === 'active').length,
+    draft: allDiscounts.filter((d) => d.status === 'draft').length,
+    expired: allDiscounts.filter((d) => d.status === 'expired').length,
+    freeship: allDiscounts.filter((d) => d.category === 'freeship').length,
+    product: allDiscounts.filter((d) => d.category === 'product').length
+  }), [allDiscounts])
 
-  const addDiscount = (data) =>
-    setDiscounts((prev) => [normalizeDiscount({ ...data, id: `d${Date.now()}`, usedCount: 0 }), ...prev])
+  const createMutation = useMutation({
+    mutationFn: createDiscountAPI,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['discounts'] })
+  })
 
-  const updateDiscount = (id, data) =>
-    setDiscounts((prev) => prev.map((d) => d.id === id ? normalizeDiscount({ ...d, ...data }) : d))
+  const updateMutation = useMutation({
+    mutationFn: ({ discountCode, payload }) => updateDiscountAPI(discountCode, payload),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['discounts'] })
+  })
 
-  const deleteDiscount = (id) =>
-    setDiscounts((prev) => prev.filter((d) => d.id !== id))
+  const deleteMutation = useMutation({
+    mutationFn: deleteDiscountAPI,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['discounts'] })
+  })
 
-  return { filtered, stats, addDiscount, updateDiscount, deleteDiscount }
+  const addDiscount = async (payload) => createMutation.mutateAsync(payload)
+
+  const updateDiscount = async (targetDiscount, payload) => {
+    const discountCode = targetDiscount?.code ?? targetDiscount?.discount_code
+    if (!discountCode) throw new Error('Cannot update discount without discount code')
+
+    return updateMutation.mutateAsync({ discountCode, payload })
+  }
+
+  const deleteDiscount = async (targetDiscount) => {
+    const discountCode = targetDiscount?.code ?? targetDiscount?.discount_code
+    if (!discountCode) throw new Error('Cannot delete discount without discount code')
+
+    return deleteMutation.mutateAsync(discountCode)
+  }
+
+  const isMutating = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending
+
+  return {
+    filtered,
+    stats,
+    isLoading,
+    isFetching,
+    isMutating,
+    error,
+    addDiscount,
+    updateDiscount,
+    deleteDiscount
+  }
 }

@@ -64,13 +64,13 @@ const ProductList = () => {
         sx={{
           display: 'grid',
           gridTemplateColumns: {
-            xs: 'repeat(auto-fill, minmax(150px, 1fr))',
+            xs: 'repeat(auto-fill, minmax(135px, 1fr))',
             sm: 'repeat(auto-fill, 220px)'
           },
           gap: 1.5,
           width: '100%',
           justifyContent: 'center',
-          maxHeight: 'calc(2 * 310px + 12px)',
+          maxHeight: { xs: 'calc(2 * 245px + 12px)', sm: 'calc(2 * 310px + 12px)' },
           overflowY: 'auto',
           p: 1,
           scrollbarWidth: '-moz-initial',

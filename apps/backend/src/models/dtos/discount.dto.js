@@ -41,7 +41,7 @@ export const createDiscountSchema = {
 
 export const updateDiscountSchema = {
   params: Joi.object({
-    id: Joi.string().pattern(OBJECT_ID_RULE).required()
+    discountCode: Joi.string().required()
   }),
   body: Joi.object({
     ...discountBase,
@@ -55,14 +55,4 @@ export const updateDiscountSchema = {
     discount_max_value: Joi.number().min(0),
     discount_max_uses: Joi.number().integer().positive(),
   }).min(1)
-}
-
-export const queryDiscountSchema = {
-  query: Joi.object({
-    shopId: Joi.string().pattern(OBJECT_ID_RULE),
-    code: Joi.string(),
-    isActive: Joi.boolean(),
-    page: Joi.number().integer().min(1).default(1),
-    limit: Joi.number().integer().min(1).max(100).default(20)
-  })
 }
