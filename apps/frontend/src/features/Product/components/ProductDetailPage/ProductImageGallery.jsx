@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Box, Skeleton } from '@mui/material'
-import { glassSx } from '~/theme'
 
 const THUMB_COUNT = 4
 
 const ProductImageGallery = ({ thumbUrl, productName }) => {
   const [activeIdx, setActiveIdx] = useState(0)
+  const [mainThumb, setMainThumb] = useState(thumbUrl)
+  console.log("🚀 ~ ProductImageGallery ~ mainThumb:", mainThumb)
 
   if (!thumbUrl) {
     return (
@@ -32,7 +33,7 @@ const ProductImageGallery = ({ thumbUrl, productName }) => {
       }}>
         <Box
           component="img"
-          src={thumbUrl}
+          src={mainThumb}
           alt={productName}
           sx={{ width: '100%', height: '100%', objectFit: 'contain' }}
         />
@@ -58,6 +59,7 @@ const ProductImageGallery = ({ thumbUrl, productName }) => {
             <Box
               component="img"
               src={thumbUrl}
+              onClick={() => setMainThumb(thumbUrl)}
               alt={`${productName} ${i + 1}`}
               sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />

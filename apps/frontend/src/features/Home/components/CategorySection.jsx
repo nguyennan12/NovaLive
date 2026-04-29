@@ -137,7 +137,7 @@ const CategorySection = ({ onCategorySelect }) => {
   if (!popular.length) return null
 
   return (
-    <Box sx={{ mb: { xs: 2.5, md: 3 } }}>
+    <Box sx={{ my: { xs: 2.5, md: 3 } }}>
 
       <Box sx={{
         display: 'grid',

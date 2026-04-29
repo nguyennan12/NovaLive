@@ -1,12 +1,7 @@
-import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import LocalMallRoundedIcon from '@mui/icons-material/LocalMallRounded'
 import ShoppingBasketRoundedIcon from '@mui/icons-material/ShoppingBasketRounded'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
-import {
-  Box, Button, Chip,
-  Divider, Grid, Rating,
-  Typography
-} from '@mui/material'
+import { Box, Button, Chip, Divider, Grid, Rating, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -15,20 +10,20 @@ import { PageSkeleton } from '~/common/components/common/loading/PageSkeleton'
 import { WaterDropBackground } from '~/common/components/common/style/WaterDropBackground'
 import { selectCategories } from '~/common/redux/product/categorySlice'
 import { formatSold } from '~/common/utils/formatters'
+import { glassSx } from '~/theme'
 import ProductAttributesTable from '../components/ProductDetailPage/ProductAttributesTable'
+import { ProductDescription } from '../components/ProductDetailPage/ProductDescription'
 import ProductImageGallery from '../components/ProductDetailPage/ProductImageGallery'
 import ProductVariantSelector, { SkuPriceLine } from '../components/ProductDetailPage/ProductVariantSelector'
 import ShopInfoCard from '../components/ProductDetailPage/ShopInfoCard'
 import { useProductDetail } from '../hooks/useProductDetail'
-import { ProductDescription } from '../components/ProductDetailPage/ProductDescription'
-import { glassSx } from '~/theme'
+import { slugCateToNameCate } from '~/common/utils/converter'
 
 
 const ProductDetailPage = () => {
   const { productId } = useParams()
   const navigate = useNavigate()
   const categories = useSelector(selectCategories)
-
   const { data: product, isLoading, isError, error } = useProductDetail(productId)
 
   const [selectedSkuId, setSelectedSkuId] = useState(null)
@@ -46,11 +41,7 @@ const ProductDetailPage = () => {
     ?? skuList[0]
     ?? null
   const attributes = product?.spu_attributes ?? []
-
-  const categoryChips = (product?.spu_category ?? []).map((catId) => {
-    const found = categories.find((c) => c._id === catId || c.cat_id === catId)
-    return { id: catId, label: found?.cat_name ?? catId.slice(-6) }
-  })
+  const categoryChips = slugCateToNameCate(product?.spu_category, categories)
 
   return (
     <WaterDropBackground>

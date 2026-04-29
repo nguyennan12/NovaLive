@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Box, IconButton } from '@mui/material'
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material'
 
-// ← Thêm ảnh vào đây
+
 const mainSlides = [
   { id: 1, image: 'https://res.cloudinary.com/nguyennan12/image/upload/v1777387470/Livestream-ecommerce/Shops/69e364dfdf24f31846f15580/Products/gstp4pfnvjaohn6oqjak.jpg' },
   { id: 2, image: 'https://res.cloudinary.com/nguyennan12/image/upload/v1777387363/Livestream-ecommerce/wlvujjxht3rrvggulws1.jpg' },

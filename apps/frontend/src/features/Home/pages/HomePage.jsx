@@ -44,8 +44,6 @@ export const HomePage = () => {
       }}>
         <BannerHomePage />
 
-        <HomeFilterBar filters={filters} onFilterChange={handleFilterChange} />
-
         {isFiltering ? (
           <ProductGridSection
             title="Kết quả lọc"
@@ -69,6 +67,7 @@ export const HomePage = () => {
             <ProductBestSellerSection products={bestSellers} isLoading={isLoading} />
 
             < PosterFirst />
+            <HomeFilterBar filters={filters} onFilterChange={handleFilterChange} />
 
             <ProductGridSection products={newArrivals} isLoading={isLoading}
             />

@@ -28,7 +28,7 @@ const HomeFilterBar = ({ filters, onFilterChange }) => {
       px: { xs: 1.5, sm: 2, md: 2.5 },
       py: { xs: 1.25, sm: 1.5 },
       boxShadow: '0 1px 12px rgba(79,79,79,0.11)',
-      mb: 3,
+      my: 3,
       display: 'flex',
       alignItems: 'center',
       gap: 1.5,

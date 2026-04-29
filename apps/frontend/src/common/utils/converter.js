@@ -1,8 +1,11 @@
+
+
 export const toDateInputValue = (value) => {
   if (!value) return ''
   const date = new Date(value)
   return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10)
 }
+
 
 export const toDefaultValuesDiscount = (discount = {}) => ({
   discount_name: discount.discount_name ?? discount.name ?? '',
@@ -50,3 +53,9 @@ export const toApiPayloadDiscount = (data) => ({
   discount_max_uses_per_user: Number(data.discount_max_uses_per_user ?? 1),
   discount_product_ids: Array.isArray(data.discount_product_ids) ? data.discount_product_ids : []
 })
+
+export const slugCateToNameCate = (categoriesSlug = [], categories = []) =>
+  categoriesSlug.map((catId) => {
+    const found = categories.find((c) => c.cat_slug === catId)
+    return { id: catId, label: found?.cat_name ?? catId.slice(-6) }
+  })

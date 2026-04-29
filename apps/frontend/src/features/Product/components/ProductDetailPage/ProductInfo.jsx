@@ -37,7 +37,7 @@ const ProductInfo = ({ product, selectedSku }) => {
   const displayPrice = selectedSku?.sku_price ?? product.spu_price
   const displayStock = selectedSku?.sku_stock ?? product.spu_quantity
 
-  // Resolve category IDs to names using the Redux store
+
   const categoryChips = (product.spu_category ?? []).map((catId) => {
     const found = categories.find((c) => c._id === catId || c.cat_id === catId)
     return { id: catId, label: found?.cat_name ?? catId.slice(-6) }

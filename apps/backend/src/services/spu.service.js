@@ -229,7 +229,10 @@ const searchProduct = async ({ keyword, category, minPrice, status, stock, sortB
     })
   }
 
-  if (category) filter.push({ term: { spu_category: category } })
+  if (category) {
+    const categoryArray = Array.isArray(category) ? category : [category]
+    filter.push({ terms: { 'spu_category.keyword': categoryArray } })
+  }
   if (status) {
     filter.push({ term: { isPublished: status === 'published' ? true : false } })
   } else {

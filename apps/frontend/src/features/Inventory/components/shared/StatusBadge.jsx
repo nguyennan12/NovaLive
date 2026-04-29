@@ -1,12 +1,12 @@
 import { Box, Typography } from '@mui/material'
 
 const STATUS_MAP = {
-  in_stock:  { label: 'In Stock',    dot: '#22c55e', bg: '#f0fdf4', text: '#15803d' },
-  low_stock: { label: 'Low Stock',   dot: '#f59e0b', bg: '#fffbeb', text: '#b45309' },
-  out:       { label: 'Out of Stock',dot: '#ef4444', bg: '#fef2f2', text: '#b91c1c' },
-  IN:        { label: 'Stock In',    dot: '#3485f7', bg: '#eff6ff', text: '#1d4ed8' },
-  OUT:       { label: 'Stock Out',   dot: '#8b5cf6', bg: '#f5f3ff', text: '#6d28d9' },
-  reserved:  { label: 'Reserved',   dot: '#f59e0b', bg: '#fffbeb', text: '#b45309' }
+  in_stock: { label: 'In Stock', dot: '#22c55e', bg: '#f0fdf4', text: '#15803d' },
+  low_stock: { label: 'Low Stock', dot: '#f59e0b', bg: '#fffbeb', text: '#b45309' },
+  out: { label: 'Out of Stock', dot: '#ef4444', bg: '#fef2f2', text: '#b91c1c' },
+  IN: { label: 'Stock In', dot: '#3485f7', bg: '#eff6ff', text: '#1d4ed8' },
+  OUT: { label: 'Stock Out', dot: '#8b5cf6', bg: '#f5f3ff', text: '#6d28d9' },
+  reserved: { label: 'Reserved', dot: '#f59e0b', bg: '#fffbeb', text: '#b45309' }
 }
 
 const getStockStatus = (qty) => {
