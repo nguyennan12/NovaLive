@@ -156,12 +156,19 @@ const theme = extendTheme({
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          backgroundColor: 'var(--mui-palette-primary-contrastText)',
-          color: 'var(--mui-palette-primary-main)',
+          backgroundColor: '#ffffff',
+          color: 'var(--mui-palette-secondary-main)',
           fontSize: '0.75rem',
+          fontWeight: 600,
           borderRadius: '6px',
-          boxShadow: '0 0 3px rgba(0,0,0,0.15)',
-          padding: '6px 12px'
+          background: 'rgba(255,255,255,0.1)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          boxShadow: '0 4px 30px rgba(0,0,0,0.05)',
+          padding: '8px 12px'
+        },
+        arrow: {
+          color: '#ffffff'
         }
       }
     },

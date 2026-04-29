@@ -29,6 +29,7 @@ const StockHistory = ({ loading = false }) => {
   })
 
   const histories = data?.items || []
+  console.log("🚀 ~ StockHistory ~ histories:", histories)
   const totalPages = data?.totalPages || 1
   const totalItems = data?.totalItems || 0
 
@@ -90,8 +91,9 @@ const StockHistory = ({ loading = false }) => {
       ) : histories.length === 0 ? (
         <EmptyState icon={HistoryRoundedIcon} title='No history found' subtitle='Adjust filters to see results' />
       ) : (
-        histories.map((h) => (
-          <Box
+        histories.map((h) => {
+          console.log("🚀 ~ StockHistory ~ h:", h)
+          return <Box
             key={h._id}
             sx={{
               display: 'grid',
@@ -115,7 +117,7 @@ const StockHistory = ({ loading = false }) => {
             </Box>
 
             <Typography sx={{ fontSize: '0.72rem', color: '#9ca3af', fontFamily: 'monospace' }}>
-              {h.inven_skuId.sku_id}
+              {h.inven_skuId?.sku_id || '—'}
             </Typography>
 
             <Typography
@@ -134,8 +136,8 @@ const StockHistory = ({ loading = false }) => {
             <Typography sx={{ fontSize: '0.72rem', color: '#6b7280' }} noWrap>{h.inven_userEmail}</Typography>
 
             <Typography sx={{ fontSize: '0.72rem', color: '#9ca3af' }} noWrap>{h.inven_note || '—'}</Typography>
-          </Box>
-        ))
+          </Box>;
+        })
       )}
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 2 }}>
         <Pagination

@@ -1,8 +1,6 @@
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import { Box, Typography } from '@mui/material'
-import { formatVND } from '~/common/utils/formatters'
 
-// SKU image-card selector — hiển thị mỗi SKU như 1 card có ảnh + tên
 // Variant selection theo sku_tier_idx sẽ được wired qua API sau
 const ProductVariantSelector = ({ skuList = [], selectedSkuId, onSelect, thumbFallback }) => {
   if (!skuList.length) return null
@@ -21,7 +19,7 @@ const ProductVariantSelector = ({ skuList = [], selectedSkuId, onSelect, thumbFa
       {/* Card grid: 2 cols */}
       <Box sx={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
+        gridTemplateColumns: 'repeat(3, 1fr)',
         gap: 1,
         flex: 1
       }}>
@@ -91,15 +89,12 @@ const ProductVariantSelector = ({ skuList = [], selectedSkuId, onSelect, thumbFa
   )
 }
 
-// Price + stock line for selected SKU — shown below the selector
-export const SkuPriceLine = ({ selectedSku, basePrice }) => {
-  const price = selectedSku?.sku_price ?? basePrice ?? 0
+export const SkuPriceLine = ({ selectedSku }) => {
   const stock = selectedSku?.sku_stock
-
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mt: 0.5 }}>
-      <Typography sx={{ fontSize: { xs: '1.6rem', md: '1.9rem' }, fontWeight: 900, color: 'secondary.main', letterSpacing: '-0.02em', lineHeight: 1 }}>
-        {formatVND(price)}
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mt: 1 }}>
+      <Typography sx={{ fontSize: '0.78rem', color: '#aaa', fontWeight: 500 }}>
+        Phân loại: <strong style={{ color: '#555' }}>{selectedSku?.sku_name ?? '—'}</strong>
       </Typography>
       {stock !== undefined && (
         <Typography sx={{

@@ -1,7 +1,6 @@
 import LocalMallRoundedIcon from '@mui/icons-material/LocalMallRounded'
-import ShoppingBasketRoundedIcon from '@mui/icons-material/ShoppingBasketRounded'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
-import { Box, Button, Chip, Divider, Grid, Rating, Typography } from '@mui/material'
+import { Box, Button, Grid, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -9,15 +8,14 @@ import { toast } from 'react-toastify'
 import { PageSkeleton } from '~/common/components/common/loading/PageSkeleton'
 import { WaterDropBackground } from '~/common/components/common/style/WaterDropBackground'
 import { selectCategories } from '~/common/redux/product/categorySlice'
-import { slugCateToNameCate } from '~/common/utils/converter'
-import { formatSold } from '~/common/utils/formatters'
 import ProductGridSection from '~/features/Home/components/ProductGridSection'
+import ProductReviewsSection from '~/features/Review/components/ProductReviewsSection'
 import { glassSx } from '~/theme'
 import ProductAttributesTable from '../components/ProductDetailPage/ProductAttributesTable'
 import { ProductDescription } from '../components/ProductDetailPage/ProductDescription'
 import ProductImageGallery from '../components/ProductDetailPage/ProductImageGallery'
+import ProductInfo from '../components/ProductDetailPage/ProductInfo'
 import ProductVariantSelector, { SkuPriceLine } from '../components/ProductDetailPage/ProductVariantSelector'
-import ProductReviewsSection from '~/features/Review/components/ProductReviewsSection'
 import ShopInfoCard from '../components/ProductDetailPage/ShopInfoCard'
 import { useProduct } from '../hooks/useProduct'
 import { useProductDetail } from '../hooks/useProductDetail'
@@ -26,7 +24,6 @@ import { useProductDetail } from '../hooks/useProductDetail'
 const ProductDetailPage = () => {
   const { productId } = useParams()
   const navigate = useNavigate()
-  const categories = useSelector(selectCategories)
   const { data: product, isLoading, isError, error } = useProductDetail(productId)
 
   const [selectedSkuId, setSelectedSkuId] = useState(null)
@@ -46,7 +43,6 @@ const ProductDetailPage = () => {
     ?? skuList[0]
     ?? null
   const attributes = product?.spu_attributes ?? []
-  const categoryChips = slugCateToNameCate(product?.spu_category, categories)
 
   return (
     <WaterDropBackground>
@@ -67,40 +63,8 @@ const ProductDetailPage = () => {
             <Grid size={{ xs: 12, md: 7 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, bgcolor: 'primary.main', ...glassSx, borderRadius: '12px', height: '100%', justifyContent: 'space-between' }}>
 
-                {/*  name, rating, sold, categories */}
-                <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 800, color: 'primary.contrastText', lineHeight: 1.3 }}>
-                    {product?.spu_name}
-                  </Typography>
+                <ProductInfo product={product} selectedSku={selectedSku} />
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1, flexWrap: 'wrap' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <Rating value={product?.spu_ratingsAvg ?? 0} precision={0.5} readOnly size="small" sx={{ color: 'fourth.main' }} />
-                      <Typography sx={{ fontSize: '0.82rem', color: 'fourth.main', fontWeight: 700 }}>
-                        {(product?.spu_ratingsAvg ?? 0).toFixed(1)}
-                      </Typography>
-                    </Box>
-                    <Divider orientation="vertical" flexItem sx={{ borderColor: '#e0e0e0' }} />
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4 }}>
-                      <ShoppingBasketRoundedIcon sx={{ fontSize: 13, color: '#aaa' }} />
-                      <Typography sx={{ fontSize: '0.78rem', color: '#aaa', fontWeight: 500 }}>
-                        {formatSold(product?.total_sold ?? 0)} lượt mua
-                      </Typography>
-                    </Box>
-
-
-                  </Box>
-                  {categoryChips.length > 0 && (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mt: 1.5 }}>
-                      {categoryChips.map(({ id, label }) => (
-                        <Chip key={id} label={label} size="small" variant="outlined" sx={{
-                          borderColor: 'secondary.main', color: 'secondary.main',
-                          fontSize: '0.72rem', borderRadius: '8px', fontWeight: 600
-                        }} />
-                      ))}
-                    </Box>
-                  )}
-                </Box>
                 {/* Price + action buttons */}
                 <Box >
                   {skuList.length > 0 && (
@@ -113,11 +77,7 @@ const ProductDetailPage = () => {
                       />
                     </Box>
                   )}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5, flexWrap: 'wrap' }}>
-                    <Typography sx={{ fontSize: '0.78rem', color: '#aaa', fontWeight: 500 }}>
-                      Phân loại: <strong style={{ color: '#555' }}>{selectedSku?.sku_name ?? '—'}</strong>
-                    </Typography>
-                  </Box>
+                  {/* Info Sku Detail */}
                   <SkuPriceLine selectedSku={selectedSku} basePrice={product?.spu_price} />
 
                   <Box sx={{ display: 'flex', gap: 1.5, mt: 2 }}>

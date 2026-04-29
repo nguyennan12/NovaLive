@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, Tooltip as RTooltip, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 import { getChartArtInventoryAPI } from '~/common/apis/services/inventoryService'
 import SectionCard from '../shared/SectionCard'
+import { CHART_DATA } from '../../../../../mockdata/stockdata'
 
 const PERIODS = ['today', 'week', 'month']
 
@@ -54,7 +55,7 @@ const StockOverviewChart = () => {
     queryKey: ['chart_inventory', period],
     queryFn: () => getChartArtInventoryAPI(period)
   })
-
+  console.log("🚀 ~ StockOverviewChart ~ data:", data)
   const totals = useMemo(() => {
     const totalIn = data.reduce((s, d) => s + d.in, 0)
     const totalOut = data.reduce((s, d) => s + d.out, 0)

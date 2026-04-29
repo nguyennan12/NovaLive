@@ -1,21 +1,14 @@
+import AssignmentReturnRoundedIcon from '@mui/icons-material/AssignmentReturnRounded'
+import FactCheckRoundedIcon from '@mui/icons-material/FactCheckRounded'
+import ShieldRoundedIcon from '@mui/icons-material/ShieldRounded'
 import ShoppingBasketRoundedIcon from '@mui/icons-material/ShoppingBasketRounded'
-import { Box, Chip, Divider, Rating, Skeleton, Typography } from '@mui/material'
+import { Box, Chip, Divider, Rating, Skeleton, Tooltip, Typography } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { selectCategories } from '~/common/redux/product/categorySlice'
+import { slugCateToNameCate } from '~/common/utils/converter'
 import { formatSold, formatVND } from '~/common/utils/formatters'
-import ProductAttributesTable from './ProductAttributesTable'
+import NearMeIcon from '@mui/icons-material/NearMe'
 
-const stockColor = (stock) => {
-  if (stock === 0) return '#ef4444'
-  if (stock <= 10) return '#f59e0b'
-  return '#22c55e'
-}
-
-const stockLabel = (stock) => {
-  if (stock === 0) return 'Hết hàng'
-  if (stock <= 10) return `Còn ${stock} sản phẩm`
-  return `Còn hàng (${stock})`
-}
 
 const ProductInfo = ({ product, selectedSku }) => {
   const categories = useSelector(selectCategories)
@@ -35,20 +28,50 @@ const ProductInfo = ({ product, selectedSku }) => {
   }
 
   const displayPrice = selectedSku?.sku_price ?? product.spu_price
-  const displayStock = selectedSku?.sku_stock ?? product.spu_quantity
-
-
-  const categoryChips = (product.spu_category ?? []).map((catId) => {
-    const found = categories.find((c) => c._id === catId || c.cat_id === catId)
-    return { id: catId, label: found?.cat_name ?? catId.slice(-6) }
-  })
+  const categoryChips = slugCateToNameCate(product?.spu_category, categories)
 
   return (
     <Box>
       {/* Product name */}
-      <Typography variant="h5" sx={{ fontWeight: 800, color: 'primary.contrastText', lineHeight: 1.3 }}>
-        {product.spu_name}
-      </Typography>
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        gap: 2,
+        width: '100%'
+      }}>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 800,
+            color: 'primary.contrastText',
+            lineHeight: 1.2,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}
+        >
+          {product.spu_name}
+        </Typography>
+
+        <Tooltip title='share'>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: 40,
+            height: 40,
+            bgcolor: 'rgba(83,155,255,0.10)',
+            border: '1px solid rgba(83,155,255,0.25)',
+            borderRadius: '50%',
+            color: 'secondary.main'
+          }}>
+            <NearMeIcon sx={{ fontSize: '1.2rem' }} />
+          </Box>
+        </Tooltip>
+
+      </Box>
 
       {/* Rating + sold row */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1, flexWrap: 'wrap' }}>
@@ -81,24 +104,20 @@ const ProductInfo = ({ product, selectedSku }) => {
         WebkitBackdropFilter: 'blur(10px)',
         borderRadius: 2,
         boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
-        p: 2
+        p: 3
       }}>
-        <Typography sx={{
-          fontSize: { xs: '1.75rem', md: '2rem' },
-          fontWeight: 900,
-          color: 'secondary.main',
+        <Typography variant="h5" sx={{
+          fontSize: { xs: '1.6rem', md: '2rem' },
+          fontWeight: 800,
+          background: 'linear-gradient(90deg, #0095ffff 10%, #47b3ffff 40%, #14c3eb 80%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          display: 'inline-block',
           letterSpacing: '-0.02em',
-          lineHeight: 1
+          lineHeight: 1.1,
+          color: 'transparent'
         }}>
           {formatVND(displayPrice ?? 0)}
-        </Typography>
-        <Typography sx={{
-          fontSize: '0.78rem',
-          fontWeight: 600,
-          color: stockColor(displayStock ?? 0),
-          mt: 0.75
-        }}>
-          {stockLabel(displayStock ?? 0)}
         </Typography>
       </Box>
 
@@ -122,7 +141,35 @@ const ProductInfo = ({ product, selectedSku }) => {
           ))}
         </Box>
       )}
-      <ProductAttributesTable />
+
+      {/* Policy */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2.5 }}>
+        <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+          Chính sách mua hàng
+        </Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {[
+            { Icon: AssignmentReturnRoundedIcon, label: 'Trả hàng miễn phí 15 ngày' },
+            { Icon: FactCheckRoundedIcon, label: 'Đồng kiểm khi nhận hàng' },
+            { Icon: ShieldRoundedIcon, label: 'Đảm bảo chính hãng' }
+          ].map(({ Icon, label }) => (
+            <Box key={label} sx={{
+              display: 'flex', alignItems: 'center', gap: 0.75,
+              bgcolor: 'rgba(83,155,255,0.10)',
+              border: '1px solid rgba(83,155,255,0.25)',
+              borderRadius: '20px', px: 1.5, py: 0.6
+            }}>
+              <Icon sx={{ fontSize: 14, color: 'secondary.main' }} />
+              <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'secondary.main', whiteSpace: 'nowrap' }}>
+                {label}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+        <Typography sx={{ fontSize: '0.72rem', color: '#9ca3af', lineHeight: 1.6, mt: 0.25 }}>
+          Miễn phí trả hàng trong <strong style={{ color: '#539bff' }}>15 ngày</strong> — bạn có thể yên tâm mua sắm. Tại thời điểm nhận hàng, bạn có quyền đồng kiểm và trả hàng miễn phí nếu không đúng mô tả.
+        </Typography>
+      </Box>
     </Box>
   )
 }
