@@ -8,6 +8,7 @@ import { selectCategories } from '~/common/redux/product/categorySlice'
 import { slugCateToNameCate } from '~/common/utils/converter'
 import { formatSold, formatVND } from '~/common/utils/formatters'
 import NearMeIcon from '@mui/icons-material/NearMe'
+import { gradientText } from '~/theme'
 
 
 const ProductInfo = ({ product, selectedSku }) => {
@@ -109,13 +110,10 @@ const ProductInfo = ({ product, selectedSku }) => {
         <Typography variant="h5" sx={{
           fontSize: { xs: '1.6rem', md: '2rem' },
           fontWeight: 800,
-          background: 'linear-gradient(90deg, #0095ffff 10%, #47b3ffff 40%, #14c3eb 80%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          ...gradientText,
           display: 'inline-block',
           letterSpacing: '-0.02em',
-          lineHeight: 1.1,
-          color: 'transparent'
+          lineHeight: 1.1
         }}>
           {formatVND(displayPrice ?? 0)}
         </Typography>

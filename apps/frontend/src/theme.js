@@ -1,13 +1,11 @@
 import { extendTheme } from '@mui/material/styles'
 
-const APP_BAR_HEIGHT = '60px'
-const CHAT_INPUT_HEIGHT = '64px'
+const APP_BAR_HEIGHT = '64px'
 const MAIN_CONTENT_HEIGHT = `calc(100vh - ${APP_BAR_HEIGHT})`
 
 const theme = extendTheme({
   app: {
     appBarHeight: APP_BAR_HEIGHT,
-    chatInputHeight: CHAT_INPUT_HEIGHT,
     mainContentHeight: MAIN_CONTENT_HEIGHT
   },
 
@@ -226,6 +224,14 @@ export const glassSx = {
   borderRadius: 3,
   boxShadow: '0 4px 30px rgba(0,0,0,0.05)',
   p: 2
+}
+
+export const gradientText = {
+  background: 'linear-gradient(to right, #0095ffff 0%, #14c3ebff 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+  color: 'transparent'
 }
 
 export default theme

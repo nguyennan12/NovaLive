@@ -7,6 +7,8 @@ import SidebarSection from './components/SidebarSection'
 import SidebarStoreSelect from './components/SidebarStoreSelect'
 import SidebarProfile from './components/SidebarProfile'
 import { useNavigate } from 'react-router-dom'
+import { gradientText } from '~/theme'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 
 const SIDEBAR_EXPANDED = 240
 const SIDEBAR_COLLAPSED = 60
@@ -17,7 +19,6 @@ const Sidebar = () => {
 
   const width = collapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED
   const navigate = useNavigate()
-  const backHome = () => navigate('/')
   return (
     <Box
       component='nav'
@@ -37,7 +38,6 @@ const Sidebar = () => {
     >
       {/* Header */}
       <Box
-        onClick={backHome}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -50,53 +50,30 @@ const Sidebar = () => {
           cursor: 'pointer'
         }}
       >
-        {!collapsed && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {/* Logo mark */}
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                bgcolor: 'secondary.main',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}
-            >
-              <Box
-                sx={{
-                  width: 14,
-                  height: 14,
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '2px'
-                }}
-              >
-                {[0, 1, 2, 3].map((i) => (
-                  <Box
-                    key={i}
-                    sx={{
-                      bgcolor: '#fff',
-                      borderRadius: '2px'
-                    }}
-                  />
-                ))}
-              </Box>
-            </Box>
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: '1rem',
-                color: 'secondary.main',
-                letterSpacing: '-0.02em'
-              }}
-            >
-              Shopall
-            </Typography>
+        <Box
+          onClick={() => navigate('/')}
+          sx={{ flexShrink: 0, cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 0.75 }}
+        >
+          <Box sx={{
+            width: 28, height: 28, borderRadius: '8px',
+            background: 'linear-gradient(90deg, #69bef7ff, #53e6eeff)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(52,133,247,0.3)'
+          }}>
+            <PlayArrowIcon sx={{ color: '#fff', fontSize: '1.25rem' }} />
           </Box>
-        )}
+          {!collapsed && (
+            <Typography variant="h6" sx={{
+              fontWeight: 800,
+              fontSize: { xs: '1rem', sm: '1.1rem' },
+              ...gradientText,
+              letterSpacing: '-0.4px',
+              lineHeight: 1
+            }}>
+              NovaLive
+            </Typography>
+          )}
+        </Box>
 
         <IconButton
           size='small'
@@ -114,29 +91,8 @@ const Sidebar = () => {
         </IconButton>
       </Box>
 
-      {/* Store select */}
-      <Box sx={{ px: collapsed ? 1 : 1.5, pt: 1.5, pb: 1 }}>
-        {!collapsed && (
-          <Typography
-            sx={{
-              fontSize: '0.7rem',
-              fontWeight: 500,
-              color: 'primary.contrastText',
-              opacity: 0.5,
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              px: 0.5,
-              mb: 0.75
-            }}
-          >
-            Stores
-          </Typography>
-        )}
-        <SidebarStoreSelect collapsed={collapsed} />
-      </Box>
-
       {/* Nav sections */}
-      <Box sx={{ flex: 1, overflowY: 'auto', px: collapsed ? 1 : 1.5, py: 0.5 }}>
+      <Box sx={{ flex: 1, overflowY: 'auto', px: collapsed ? 1 : 1.5, py: 2 }}>
         {NAV_SECTIONS.map((section) => (
           <SidebarSection
             key={section.label}

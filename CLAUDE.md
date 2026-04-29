@@ -1,7 +1,7 @@
 # 📦 E-commerce Project Overview
 
 **Repo:** https://github.com/nguyennan12/E-commerce  
-**Cập nhật:** 29/04/2026  
+**Cập nhật:** 29/04/2026 (Product Detail hoàn thành)  
 **Mục tiêu:** Tăng tốc phát triển frontend các tính năng chính, tối ưu cho teamwork với AI code assistant.
 
 ---
@@ -34,14 +34,7 @@
 
 ## 3. Các module/frontend đã hoàn thành
 
-- **Product Management (admin):** Danh sách, filter, tạo, cập nhật, xóa sản phẩm — `src/features/Product`
-- **Inventory Management (admin):** Xem tồn kho, lịch sử, nhập xuất kho — `src/features/Inventory`
-- **Discount Management (admin):** Tạo/quản lý mã giảm giá — `src/features/Discount`
-- **Live Session (admin):** Quản lý phiên livestream — `src/features/LiveSession`
-- **Home Page (consumer):** Banner slider, danh mục nổi bật, Flash Sale scroll, Best Seller, New Arrivals grid — `src/features/Home`
-  - Components: `BannerHomePage`, `CategorySection`, `ProductScrollSection` (Flash Sale + countdown), `ProductBestSellerSection`, `ProductGridSection`, `HomeProductCard` (portrait/landscape), `HomeSearchBar` (filter bar)
-  - Hook: `useHomeProducts` — `getAllProductsAPI` mặc định, `queryProductAPI` khi filter theo danh mục
-  - SPU model field: `total_sold` — hiển thị "lượt mua" bên cạnh giá
+Chi tiết từng feature (components, hooks, layout, TODO) xem tại **[FEATURE.md](./FEATURE.md)**.
 
 ---
 
@@ -60,7 +53,7 @@
 - **Đăng nhập/đăng ký**: sử dụng API Auth Backend.
 - **Dashboard** cho admin: tổng quan chỉ số, số sản phẩm, doanh thu.
 - **Analytics đơn giản**: dùng recharts.
-- Trang **chi tiết sản phẩm**: ảnh, mô tả, biến thể, thêm giỏ hàng.
+- ~~Trang **chi tiết sản phẩm**~~ ✅ HOÀN THÀNH (xem Mục 3)
 
 ---
 
@@ -85,7 +78,8 @@
   - ✅ Quản lý mã giảm giá (shop)
   - ✅ Quản lý phiên live (shop)
   - ✅ **Trang Home (consumer)** — banner, danh mục, 3 layout list sản phẩm
-  - ⬜ **Cart / Order / Customer / Auth / Dashboard / Product Detail**
+  - ✅ **Trang Product Detail (consumer)** — ảnh, SKU cards, giá, attributes, shop card, description
+  - ⬜ **Cart / Order / Customer / Auth / Dashboard**
 
 ---
 

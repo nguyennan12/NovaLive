@@ -1,4 +1,5 @@
 import { Box, Typography } from '@mui/material'
+import { gradientText } from '~/theme'
 
 export const SectionHeader = ({ title }) => (
   <Box sx={{
@@ -17,11 +18,7 @@ export const SectionHeader = ({ title }) => (
       <Typography sx={{
         fontSize: { xs: '1.5rem', sm: '2.5rem' },
         fontWeight: 900,
-        background: 'linear-gradient(to right, #0095ffff 0%, #14c3ebff 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        backgroundClip: 'text',
-        color: 'transparent',
+        ...gradientText,
         letterSpacing: '-0.02em', lineHeight: 1
       }}>{title}</Typography>
 

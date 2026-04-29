@@ -15,6 +15,8 @@ export const buildQueryParams = (filters) => {
 
     if (filters.status && filters.status !== 'all') { params.status = filters.status; }
     if (filters.stock && filters.stock !== 'all') { params.stock = filters.stock; }
+    if (filters.minPrice !== undefined && filters.minPrice > 0) { params.minPrice = filters.minPrice; }
+    if (filters.maxPrice !== undefined) { params.maxPrice = filters.maxPrice; }
 
     switch (filters.sort) {
         case 'price_asc':

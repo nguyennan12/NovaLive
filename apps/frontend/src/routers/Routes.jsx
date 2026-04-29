@@ -11,25 +11,33 @@ import { DiscountPage } from '~/features/Discount/pages/DiscountPage'
 import LiveManagerPage from '~/features/LiveSession/pages/LiveManagerPage'
 import { HomePage } from '~/features/Home/pages/HomePage'
 import ProductDetailPage from '~/features/Product/pages/ProductDetailPage'
+import ConsumerLayout from '~/common/components/layout/ConsumerLayout/ConsumerLayout'
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      {/* AUTH */}
+      {/* Consumer routes — có AppBar + BottomActionBar */}
+      <Route element={<ConsumerLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/product/:productId" element={<ProductDetailPage />} />
+      </Route>
 
+      {/* AUTH */}
       <Route path='/login' element={<Auth />} />
       <Route path='/register' element={<Auth />} />
       <Route path='/verify' element={<Auth />} />
-      {/* LIVE */}
+
+      {/* LIVE feed (standalone, không cần consumer layout) */}
       <Route path='/live' element={<LiveFeedPage />} />
       <Route path='/shop/live/:liveId' element={<ShopLive />} />
-      {/* PRODUCT */}
-      <Route path="/product/:productId" element={<ProductDetailPage />} />
+
+      {/* PRODUCT forms */}
       <Route path="/products/form" element={<ProductFormPage />} />
       <Route path="/products/form/:id" element={<ProductFormPage />} />
       <Route path='/inventory' element={<InventoryPage />} />
       <Route path='/discount' element={<DiscountPage />} />
+
+      {/* SHOP DASHBOARD */}
       <Route path='/dashboard/shop' element={<DashboardShop />}>
         <Route index element={<Box>dashboard</Box>} />
         <Route path="products" element={<ProductsPage />} />

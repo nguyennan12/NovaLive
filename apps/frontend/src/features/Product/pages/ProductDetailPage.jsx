@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { PageSkeleton } from '~/common/components/common/loading/PageSkeleton'
-import { WaterDropBackground } from '~/common/components/common/style/WaterDropBackground'
 import ProductGridSection from '~/features/Home/components/ProductGridSection'
 import ProductReviewsSection from '~/features/Review/components/ProductReviewsSection'
 import { glassSx } from '~/theme'
@@ -41,120 +40,117 @@ const ProductDetailPage = () => {
     ?? skuList[0]
     ?? null
 
-  // Khi user chọn SKU, fetch fresh price/stock từ server; fallback về local data trong khi chờ
   const { data: fetchedSku } = useSelectedSku(product?._id, selectedSkuId)
   const selectedSku = fetchedSku ?? localSku
   const attributes = product?.spu_attributes ?? []
 
   return (
-    <WaterDropBackground>
-      <Box sx={{ px: { xs: 1.5, sm: 2.5, md: 4 }, py: { xs: 2, md: 3 } }}>
+    <Box sx={{ px: { xs: 1.5, sm: 2.5, md: 4 }, pt: { xs: 2, md: 3 }, pb: { xs: '100px', sm: '110px' } }}>
 
-        {isLoading ? <PageSkeleton /> : (
-          <Grid container spacing={2.5}>
+      {isLoading ? <PageSkeleton /> : (
+        <Grid container spacing={2.5}>
 
-            <Grid size={{ xs: 12, md: 5 }}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Box sx={{ p: 2, bgcolor: 'primary.main', ...glassSx, borderRadius: '12px' }}>
-                  <ProductImageGallery thumbUrl={product?.spu_thumb} productName={product?.spu_name} />
-                </Box>
-
-
+          <Grid size={{ xs: 12, md: 5 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ p: 2, bgcolor: 'primary.main', ...glassSx, borderRadius: '12px' }}>
+                <ProductImageGallery thumbUrl={product?.spu_thumb} productName={product?.spu_name} />
               </Box>
-            </Grid>
-            <Grid size={{ xs: 12, md: 7 }}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, bgcolor: 'primary.main', ...glassSx, borderRadius: '12px', height: '100%', justifyContent: 'space-between' }}>
-
-                <ProductInfo product={product} selectedSku={selectedSku} />
-
-                {/* Price + action buttons */}
-                <Box >
-                  {skuList.length > 0 && (
-                    <Box >
-                      <ProductVariantSelector
-                        skuList={skuList}
-                        selectedSkuId={selectedSkuId}
-                        onSelect={setSelectedSkuId}
-                        thumbFallback={product?.spu_thumb}
-                      />
-                    </Box>
-                  )}
-                  {/* Info Sku Detail */}
-                  <SkuPriceLine selectedSku={selectedSku} basePrice={product?.spu_price} />
-
-                  <Box sx={{ display: 'flex', gap: 1.5, mt: 2 }}>
-                    <Button
-                      variant="outlined" fullWidth
-                      startIcon={<ShoppingCartOutlinedIcon />}
-                      onClick={(e) => e.stopPropagation()}
-                      sx={{
-                        textTransform: 'none', fontWeight: 700, fontSize: '0.9rem',
-                        borderRadius: '12px', py: 1.25,
-                        borderColor: 'secondary.main', color: 'secondary.main',
-                        '&:hover': { bgcolor: 'rgba(52,133,247,0.06)' }
-                      }}
-                    >
-                      Giỏ hàng
-                    </Button>
-                    <Button
-                      variant="contained" fullWidth
-                      startIcon={<LocalMallRoundedIcon />}
-                      onClick={(e) => e.stopPropagation()}
-                      sx={{
-                        textTransform: 'none', fontWeight: 700, fontSize: '0.9rem',
-                        borderRadius: '12px', py: 1.25,
-                        bgcolor: 'secondary.main',
-                        background: 'linear-gradient(90deg, #568dfbff, #69aedc, #8acdde)',
-                        color: '#ffffff',
-                        '&:hover': { bgcolor: '#4e96f6ff', boxShadow: '0 6px 20px rgba(52,133,247,0.45)' }
-                      }}
-                    >
-                      Mua ngay
-                    </Button>
-                  </Box>
-                </Box>
-              </Box>
-            </Grid>
 
 
-            {/* DESCRIPTION + ATTRIBUTE */}
-            <Grid container size={12} spacing={2} sx={{ mt: 2 }}>
-              {product?.spu_description && (
-                <Grid size={{ xs: 12, md: 7 }} >
-                  <ProductDescription text={product.spu_description} sx={{ height: '100%' }} />
-                </Grid>
-              )}
-
-              {attributes.length > 0 && (
-                <Grid size={{ xs: 12, md: 5 }}>
-                  <Box sx={{ bgcolor: 'primary.main', ...glassSx }}>
-                    <ProductAttributesTable attributes={attributes} />
-                  </Box>
-                </Grid>
-              )}
-            </Grid>
-
-            <Grid size={12}>
-              <ShopInfoCard shopId={product?.spu_shopId} />
-            </Grid>
-
-            <Grid size={12}>
-              <ProductReviewsSection
-                productId={productId}
-                ratingAvg={product?.spu_ratingsAvg}
-                ratingCount={product?.spu_ratingCount}
-              />
-            </Grid>
-
-            {/* Other Product */}
-            <Grid size={12}>
-              <ProductGridSection products={products} isLoading={isLoading} />
-            </Grid>
-
+            </Box>
           </Grid>
-        )}
-      </Box>
-    </WaterDropBackground >
+          <Grid size={{ xs: 12, md: 7 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, bgcolor: 'primary.main', ...glassSx, borderRadius: '12px', height: '100%', justifyContent: 'space-between' }}>
+
+              <ProductInfo product={product} selectedSku={selectedSku} />
+
+              {/* Price + action buttons */}
+              <Box >
+                {skuList.length > 0 && (
+                  <Box >
+                    <ProductVariantSelector
+                      skuList={skuList}
+                      selectedSkuId={selectedSkuId}
+                      onSelect={setSelectedSkuId}
+                      thumbFallback={product?.spu_thumb}
+                    />
+                  </Box>
+                )}
+                {/* Info Sku Detail */}
+                <SkuPriceLine selectedSku={selectedSku} basePrice={product?.spu_price} />
+
+                <Box sx={{ display: 'flex', gap: 1.5, mt: 2 }}>
+                  <Button
+                    variant="outlined" fullWidth
+                    startIcon={<ShoppingCartOutlinedIcon />}
+                    onClick={(e) => e.stopPropagation()}
+                    sx={{
+                      textTransform: 'none', fontWeight: 700, fontSize: '0.9rem',
+                      borderRadius: '12px', py: 1.25,
+                      borderColor: 'secondary.main', color: 'secondary.main',
+                      '&:hover': { bgcolor: 'rgba(52,133,247,0.06)' }
+                    }}
+                  >
+                    Giỏ hàng
+                  </Button>
+                  <Button
+                    variant="contained" fullWidth
+                    startIcon={<LocalMallRoundedIcon />}
+                    onClick={(e) => e.stopPropagation()}
+                    sx={{
+                      textTransform: 'none', fontWeight: 700, fontSize: '0.9rem',
+                      borderRadius: '12px', py: 1.25,
+                      bgcolor: 'secondary.main',
+                      background: 'linear-gradient(90deg, #568dfbff, #69aedc, #8acdde)',
+                      color: '#ffffff',
+                      '&:hover': { bgcolor: '#4e96f6ff', boxShadow: '0 6px 20px rgba(52,133,247,0.45)' }
+                    }}
+                  >
+                    Mua ngay
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
+          </Grid>
+
+
+          {/* DESCRIPTION + ATTRIBUTE */}
+          <Grid container size={12} spacing={2} sx={{ mt: 2 }}>
+            {product?.spu_description && (
+              <Grid size={{ xs: 12, md: 7 }} >
+                <ProductDescription text={product.spu_description} sx={{ height: '100%' }} />
+              </Grid>
+            )}
+
+            {attributes.length > 0 && (
+              <Grid size={{ xs: 12, md: 5 }}>
+                <Box sx={{ bgcolor: 'primary.main', ...glassSx }}>
+                  <ProductAttributesTable attributes={attributes} />
+                </Box>
+              </Grid>
+            )}
+          </Grid>
+
+          <Grid size={12}>
+            <ShopInfoCard shopId={product?.spu_shopId} />
+          </Grid>
+
+          <Grid size={12}>
+            <ProductReviewsSection
+              productId={productId}
+              ratingAvg={product?.spu_ratingsAvg}
+              ratingCount={product?.spu_ratingCount}
+            />
+          </Grid>
+
+          {/* Other Product */}
+          <Grid size={12}>
+            <ProductGridSection products={products} isLoading={isLoading} />
+          </Grid>
+
+        </Grid>
+      )}
+    </Box>
   )
 }
 

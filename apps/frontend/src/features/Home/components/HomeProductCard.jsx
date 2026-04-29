@@ -76,14 +76,27 @@ const PortraitCard = ({ product }) => {
             <IconButton
               size="small"
               onClick={(e) => e.stopPropagation()}
-              sx={{ bgcolor: 'secondary.main', color: '#fff', width: 30, height: 30, '&:hover': { bgcolor: '#1a6fe0' } }}
+              sx={{
+                background: 'linear-gradient(90deg, #69bef7ff, #53e6eeff)',
+                color: '#fff',
+                width: 32,
+                height: 32,
+                boxShadow: '0 2px 8px rgba(140, 209, 255, 0.4)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  background: 'linear-gradient(90deg, #3c8ffbff, #84d8ffff)',
+                  transform: 'scale(1.1)',
+                  boxShadow: '0 4px 12px rgba(26, 111, 224, 0.5)'
+                },
+                '& .MuiSvgIcon-root': { fontSize: 18 }
+              }}
             >
-              <ShoppingCartOutlinedIcon sx={{ fontSize: 14 }} />
+              <ShoppingCartOutlinedIcon />
             </IconButton>
           </Tooltip>
         </Box>
       </Box>
-    </Box>
+    </Box >
   )
 }
 
@@ -134,9 +147,22 @@ const LandscapeCard = ({ product }) => {
             <IconButton
               size="small"
               onClick={(e) => e.stopPropagation()}
-              sx={{ bgcolor: 'secondary.main', color: '#fff', width: 30, height: 30, '&:hover': { bgcolor: '#1a6fe0' } }}
+              sx={{
+                background: 'linear-gradient(90deg, #69bef7ff, #53e6eeff)',
+                color: '#fff',
+                width: 32,
+                height: 32,
+                boxShadow: '0 2px 8px rgba(140, 209, 255, 0.4)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  background: 'linear-gradient(90deg, #3c8ffbff, #84d8ffff)',
+                  transform: 'scale(1.1)',
+                  boxShadow: '0 4px 12px rgba(26, 111, 224, 0.5)'
+                },
+                '& .MuiSvgIcon-root': { fontSize: 18 }
+              }}
             >
-              <ShoppingCartOutlinedIcon sx={{ fontSize: 14 }} />
+              <ShoppingCartOutlinedIcon />
             </IconButton>
           </Tooltip>
         </Box>
