@@ -47,10 +47,19 @@ const deleteShop = async ({ userId, shopId }) => {
   if (!foundShop) throw new ApiError(StatusCodes.BAD_REQUEST, 'User does not exists')
   return await shopRepo.changeStatus(shopId, 'inactive')
 }
+const getInfoShop = async ({ shopId }) => {
+  const foundShop = await shopModel.findById(shopId)
+    .select('shop_name shop_logo shop_addresses shop_metrics default_address_id')
+    .populate('default_address_id', 'fullAdress')
+    .lean()
+  if (!foundShop) throw new ApiError(StatusCodes.BAD_REQUEST, 'User does not exists')
+  return foundShop
+}
 
 export default {
   registerShop,
   getShopByUser,
   updateInfoShop,
-  deleteShop
+  deleteShop,
+  getInfoShop
 }

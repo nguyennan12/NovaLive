@@ -4,13 +4,12 @@ import shopRepo from '#models/repository/shop.repo.js'
 import spuRepo from '#models/repository/spu.repo.js'
 import { skuModel } from '#models/sku.model.js'
 import { spuModel } from '#models/spu.model.js'
-import { PREFIX } from '#utils/constant.js'
+import { LOW_STOCK_THRESHOLD, PREFIX } from '#utils/constant.js'
 import converter from '#utils/converter.js'
 import { getMinPriceFromSkus, getNameSkuByTierOption } from '#utils/data.js'
 import { generateSkuId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import _ from 'lodash'
-import { LOW_STOCK_THRESHOLD } from '#utils/constant.js'
 
 
 const createSku = async ({ spu_id, sku_list, spu_code, isPublished, spu_shopId, userId, userEmail }) => {
@@ -63,25 +62,29 @@ const getAllSkuBySpuId = async (spuId) => {
 
 //này up date toàn bộ sku list tương ứng với variation
 const updateSkuBySpuId = async ({ spuId, spuCode, skuList }) => {
-  //tạo danh sách sku mới từ sku list truyền vào
   const newSkuIds = skuList.map(sku => generateSkuId(spuCode, sku.sku_tier_idx))
 
-  //tạo mảng bulk option updateOne tất cả cái sku mới
-  const bulkOps = skuList.map((newSku, idx) => ({
-    updateOne: {
-      filter: { sku_id: newSkuIds[idx] },
-      update: { $set: { ...newSku, sku_id: newSkuIds[idx], sku_spuId: spuId } },
-      upsert: true
+  const bulkOps = skuList.map((newSku, idx) => {
+    // strip _id to avoid MongoDB "Mod on _id not allowed" error
+    // eslint-disable-next-line no-unused-vars
+    const { _id, __v, createdAt, updatedAt, ...skuData } = newSku
+    return {
+      updateOne: {
+        filter: { sku_id: newSkuIds[idx], sku_spuId: spuId },
+        update: { $set: { ...skuData, sku_id: newSkuIds[idx], sku_spuId: spuId } },
+        upsert: true  // must be inside updateOne
+      }
     }
-  }))
+  })
 
   if (bulkOps.length > 0) await skuModel.bulkWrite(bulkOps)
 
-  //xóa tất cả sku cũ không có trong sku list mới
-  skuModel.deleteMany({
-    sku_spuId: spuId,
-    sku_id: { $nin: newSkuIds }
-  })
+  // fetch existing IDs after upsert to only delete SKUs truly removed from variations
+  const existingIds = (await skuModel.find({ sku_spuId: spuId }, { sku_id: 1 }).lean()).map(s => s.sku_id)
+  const toDelete = existingIds.filter(id => !newSkuIds.includes(id))
+  if (toDelete.length > 0) {
+    await skuModel.deleteMany({ sku_spuId: spuId, sku_id: { $in: toDelete } })
+  }
 
   return await skuModel.find({ sku_spuId: spuId }).lean()
 }

@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded'
-import HomeProductCard, { HomeProductCardSkeleton } from './HomeProductCard'
+import { HomeProductCard, HomeProductCardSkeleton } from './HomeProductCard'
 import VerifiedIcon from '@mui/icons-material/Verified'
 
 const rankColors = ['#f59e0b', '#9ca3af', '#cd7c2f']

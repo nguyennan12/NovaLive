@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material'
-import HomeProductCard, { HomeProductCardSkeleton } from './HomeProductCard'
+import { HomeProductCard, HomeProductCardSkeleton } from './HomeProductCard'
 
 const ProductGridSection = ({ products = [], isLoading }) => {
   return (

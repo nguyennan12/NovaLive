@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAllProductsAPI, queryProductAPI } from '~/common/apis/services/productService'
@@ -10,10 +11,8 @@ const toArray = (data) => {
 }
 
 export const useHomeProducts = (filters) => {
-  // Only trigger filter query when category is explicitly selected
   const isFiltering = filters.category !== 'all'
 
-  // Default load: fetch all products once
   const { data: rawAll = [], isLoading } = useQuery({
     queryKey: ['home_products'],
     queryFn: () => getAllProductsAPI({ page: 1, limit: 24 }),
@@ -21,7 +20,6 @@ export const useHomeProducts = (filters) => {
     enabled: !isFiltering
   })
 
-  // Build query string only when filtering
   const queryString = useMemo(() => {
     if (!isFiltering) return ''
     const params = buildQueryParams({ ...filters })
@@ -36,7 +34,6 @@ export const useHomeProducts = (filters) => {
 
   const allProducts = useMemo(() => toArray(rawAll), [rawAll])
 
-  // Apply client-side sort to the default product pool
   const sortedProducts = useMemo(() => {
     const list = [...allProducts]
     switch (filters.sort) {

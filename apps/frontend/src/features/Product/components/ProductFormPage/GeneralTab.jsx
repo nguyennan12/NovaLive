@@ -8,7 +8,7 @@ import { Controller, useFormContext } from 'react-hook-form'
 import ProductVariantsCard from './ProductVariantsCard'
 import ProductDetailsCard from './ProductDetailsCard'
 
-export default function GeneralTab() {
+export default function GeneralTab({ isUpdate }) {
   const { control } = useFormContext()
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -28,7 +28,7 @@ export default function GeneralTab() {
               <>
                 <TextField
                   {...field}
-                  value={field.value ?? ""}
+                  value={field.value ?? ''}
                   fullWidth
                   size="small"
                   placeholder="Enter product name"
@@ -164,7 +164,7 @@ export default function GeneralTab() {
 
       <ProductVariantsCard />
 
-      <ProductDetailsCard />
+      {isUpdate ? <Box></Box> : <ProductDetailsCard />}
 
     </Box>
   )

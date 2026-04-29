@@ -17,6 +17,15 @@ const getShopByUser = async (req, res, next) => {
     metadata: await shopService.getShopByUser({ userId: req.user.userId })
   }).send(res)
 }
+
+const getInfoShop = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get Shop successfully!',
+    metadata: await shopService.getInfoShop({ shopId: req.params.shopId })
+  }).send(res)
+}
+
 const updateInfoShop = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
@@ -37,5 +46,6 @@ export default {
   registerShop,
   getShopByUser,
   updateInfoShop,
-  deleteShop
+  deleteShop,
+  getInfoShop
 }

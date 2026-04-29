@@ -4,7 +4,6 @@ const APP_BAR_HEIGHT = '60px'
 const CHAT_INPUT_HEIGHT = '64px'
 const MAIN_CONTENT_HEIGHT = `calc(100vh - ${APP_BAR_HEIGHT})`
 
-
 const theme = extendTheme({
   app: {
     appBarHeight: APP_BAR_HEIGHT,
@@ -12,6 +11,14 @@ const theme = extendTheme({
     mainContentHeight: MAIN_CONTENT_HEIGHT
   },
 
+  typography: {
+    fontFamily: [
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif'
+    ].join(',')
+  },
 
   colorSchemes: {
     light: {
@@ -204,5 +211,14 @@ const theme = extendTheme({
     }
   }
 })
+
+export const glassSx = {
+  background: 'rgba(255,255,255,0.1)',
+  backdropFilter: 'blur(10px)',
+  WebkitBackdropFilter: 'blur(10px)',
+  borderRadius: 3,
+  boxShadow: '0 4px 30px rgba(0,0,0,0.05)',
+  p: 2
+}
 
 export default theme

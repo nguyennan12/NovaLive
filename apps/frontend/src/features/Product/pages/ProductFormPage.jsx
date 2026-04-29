@@ -156,7 +156,7 @@ const ProductFormPage = () => {
 
           {/* RIGHT main content */}
           <Box sx={{ flex: 1, minWidth: 0, width: '100%' }}>
-            <GeneralTab />
+            <GeneralTab isUpdate={isUpdate} />
           </Box>
         </Box>
 

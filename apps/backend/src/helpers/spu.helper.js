@@ -19,7 +19,7 @@ export const transformSPUtoES = (doc) => {
     spu_thumb: doc.spu_thumb,
     total_sold: doc.total_sold,
     spu_shopId: doc.spu_shopId?.toString(),
-
+    spu_code: doc.spu_code,
     spu_attributes: doc.spu_attributes?.map(attr => ({
       attr_id: attr.attr_id,
       attr_name: attr.attr_name,

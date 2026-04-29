@@ -10,6 +10,7 @@ import InventoryPage from '~/features/Inventory/pages/InventoryPage'
 import { DiscountPage } from '~/features/Discount/pages/DiscountPage'
 import LiveManagerPage from '~/features/LiveSession/pages/LiveManagerPage'
 import { HomePage } from '~/features/Home/pages/HomePage'
+import ProductDetailPage from '~/features/Product/pages/ProductDetailPage'
 
 const AppRoutes = () => {
   return (
@@ -24,6 +25,7 @@ const AppRoutes = () => {
       <Route path='/live' element={<LiveFeedPage />} />
       <Route path='/shop/live/:liveId' element={<ShopLive />} />
       {/* PRODUCT */}
+      <Route path="/product/:productId" element={<ProductDetailPage />} />
       <Route path="/products/form" element={<ProductFormPage />} />
       <Route path="/products/form/:id" element={<ProductFormPage />} />
       <Route path='/inventory' element={<InventoryPage />} />

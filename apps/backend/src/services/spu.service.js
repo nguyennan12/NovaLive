@@ -95,7 +95,7 @@ const updateProduct = async ({ productId, reqBody, userId }) => {
   const allowedFields = [
     'spu_name', 'spu_thumb', 'spu_description',
     'spu_price', 'spu_category', 'spu_attributes',
-    'spu_variations', 'sku_list',
+    'spu_variations', 'sku_list', 'spu_code'
   ]
   //các bước check business
   const { foundProduct } = await validateProductOwnership({ productId, userId })
@@ -105,7 +105,7 @@ const updateProduct = async ({ productId, reqBody, userId }) => {
       spuId: foundProduct._id,
       spuCode: foundProduct.spu_code,
       skuList: reqBody.sku_list,
-      isPublished: isPublished,
+      isPublished: foundProduct.isPublished,
     })
     //set lại giá khi đã update sku
     reqBody.spu_price = getMinPriceFromSkus(updatedSkus)

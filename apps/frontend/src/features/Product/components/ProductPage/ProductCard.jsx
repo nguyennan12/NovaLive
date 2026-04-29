@@ -108,7 +108,9 @@ const ProductCard = ({ product }) => {
             <Tooltip title='update' placement="top">
               <IconButton
                 size='small'
-                onClick={() => navigate(`/products/form/${product.spu_code}`)}
+                onClick={() => {
+                  return navigate(`/products/form/${product.spu_code}`)
+                }}
                 sx={{
                   width: { xs: 28, sm: 32 },
                   height: { xs: 28, sm: 32 },

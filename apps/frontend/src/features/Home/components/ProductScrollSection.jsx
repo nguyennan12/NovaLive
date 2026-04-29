@@ -3,14 +3,14 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import { Box, IconButton, Typography } from '@mui/material'
 import { useRef } from 'react'
-import HomeProductCard, { HomeProductCardSkeleton } from './HomeProductCard'
+import { HomeProductCard, HomeProductCardSkeleton } from './HomeProductCard'
 import { FlashSaleCountdown } from '~/common/components/common/countdown/CounDownBox'
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
 
 const FlashSaleHeader = ({ endTime, onViewAll }) => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2.5 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 }, bgcolor: '#fff', p: 1 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 } }}>
         <Box sx={{ width: { xs: 4, sm: 6 }, height: { xs: 28, sm: 36 }, borderRadius: '4px', bgcolor: '#e8472a', flexShrink: 0 }} />
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

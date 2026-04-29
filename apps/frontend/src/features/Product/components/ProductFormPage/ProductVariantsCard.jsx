@@ -14,8 +14,15 @@ export default function ProductVariantsCard() {
 
   //khi variations thay đổi (thêm mới) thì generate ra sku
   useEffect(() => {
-    const combinations = generateCombinations(variations)
+    // guard: if variations is empty but sku_list already has data, this is likely the
+    // initial render before reset() populates the form — skip to avoid wiping existing SKUs
     const currentSkus = getValues('sku_list') || []
+    if (variations.length === 0) {
+      if (currentSkus.length > 0) return  // existing SKUs present, no variations yet → skip
+      return                               // both empty, nothing to do
+    }
+
+    const combinations = generateCombinations(variations)
 
     const newSkuList = combinations.map(comb => {
       const tierIdx = comb.indices
