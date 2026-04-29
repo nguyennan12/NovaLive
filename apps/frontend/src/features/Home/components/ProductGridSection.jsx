@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import { HomeProductCard, HomeProductCardSkeleton } from './HomeProductCard'
+import { SectionHeader } from '~/features/Product/components/shared/SectionHeader'
 
 const ProductGridSection = ({ products = [], isLoading }) => {
   return (
@@ -12,6 +13,7 @@ const ProductGridSection = ({ products = [], isLoading }) => {
       p: 2,
       my: { xs: 3.5, md: 5 }
     }}>
+      <SectionHeader title={'Các sản phẩm khác'} />
       {isLoading ? (
         <Box sx={{
           display: 'grid',

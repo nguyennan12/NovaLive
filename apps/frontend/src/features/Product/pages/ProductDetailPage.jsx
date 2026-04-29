@@ -9,15 +9,17 @@ import { toast } from 'react-toastify'
 import { PageSkeleton } from '~/common/components/common/loading/PageSkeleton'
 import { WaterDropBackground } from '~/common/components/common/style/WaterDropBackground'
 import { selectCategories } from '~/common/redux/product/categorySlice'
+import { slugCateToNameCate } from '~/common/utils/converter'
 import { formatSold } from '~/common/utils/formatters'
+import ProductGridSection from '~/features/Home/components/ProductGridSection'
 import { glassSx } from '~/theme'
 import ProductAttributesTable from '../components/ProductDetailPage/ProductAttributesTable'
 import { ProductDescription } from '../components/ProductDetailPage/ProductDescription'
 import ProductImageGallery from '../components/ProductDetailPage/ProductImageGallery'
 import ProductVariantSelector, { SkuPriceLine } from '../components/ProductDetailPage/ProductVariantSelector'
 import ShopInfoCard from '../components/ProductDetailPage/ShopInfoCard'
+import { useProduct } from '../hooks/useProduct'
 import { useProductDetail } from '../hooks/useProductDetail'
-import { slugCateToNameCate } from '~/common/utils/converter'
 
 
 const ProductDetailPage = () => {
@@ -27,6 +29,8 @@ const ProductDetailPage = () => {
   const { data: product, isLoading, isError, error } = useProductDetail(productId)
 
   const [selectedSkuId, setSelectedSkuId] = useState(null)
+  //có thể làm 1 API get product Similar
+  const { products } = useProduct()
 
   useEffect(() => {
     if (isError) {
@@ -59,8 +63,6 @@ const ProductDetailPage = () => {
 
               </Box>
             </Grid>
-
-
             <Grid size={{ xs: 12, md: 7 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, bgcolor: 'primary.main', ...glassSx, borderRadius: '12px', height: '100%', justifyContent: 'space-between' }}>
 
@@ -169,9 +171,16 @@ const ProductDetailPage = () => {
               )}
             </Grid>
 
-            {/* ─── SHOP INFO ─── */}
             <Grid size={12}>
               <ShopInfoCard shopId={product?.spu_shopId} />
+            </Grid>
+
+            {/* Other Product */}
+            <Box sx={{ alignContent: 'center', width: '100vw' }}>
+              <Typography >Có thể bạn thích</Typography>
+            </Box>
+            <Grid size={12}>
+              <ProductGridSection products={products} isLoading={isLoading} />
             </Grid>
 
           </Grid>

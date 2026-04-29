@@ -6,7 +6,6 @@ const THUMB_COUNT = 4
 const ProductImageGallery = ({ thumbUrl, productName }) => {
   const [activeIdx, setActiveIdx] = useState(0)
   const [mainThumb, setMainThumb] = useState(thumbUrl)
-  console.log("🚀 ~ ProductImageGallery ~ mainThumb:", mainThumb)
 
   if (!thumbUrl) {
     return (

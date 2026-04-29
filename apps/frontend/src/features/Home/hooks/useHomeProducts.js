@@ -10,7 +10,7 @@ const toArray = (data) => {
   return []
 }
 
-export const useHomeProducts = (filters) => {
+export const useHomeProducts = (filters = {}) => {
   const isFiltering = filters.category !== 'all'
 
   const { data: rawAll = [], isLoading } = useQuery({
@@ -52,6 +52,7 @@ export const useHomeProducts = (filters) => {
   )
 
   const newArrivals = useMemo(() => sortedProducts, [sortedProducts])
+  console.log("🚀 ~ useHomeProducts ~ newArrivals:", newArrivals)
 
   return {
     isFiltering,
