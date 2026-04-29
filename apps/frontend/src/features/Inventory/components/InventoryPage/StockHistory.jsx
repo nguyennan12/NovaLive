@@ -29,7 +29,6 @@ const StockHistory = ({ loading = false }) => {
   })
 
   const histories = data?.items || []
-  console.log("🚀 ~ StockHistory ~ histories:", histories)
   const totalPages = data?.totalPages || 1
   const totalItems = data?.totalItems || 0
 
@@ -92,7 +91,6 @@ const StockHistory = ({ loading = false }) => {
         <EmptyState icon={HistoryRoundedIcon} title='No history found' subtitle='Adjust filters to see results' />
       ) : (
         histories.map((h) => {
-          console.log("🚀 ~ StockHistory ~ h:", h)
           return <Box
             key={h._id}
             sx={{

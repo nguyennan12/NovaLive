@@ -52,7 +52,6 @@ export const useHomeProducts = (filters = {}) => {
   )
 
   const newArrivals = useMemo(() => sortedProducts, [sortedProducts])
-  console.log("🚀 ~ useHomeProducts ~ newArrivals:", newArrivals)
 
   return {
     isFiltering,

@@ -42,3 +42,8 @@ export const getProductStatsAPI = async () => {
   const response = await authorizedAxiosInstance.get('product/stats')
   return response.metadata
 }
+
+export const getOneSkusAPI = async (spuId, skuId) => {
+  const response = await authorizedAxiosInstance.get(`product/variation?spuId=${spuId}&skuId=${skuId}`)
+  return response.metadata
+}

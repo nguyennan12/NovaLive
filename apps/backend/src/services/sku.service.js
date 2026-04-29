@@ -72,7 +72,7 @@ const updateSkuBySpuId = async ({ spuId, spuCode, skuList }) => {
       updateOne: {
         filter: { sku_id: newSkuIds[idx], sku_spuId: spuId },
         update: { $set: { ...skuData, sku_id: newSkuIds[idx], sku_spuId: spuId } },
-        upsert: true  // must be inside updateOne
+        upsert: true
       }
     }
   })

@@ -55,7 +55,6 @@ const StockOverviewChart = () => {
     queryKey: ['chart_inventory', period],
     queryFn: () => getChartArtInventoryAPI(period)
   })
-  console.log("🚀 ~ StockOverviewChart ~ data:", data)
   const totals = useMemo(() => {
     const totalIn = data.reduce((s, d) => s + d.in, 0)
     const totalOut = data.reduce((s, d) => s + d.out, 0)

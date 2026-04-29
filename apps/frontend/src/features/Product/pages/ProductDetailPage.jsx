@@ -1,13 +1,11 @@
 import LocalMallRoundedIcon from '@mui/icons-material/LocalMallRounded'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
-import { Box, Button, Grid, Typography } from '@mui/material'
+import { Box, Button, Grid } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { PageSkeleton } from '~/common/components/common/loading/PageSkeleton'
 import { WaterDropBackground } from '~/common/components/common/style/WaterDropBackground'
-import { selectCategories } from '~/common/redux/product/categorySlice'
 import ProductGridSection from '~/features/Home/components/ProductGridSection'
 import ProductReviewsSection from '~/features/Review/components/ProductReviewsSection'
 import { glassSx } from '~/theme'
@@ -18,7 +16,7 @@ import ProductInfo from '../components/ProductDetailPage/ProductInfo'
 import ProductVariantSelector, { SkuPriceLine } from '../components/ProductDetailPage/ProductVariantSelector'
 import ShopInfoCard from '../components/ProductDetailPage/ShopInfoCard'
 import { useProduct } from '../hooks/useProduct'
-import { useProductDetail } from '../hooks/useProductDetail'
+import { useProductDetail, useSelectedSku } from '../hooks/useProductDetail'
 
 
 const ProductDetailPage = () => {
@@ -38,10 +36,14 @@ const ProductDetailPage = () => {
   }, [isError, error, navigate])
 
   const skuList = product?.sku_list ?? []
-  const selectedSku = skuList.find((s) => s.sku_id === selectedSkuId)
+  const localSku = skuList.find((s) => s.sku_id === selectedSkuId)
     ?? skuList.find((s) => s.sku_default)
     ?? skuList[0]
     ?? null
+
+  // Khi user chọn SKU, fetch fresh price/stock từ server; fallback về local data trong khi chờ
+  const { data: fetchedSku } = useSelectedSku(product?._id, selectedSkuId)
+  const selectedSku = fetchedSku ?? localSku
   const attributes = product?.spu_attributes ?? []
 
   return (

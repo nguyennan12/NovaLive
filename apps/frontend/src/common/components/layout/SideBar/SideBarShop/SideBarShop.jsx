@@ -6,6 +6,7 @@ import { NAV_SECTIONS } from '~/common/configs/sidebar.config'
 import SidebarSection from './components/SidebarSection'
 import SidebarStoreSelect from './components/SidebarStoreSelect'
 import SidebarProfile from './components/SidebarProfile'
+import { useNavigate } from 'react-router-dom'
 
 const SIDEBAR_EXPANDED = 240
 const SIDEBAR_COLLAPSED = 60
@@ -15,7 +16,8 @@ const Sidebar = () => {
   const [activeKey, setActiveKey] = useState('dashboard')
 
   const width = collapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED
-
+  const navigate = useNavigate()
+  const backHome = () => navigate('/')
   return (
     <Box
       component='nav'
@@ -35,6 +37,7 @@ const Sidebar = () => {
     >
       {/* Header */}
       <Box
+        onClick={backHome}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -43,7 +46,8 @@ const Sidebar = () => {
           py: 1.5,
           borderBottom: '1px solid',
           borderColor: 'divider',
-          minHeight: 56
+          minHeight: 56,
+          cursor: 'pointer'
         }}
       >
         {!collapsed && (
@@ -151,7 +155,7 @@ const Sidebar = () => {
           onItemClick={setActiveKey}
         />
       </Box>
-    </Box>
+    </Box >
   )
 }
 
