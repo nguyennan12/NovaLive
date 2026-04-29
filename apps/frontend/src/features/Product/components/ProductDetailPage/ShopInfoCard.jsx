@@ -59,7 +59,7 @@ const ShopInfoCard = ({ shopId }) => {
       {/* Stats */}
       <Box sx={{ display: 'flex', gap: { xs: 2, sm: 3 }, flexWrap: 'wrap', flex: 1 }}>
         <Box>
-          <Typography sx={{ fontSize: '0.68rem', color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <Typography sx={{ fontSize: '0.68rem', color: '#6f97ddff', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Sản phẩm
           </Typography>
           <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: 'primary.contrastText', mt: 0.25 }}>
@@ -67,7 +67,7 @@ const ShopInfoCard = ({ shopId }) => {
           </Typography>
         </Box>
         <Box>
-          <Typography sx={{ fontSize: '0.68rem', color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <Typography sx={{ fontSize: '0.68rem', color: '#6f97ddff', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Thời gian phản hồi
           </Typography>
           <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: 'primary.contrastText', mt: 0.25 }}>
@@ -75,7 +75,7 @@ const ShopInfoCard = ({ shopId }) => {
           </Typography>
         </Box>
         <Box>
-          <Typography sx={{ fontSize: '0.68rem', color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <Typography sx={{ fontSize: '0.68rem', color: '#6f97ddff', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Đã bán
           </Typography>
           <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: 'primary.contrastText', mt: 0.25 }}>

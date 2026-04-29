@@ -11,6 +11,7 @@ import App from './App'
 import { store } from './common/redux/store'
 import theme from './theme'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import ScrollToTop from './common/hooks/ScrollToTop'
 
 
 const persitor = persistStore(store)
@@ -25,6 +26,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <ThemeProvider theme={theme}>
             <ConfirmProvider>
               <CssBaseline />
+              <ScrollToTop />
               <App />
               <ToastContainer autoClose={2000} theme="colored" />
             </ConfirmProvider>

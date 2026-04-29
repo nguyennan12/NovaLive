@@ -17,6 +17,7 @@ import ProductAttributesTable from '../components/ProductDetailPage/ProductAttri
 import { ProductDescription } from '../components/ProductDetailPage/ProductDescription'
 import ProductImageGallery from '../components/ProductDetailPage/ProductImageGallery'
 import ProductVariantSelector, { SkuPriceLine } from '../components/ProductDetailPage/ProductVariantSelector'
+import ProductReviewsSection from '~/features/Review/components/ProductReviewsSection'
 import ShopInfoCard from '../components/ProductDetailPage/ShopInfoCard'
 import { useProduct } from '../hooks/useProduct'
 import { useProductDetail } from '../hooks/useProductDetail'
@@ -175,10 +176,15 @@ const ProductDetailPage = () => {
               <ShopInfoCard shopId={product?.spu_shopId} />
             </Grid>
 
+            <Grid size={12}>
+              <ProductReviewsSection
+                productId={productId}
+                ratingAvg={product?.spu_ratingsAvg}
+                ratingCount={product?.spu_ratingCount}
+              />
+            </Grid>
+
             {/* Other Product */}
-            <Box sx={{ alignContent: 'center', width: '100vw' }}>
-              <Typography >Có thể bạn thích</Typography>
-            </Box>
             <Grid size={12}>
               <ProductGridSection products={products} isLoading={isLoading} />
             </Grid>
