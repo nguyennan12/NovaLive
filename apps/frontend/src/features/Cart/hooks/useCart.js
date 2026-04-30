@@ -16,6 +16,7 @@ export const useCart = () => {
     queryFn: getCartAPI,
     staleTime: 1000 * 30
   })
+  console.log("🚀 ~ useCart ~ shopGroups:", shopGroups)
 
   const calculations = useCartCalc(shopGroups)
 
