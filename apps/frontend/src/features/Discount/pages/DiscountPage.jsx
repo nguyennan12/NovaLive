@@ -14,7 +14,9 @@ import { DiscountFilterBar } from '../components/shared/DiscountFilterBar'
 import { useDebounce } from '../hook/useDebounce'
 import { useDiscounts } from '../hook/useDiscounts'
 
+
 export const DiscountPage = () => {
+
   const [searchInput, setSearchInput] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')

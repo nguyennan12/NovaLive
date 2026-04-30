@@ -1,10 +1,11 @@
 import discountModel from '#models/discount.model.js'
 import _ from 'lodash'
 
-const buildDiscountQuery = ({ scope, search, status, type, target }) => {
+const buildDiscountQuery = ({ scope, shopId, search, status, type, target }) => {
   const query = {}
 
   if (!_.isNil(scope) && scope !== '') query.discount_scope = scope
+  if (!_.isNil(shopId) && shopId !== '') query.discount_shopId = shopId
 
   const now = new Date()
 
@@ -53,7 +54,7 @@ const findAllDiscountByType = async ({ scope, offset, limit, search, status, typ
   return result
 }
 
-const queryDiscounts = async ({ page = 1, limit = 20, scope = '', search = '', status = 'all', type = 'all', target = 'all' }) => {
+const queryDiscounts = async ({ page = 1, limit = 20, scope = '', shopId = '', search = '', status = 'all', type = 'all', target = 'all' }) => {
   const pageNumber = Number(page)
   const limitNumber = Number(limit)
   const skip = (pageNumber - 1) * limitNumber
@@ -64,6 +65,7 @@ const queryDiscounts = async ({ page = 1, limit = 20, scope = '', search = '', s
 
   const query = buildDiscountQuery({
     scope,
+    shopId,
     search,
     status: normalizedStatus,
     type: normalizedType,

@@ -147,7 +147,6 @@ const getSkusDetails = async (skuIds) => {
       product_name: sku.sku_spuId.spu_name,
       shopId: sku.sku_spuId.spu_shopId._id.toString(),
       shop_name: sku.sku_spuId.spu_shopId.shop_name,
-      addedAt: sku.addedAt
     }
   })
 

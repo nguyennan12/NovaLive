@@ -26,6 +26,11 @@ export const getAllDiscountAPI = async (params = {}) => {
   const response = await authorizedAxiosInstance.get(`discount${query ? `?${query}` : ''}`)
   return response.metadata
 }
+export const getAllDiscountOfShopAPI = async (shopId, params) => {
+  const query = toQueryString(params)
+  const response = await authorizedAxiosInstance.get(`discount/shop/${shopId}?${query}`)
+  return response.metadata
+}
 
 export const queryDiscountAPI = async (params = {}) => {
   const query = toQueryString(params)

@@ -28,7 +28,7 @@ const getAllDiscountOfShop = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Get discount of shop successfully!',
-    metadata: await discountService.getAllDiscountOfShop(req.params.shopId)
+    metadata: await discountService.getAllDiscountOfShop({ shopId: req.params.shopId, ...req.query })
   }).send(res)
 }
 const getProductsByDiscount = async (req, res, next) => {

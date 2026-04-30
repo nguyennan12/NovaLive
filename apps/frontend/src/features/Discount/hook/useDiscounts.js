@@ -1,13 +1,12 @@
+import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useSelector } from 'react-redux'
 import {
-  createDiscountAPI,
-  deleteDiscountAPI,
-  getAllDiscountAPI,
-  queryDiscountAPI,
-  updateDiscountAPI
+  queryDiscountAPI
 } from '~/common/apis/services/discountService'
+import { selectCurrentUser } from '~/common/redux/user/userSlice'
 import { LIMIT } from '~/common/utils/constant'
+import { useDiscountMutations } from './useDiscountMutations'
 
 const toDateKey = (value) => {
   if (!value) return ''
@@ -42,19 +41,21 @@ const normalizeDiscount = (discount) => {
 }
 
 export const useDiscounts = (search = '', statusFilter = 'all', typeFilter = 'all', categoryFilter = 'all') => {
-  const queryClient = useQueryClient()
+  const user = useSelector(selectCurrentUser)
+  const discountMutations = useDiscountMutations()
 
   const listQueryParams = useMemo(() => {
     const params = {
       limit: LIMIT.DISCOUNT,
-      page: 1
+      page: 1,
+      shopId: user?.user_shop
     }
     if (search?.trim()) params.search = search.trim()
     if (statusFilter !== 'all') params.status = statusFilter
     if (typeFilter !== 'all') params.type = typeFilter === 'fixed' ? 'fixed_amount' : typeFilter
     if (categoryFilter !== 'all') params.target = categoryFilter === 'freeship' ? 'shipping' : categoryFilter
     return params
-  }, [search, statusFilter, typeFilter, categoryFilter])
+  }, [search, statusFilter, typeFilter, categoryFilter, user?.user_shop])
 
   const {
     data: filtered = [],
@@ -69,64 +70,21 @@ export const useDiscounts = (search = '', statusFilter = 'all', typeFilter = 'al
     select: (raw) => safeArray(raw?.items).map(normalizeDiscount)
   })
 
-  const { data: allDiscounts = [] } = useQuery({
-    queryKey: ['discounts', 'stats'],
-    queryFn: () => getAllDiscountAPI({ limit: LIMIT.DISCOUNT, page: 1 }),
-    staleTime: 20 * 1000,
-    select: (raw) => safeArray(raw).map(normalizeDiscount)
-  })
-
   const stats = useMemo(() => ({
-    total: allDiscounts.length,
-    active: allDiscounts.filter((d) => d.status === 'active').length,
-    draft: allDiscounts.filter((d) => d.status === 'draft').length,
-    expired: allDiscounts.filter((d) => d.status === 'expired').length,
-    freeship: allDiscounts.filter((d) => d.category === 'freeship').length,
-    product: allDiscounts.filter((d) => d.category === 'product').length
-  }), [allDiscounts])
-
-  const createMutation = useMutation({
-    mutationFn: createDiscountAPI,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['discounts'] })
-  })
-
-  const updateMutation = useMutation({
-    mutationFn: ({ discountCode, payload }) => updateDiscountAPI(discountCode, payload),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['discounts'] })
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteDiscountAPI,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['discounts'] })
-  })
-
-  const addDiscount = async (payload) => createMutation.mutateAsync(payload)
-
-  const updateDiscount = async (targetDiscount, payload) => {
-    const discountCode = targetDiscount?.code ?? targetDiscount?.discount_code
-    if (!discountCode) throw new Error('Cannot update discount without discount code')
-
-    return updateMutation.mutateAsync({ discountCode, payload })
-  }
-
-  const deleteDiscount = async (targetDiscount) => {
-    const discountCode = targetDiscount?.code ?? targetDiscount?.discount_code
-    if (!discountCode) throw new Error('Cannot delete discount without discount code')
-
-    return deleteMutation.mutateAsync(discountCode)
-  }
-
-  const isMutating = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending
+    total: filtered.length,
+    active: filtered.filter((d) => d.status === 'active').length,
+    draft: filtered.filter((d) => d.status === 'draft').length,
+    expired: filtered.filter((d) => d.status === 'expired').length,
+    freeship: filtered.filter((d) => d.category === 'freeship').length,
+    product: filtered.filter((d) => d.category === 'product').length
+  }), [filtered])
 
   return {
     filtered,
     stats,
     isLoading,
     isFetching,
-    isMutating,
     error,
-    addDiscount,
-    updateDiscount,
-    deleteDiscount
+    ...discountMutations
   }
 }

@@ -10,6 +10,8 @@ import AttachMoneyRoundedIcon from '@mui/icons-material/AttachMoneyRounded'
 import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
 import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded'
 import { toApiPayloadDiscount, toDefaultValuesDiscount } from '~/common/utils/converter'
+import { selectCurrentUser } from '~/common/redux/user/userSlice'
+import { useSelector } from 'react-redux'
 
 const cardSx = {
   boxShadow: 'none',
@@ -58,6 +60,7 @@ export const DiscountForm = ({ onSubmit, editData }) => {
   const inputSx = theme.customStyles?.discountForm?.inputSx || {}
   const dateSx = theme.customStyles?.discountForm?.dateSx || {}
   const sectionLabel = theme.customStyles?.discountForm?.sectionLabel || {}
+  const user = useSelector(selectCurrentUser)
 
   const { control, handleSubmit, reset, formState: { errors } } =
     useForm({ defaultValues: DEFAULT_VALUES })
@@ -70,7 +73,11 @@ export const DiscountForm = ({ onSubmit, editData }) => {
   }, [editData, reset])
 
   const onFormSubmit = (data) => {
-    onSubmit(toApiPayloadDiscount(data))
+    const payload = {
+      ...data,
+      discount_shopId: user.user_shop
+    }
+    onSubmit(toApiPayloadDiscount(payload))
     reset(DEFAULT_VALUES)
   }
 
