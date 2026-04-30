@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import { getCartAPI } from '~/common/apis/services/cartService'
 import { clearVoucher, deselectAll, setVoucher, toggleSelect } from '~/common/redux/cart/cartSlice'
@@ -42,11 +41,8 @@ export const useCartCount = () => {
     queryFn: getCartAPI,
     staleTime: 1000 * 30
   })
-  return useMemo(
-    () => shopGroups.reduce(
-      (sum, g) => sum + g.items.reduce((s, i) => s + i.quantity, 0),
-      0
-    ),
-    [shopGroups]
+  return shopGroups.reduce(
+    (sum, g) => sum + (g.items?.length ?? 0),
+    0
   )
 }

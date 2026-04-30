@@ -1,13 +1,13 @@
 import DeleteSweepRoundedIcon from '@mui/icons-material/DeleteSweepRounded'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
-import { Box, Button, Checkbox, Typography } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import { useCart } from '../hooks/useCart'
 import CartShopGroup from './CartShopGroup'
 
 function CartList() {
   const {
     allItems, selectedIds, shopGroups,
-    isAllSelected, selectAll, deselectAll, removeSelected
+    removeSelectedItems
   } = useCart()
 
   if (allItems.length === 0) {
@@ -27,29 +27,12 @@ function CartList() {
     )
   }
 
-  const handleToggleAll = () => {
-    if (isAllSelected) deselectAll()
-    else selectAll()
-  }
-
   return (
     <Box>
-      {/* Thanh hành động trên cùng */}
       <Box sx={{
         display: 'flex', alignItems: 'center', gap: 1.5,
         mb: 1.5, px: 0.5
       }}>
-        <Checkbox
-          checked={isAllSelected}
-          indeterminate={selectedIds?.length > 0 && !isAllSelected}
-          onChange={handleToggleAll}
-          size="small"
-          sx={{
-            p: 0,
-            color: 'rgba(0,0,0,0.28)',
-            '&.Mui-checked': { color: 'secondary.main' }
-          }}
-        />
         <Typography sx={{
           fontSize: '0.82rem', color: 'rgba(45,45,45,0.6)',
           flex: 1, userSelect: 'none'
@@ -62,13 +45,16 @@ function CartList() {
             size="small"
             color="error"
             startIcon={<DeleteSweepRoundedIcon sx={{ fontSize: 17 }} />}
-            onClick={removeSelected}
+            onClick={removeSelectedItems}
             sx={{
               textTransform: 'none', fontSize: '0.78rem',
-              py: 0.3, fontWeight: 600
+              py: 0.3, px: 1, fontWeight: 500,
+              bgcolor: 'rgba(255, 3, 3, 0.6)',
+              color: '#fff',
+              ':hover': { bgcolor: '#f10000ff' }
             }}
           >
-            Xóa đã chọn ({selectedIds.length})
+            Xóa ({selectedIds.length}) sản phẩm ra khỏi giỏ hàng
           </Button>
         )}
       </Box>

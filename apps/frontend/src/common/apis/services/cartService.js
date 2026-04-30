@@ -2,7 +2,6 @@ import authorizedAxiosInstance from '../custom/authorizeAxios'
 
 export const getCartAPI = async () => {
   const response = await authorizedAxiosInstance.get('cart')
-  console.log("🚀 ~ getCartAPI ~ response:", response)
   return response.metadata
 }
 

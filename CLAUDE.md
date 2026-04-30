@@ -1,7 +1,7 @@
 # 📦 E-commerce Project Overview
 
 **Repo:** https://github.com/nguyennan12/E-commerce  
-**Cập nhật:** 29/04/2026 (Product Detail hoàn thành)  
+**Cập nhật:** 30/04/2026 (Cart hoàn thành)  
 **Mục tiêu:** Tăng tốc phát triển frontend các tính năng chính, tối ưu cho teamwork với AI code assistant.
 
 ---
@@ -12,7 +12,8 @@
 - **Frontend:**
   - Đã có UI quản lý sản phẩm, kho với các component/module chính (hiển thị, filter, tạo & sửa sản phẩm, nhập/xuất kho, thống kê tồn kho).
   - **Trang Home** (consumer) đã hoàn thành: banner slider, danh mục, 3 layout list sản phẩm, filter bar.
-  - Các phần còn lại (giỏ hàng, đơn hàng, customer, phân quyền, analytics) ĐANG LÀM hoặc CHƯA LÀM.
+  - **Trang Cart** (consumer) đã hoàn thành: layout 7/3, list theo shop, checkbox chọn/xóa, tăng/giảm số lượng, CartSummary tính tiền realtime, voucher input.
+  - Các phần còn lại (đơn hàng, customer, phân quyền, analytics) CHƯA LÀM.
 
 ---
 
@@ -47,7 +48,7 @@ Chi tiết từng feature (components, hooks, layout, TODO) xem tại **[FEATURE
 - **Kết hợp Redux/React-query:** Ưu tiên react-query nếu cần đồng bộ dữ liệu realtime với server.
 
 ### B. **Các phần còn lại cần AI hỗ trợ**:
-- Trang **giỏ hàng (Cart)**: list sản phẩm đã chọn, sửa số lượng, xóa.
+- ~~Trang **giỏ hàng (Cart)**~~ ✅ HOÀN THÀNH (xem FEATURE.md)
 - Trang **đơn hàng (Orders)**: list, chi tiết, trạng thái thanh toán/vận chuyển.
 - Trang **customer/profile**: info khách hàng, lịch sử mua hàng.
 - **Đăng nhập/đăng ký**: sử dụng API Auth Backend.
@@ -69,7 +70,7 @@ Chi tiết từng feature (components, hooks, layout, TODO) xem tại **[FEATURE
 
 ---
 
-## 6. Tiến độ (tính tới 29/04/2026)
+## 6. Tiến độ (tính tới 30/04/2026)
 
 - Backend: 80% (API core đã xong)
 - Frontend:
@@ -79,7 +80,8 @@ Chi tiết từng feature (components, hooks, layout, TODO) xem tại **[FEATURE
   - ✅ Quản lý phiên live (shop)
   - ✅ **Trang Home (consumer)** — banner, danh mục, 3 layout list sản phẩm
   - ✅ **Trang Product Detail (consumer)** — ảnh, SKU cards, giá, attributes, shop card, description
-  - ⬜ **Cart / Order / Customer / Auth / Dashboard**
+  - ✅ **Trang Cart (consumer)** — layout 7/3, danh sách theo shop, checkbox, stepper, summary, voucher
+  - ⬜ **Order / Customer / Auth / Dashboard**
 
 ---
 

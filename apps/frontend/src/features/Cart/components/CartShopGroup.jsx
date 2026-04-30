@@ -67,7 +67,7 @@ function CartShopGroup({ group }) {
         ))}
       </Box>
 
-      {/*  discount của shop */}
+      {/* discount của shop */}
       <Box sx={{
         px: 2, py: 1,
         borderTop: '1px solid', borderColor: 'divider',

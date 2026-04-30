@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { PageSkeleton } from '~/common/components/common/loading/PageSkeleton'
-import { useCartMutations } from '~/features/Cart/hooks/useCartMutations'
+import { useAddToCart } from '~/features/Cart/hooks/useAddToCard'
 import ProductGridSection from '~/features/Home/components/ProductGridSection'
 import ProductReviewsSection from '~/features/Review/components/ProductReviewsSection'
 import { glassSx } from '~/theme'
@@ -23,9 +23,14 @@ const ProductDetailPage = () => {
   const { productId } = useParams()
   const navigate = useNavigate()
   const { data: product, isLoading, isError, error } = useProductDetail(productId)
-
   const [selectedSkuId, setSelectedSkuId] = useState(null)
   const { products } = useProducts()
+  const [quantity, setQuantity] = useState(1)
+
+  const onChangeQuantity = (newQty) => {
+    if (newQty < 1) return
+    setQuantity(newQty)
+  }
 
   useEffect(() => {
     if (isError) {
@@ -44,24 +49,7 @@ const ProductDetailPage = () => {
   const selectedSku = fetchedSku ?? localSku
   const attributes = product?.spu_attributes ?? []
 
-  const { addToCart, isPending } = useCartMutations()
-
-  const handleAddToCart = () => {
-    if (!product) return
-    const skuId = selectedSku?._id
-    if (!skuId) {
-      toast.warning('Vui lòng chọn phiên bản sản phẩm')
-      return
-    }
-    const payload = {
-      skuId,
-      productId: selectedSku.sku_spuId,
-      shopId: product.spu_shopId,
-      quantity: 1
-    }
-    // console.log("🚀 ~ handleAddToCart ~ payload:", payload)
-    addToCart(payload)
-  }
+  const { handleAddToCart, isPending } = useAddToCart({ product, selectedSku, quantity })
 
   return (
     <Box sx={{ px: { xs: 1.5, sm: 2.5, md: 4 }, pt: { xs: 2, md: 3 }, pb: { xs: '100px', sm: '110px' } }}>
@@ -97,7 +85,7 @@ const ProductDetailPage = () => {
                     />
                   </Box>
                 )}
-                <SkuPriceLine selectedSku={selectedSku} basePrice={product?.spu_price} />
+                <SkuPriceLine quantity={quantity} onChangeQuantity={onChangeQuantity} selectedSku={selectedSku} />
 
                 <Box sx={{ display: 'flex', gap: 1.5, mt: 2 }}>
                   <Button

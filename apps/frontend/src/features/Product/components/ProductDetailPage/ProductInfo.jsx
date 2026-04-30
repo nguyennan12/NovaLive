@@ -1,5 +1,6 @@
 import AssignmentReturnRoundedIcon from '@mui/icons-material/AssignmentReturnRounded'
 import FactCheckRoundedIcon from '@mui/icons-material/FactCheckRounded'
+import NearMeIcon from '@mui/icons-material/NearMe'
 import ShieldRoundedIcon from '@mui/icons-material/ShieldRounded'
 import ShoppingBasketRoundedIcon from '@mui/icons-material/ShoppingBasketRounded'
 import { Box, Chip, Divider, Rating, Skeleton, Tooltip, Typography } from '@mui/material'
@@ -7,7 +8,6 @@ import { useSelector } from 'react-redux'
 import { selectCategories } from '~/common/redux/product/categorySlice'
 import { slugCateToNameCate } from '~/common/utils/converter'
 import { formatSold, formatVND } from '~/common/utils/formatters'
-import NearMeIcon from '@mui/icons-material/NearMe'
 import { gradientText } from '~/theme'
 
 

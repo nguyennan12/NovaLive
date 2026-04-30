@@ -6,18 +6,22 @@ import inventoryService from './inventory.service.js'
 import skuService from './sku.service.js'
 
 const addToCart = async ({ userId, reqBody }) => {
-  const { skuId, quantity, } = reqBody
+  const { skuId, quantity } = reqBody
   //check xem quantiy thêm vào cart có đủ với số luọng trong kho k
   const available = await inventoryService.checkAvailableStock({ skuId, quantity })
   if (!available) throw new ApiError(StatusCodes.BAD_REQUEST, 'Stock is not enough')
   const cartQuery = { cart_userId: userId, cart_state: 'active' }
   const foundCart = await cartModel.findOne(cartQuery).lean()
+  const itemData = {
+    ...reqBody,
+    addedAt: new Date()
+  }
   //nếu chưa có cart thì tạo cart mới
   if (!foundCart) {
     return await cartModel.create({
       cart_userId: userId,
       cart_code: generateCatId(),
-      cart_products: [reqBody],
+      cart_products: [itemData],
       cart_count_product: 1
     })
   }
@@ -27,8 +31,8 @@ const addToCart = async ({ userId, reqBody }) => {
   if (!isProductExists) {
     return await cartModel.findOneAndUpdate(cartQuery,
       {
-        $push: { cart_products: reqBody },
-        $inc: { cart_count_product: 1 }
+        $push: { cart_products: itemData },
+        $inc: { cart_count_product: 1 },
       },
       { returnDocument: 'after' }
     )
@@ -73,27 +77,29 @@ const removeFromCart = async ({ userId, reqBody }) => {
 }
 
 const getCart = async ({ userId }) => {
-  const userCart = await cartModel.findOne({ cart_userId: userId, cart_state: 'active' }).lean()
-  if (!userCart || !userCart.cart_products.length) return []
+  const userCart = await cartModel
+    .findOne({ cart_userId: userId, cart_state: 'active' })
+    .lean()
 
-  //lấy danh sách chi tiết cái sku ra
-  const skuIds = userCart.cart_products.map(item => item.skuId)
+  if (!userCart?.cart_products?.length) return []
+
+  const skuIds = userCart.cart_products.map(i => i.skuId)
+
   const skusDetails = await skuService.getSkusDetails(skuIds)
 
-  //biến mảng thành 1 object
-  const skuDict = skusDetails.reduce((dict, sku) => {
-    dict[sku.sku_id] = sku// key(sku_id) : value(sku)
-    return dict
-  }, {})
+  //map sku key(skuId) value(sku)
+  const skuMap = new Map(
+    skusDetails.map(sku => [sku.sku_id.toString(), sku])
+  )
 
-  const cartFormatted = userCart.cart_products.reduce((acc, cartItem) => {
+  const shopMap = new Map()
 
-    //lấy value(name, thumb, spuId, shopId,...) tương ứng với skuId
-    const skuInfo = skuDict[cartItem.skuId]
-    //nếu k có tiếp acc khác
-    if (!skuInfo) return acc
+  for (const cartItem of userCart.cart_products) {
+    const skuInfo = skuMap.get(cartItem.skuId.toString())
+    if (!skuInfo) continue
 
-    //format lại data
+    const shopId = cartItem.shopId?.toString() || 'unknown_shop'
+
     const mappedItem = {
       skuId: cartItem.skuId,
       productId: cartItem.productId,
@@ -101,27 +107,29 @@ const getCart = async ({ userId }) => {
       price: skuInfo.sku_price,
       name: skuInfo.product_name,
       image: skuInfo.sku_image,
+      addedAt: cartItem.addedAt,
       skuName: skuInfo.sku_name,
       attributes: skuInfo.sku_attributes
     }
-    //kiểm trả shop có tồn tại trong mảng trả về chưa (acc)
-    const safeShopId = cartItem.shopId ? cartItem.shopId.toString() : 'unknown_shop'
-    const existingShopIndex = acc.findIndex(shop => shop.shopId === safeShopId)
 
-    if (existingShopIndex !== -1) {
-      // Nếu có Shop này rồi thì push item vào mảng items của Shop đó
-      acc[existingShopIndex].items.push(mappedItem)
-    } else {
-      // Nếu chưa có thì tạo mới 1 acc Shop và đẩy vào kết quả
-      acc.push({
-        shopId: cartItem.shopId.toString(),
+    if (!shopMap.has(shopId)) {
+      shopMap.set(shopId, {
+        shopId,
         shopName: skuInfo.shop_name,
-        items: [mappedItem]
+        items: []
       })
     }
-    return acc
-  }, [])
-  return cartFormatted
+
+    shopMap.get(shopId).items.push(mappedItem)
+  }
+
+  for (const shop of shopMap.values()) {
+    shop.items.sort(
+      (a, b) => new Date(b.addedAt) - new Date(a.addedAt)
+    )
+  }
+
+  return Array.from(shopMap.values())
 }
 
 export default {

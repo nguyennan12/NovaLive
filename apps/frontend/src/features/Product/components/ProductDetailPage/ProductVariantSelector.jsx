@@ -1,5 +1,6 @@
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import { Box, Typography } from '@mui/material'
+import { QuantityStepper } from '~/features/Cart/components/shared/QuantityStepper'
 
 // Variant selection theo sku_tier_idx sẽ được wired qua API sau
 const ProductVariantSelector = ({ skuList = [], selectedSkuId, onSelect, thumbFallback }) => {
@@ -89,7 +90,7 @@ const ProductVariantSelector = ({ skuList = [], selectedSkuId, onSelect, thumbFa
   )
 }
 
-export const SkuPriceLine = ({ selectedSku }) => {
+export const SkuPriceLine = ({ selectedSku, quantity, onChangeQuantity }) => {
   const stock = selectedSku?.sku_stock
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mt: 1 }}>
@@ -104,6 +105,7 @@ export const SkuPriceLine = ({ selectedSku }) => {
           {stock === 0 ? 'Hết hàng' : stock <= 10 ? `Còn ${stock} sản phẩm` : `Còn hàng (${stock})`}
         </Typography>
       )}
+      <QuantityStepper value={quantity} onChange={onChangeQuantity} />
     </Box>
   )
 }

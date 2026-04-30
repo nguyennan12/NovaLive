@@ -1,7 +1,6 @@
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
 import ShoppingBasketRoundedIcon from '@mui/icons-material/ShoppingBasketRounded'
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
-import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material'
+import { Box, Skeleton, Typography } from '@mui/material'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatSold, formatVND } from '~/common/utils/formatters'
@@ -51,51 +50,25 @@ const PortraitCard = React.forwardRef(({ product }, ref) => {
         <Typography noWrap sx={{ fontSize: { xs: '0.82rem', sm: '0.9rem' }, fontWeight: 700, color: 'primary.contrastText', mb: 0.85 }}>
           {product.spu_name}
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
-              <Typography sx={{
-                fontSize: { xs: '1rem', sm: '1.1rem' }, fontWeight: 800,
-                color: product.is_flash_sale ? '#e8472a' : 'secondary.main',
-                letterSpacing: '-0.02em', lineHeight: 1
-              }}>
-                {formatVND(product.is_flash_sale ? product.flash_price : product.spu_price)}
-              </Typography>
-              {product.is_flash_sale && (
-                <Typography sx={{ fontSize: '0.7rem', color: '#aaa', textDecoration: 'line-through', lineHeight: 1 }}>
-                  {formatVND(product.spu_price)}
-                </Typography>
-              )}
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, mt: 0.4 }}>
-              <ShoppingBasketRoundedIcon sx={{ fontSize: 11, color: '#aaa' }} />
-              <Typography sx={{ fontSize: '0.65rem', color: '#aaa', fontWeight: 500 }}>
-                {formatSold(product.total_sold)} lượt mua
-              </Typography>
-            </Box>
-          </Box>
-          <Tooltip title="Thêm vào giỏ">
-            <IconButton
-              size="small"
-              onClick={(e) => e.stopPropagation()}
-              sx={{
-                background: 'linear-gradient(90deg, #69bef7ff, #53e6eeff)',
-                color: '#fff',
-                width: 32,
-                height: 32,
-                boxShadow: '0 2px 8px rgba(140, 209, 255, 0.4)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  background: 'linear-gradient(90deg, #3c8ffbff, #84d8ffff)',
-                  transform: 'scale(1.1)',
-                  boxShadow: '0 4px 12px rgba(26, 111, 224, 0.5)'
-                },
-                '& .MuiSvgIcon-root': { fontSize: 18 }
-              }}
-            >
-              <ShoppingCartOutlinedIcon />
-            </IconButton>
-          </Tooltip>
+        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
+          <Typography sx={{
+            fontSize: { xs: '1rem', sm: '1.1rem' }, fontWeight: 800,
+            color: product.is_flash_sale ? '#e8472a' : 'secondary.main',
+            letterSpacing: '-0.02em', lineHeight: 1
+          }}>
+            {formatVND(product.is_flash_sale ? product.flash_price : product.spu_price)}
+          </Typography>
+          {product.is_flash_sale && (
+            <Typography sx={{ fontSize: '0.7rem', color: '#aaa', textDecoration: 'line-through', lineHeight: 1 }}>
+              {formatVND(product.spu_price)}
+            </Typography>
+          )}
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, mt: 0.4 }}>
+          <ShoppingBasketRoundedIcon sx={{ fontSize: 11, color: '#aaa' }} />
+          <Typography sx={{ fontSize: '0.65rem', color: '#aaa', fontWeight: 500 }}>
+            {formatSold(product.total_sold)} lượt mua
+          </Typography>
         </Box>
       </Box>
     </Box >
@@ -133,40 +106,16 @@ const LandscapeCard = ({ product }) => {
         }}>
           {product.spu_name}
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 0.75 }}>
-          <Box>
-            <Typography sx={{ fontSize: { xs: '1rem', sm: '1.1rem' }, fontWeight: 800, color: 'secondary.main', letterSpacing: '-0.02em', lineHeight: 1 }}>
-              {formatVND(product.spu_price)}
+        <Box sx={{ mt: 0.75 }}>
+          <Typography sx={{ fontSize: { xs: '1rem', sm: '1.1rem' }, fontWeight: 800, color: 'secondary.main', letterSpacing: '-0.02em', lineHeight: 1 }}>
+            {formatVND(product.spu_price)}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, mt: 0.35 }}>
+            <ShoppingBasketRoundedIcon sx={{ fontSize: 11, color: '#aaa' }} />
+            <Typography sx={{ fontSize: '0.65rem', color: '#aaa', fontWeight: 500 }}>
+              {formatSold(product.total_sold)} lượt mua
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, mt: 0.35 }}>
-              <ShoppingBasketRoundedIcon sx={{ fontSize: 11, color: '#aaa' }} />
-              <Typography sx={{ fontSize: '0.65rem', color: '#aaa', fontWeight: 500 }}>
-                {formatSold(product.total_sold)} lượt mua
-              </Typography>
-            </Box>
           </Box>
-          <Tooltip title="Thêm vào giỏ">
-            <IconButton
-              size="small"
-              onClick={(e) => e.stopPropagation()}
-              sx={{
-                background: 'linear-gradient(90deg, #69bef7ff, #53e6eeff)',
-                color: '#fff',
-                width: 32,
-                height: 32,
-                boxShadow: '0 2px 8px rgba(140, 209, 255, 0.4)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  background: 'linear-gradient(90deg, #3c8ffbff, #84d8ffff)',
-                  transform: 'scale(1.1)',
-                  boxShadow: '0 4px 12px rgba(26, 111, 224, 0.5)'
-                },
-                '& .MuiSvgIcon-root': { fontSize: 18 }
-              }}
-            >
-              <ShoppingCartOutlinedIcon />
-            </IconButton>
-          </Tooltip>
         </Box>
       </Box>
     </Box>

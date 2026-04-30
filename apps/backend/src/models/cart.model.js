@@ -18,10 +18,10 @@ const cartSchema = new Schema({
       quantity: { type: Number, required: true, min: 1 },
       liveId: { type: Schema.Types.ObjectId, ref: 'LiveSession', default: null },
       is_gift: { type: Boolean, default: false },
+      addedAt: { type: Date }
     }
   ],
   cart_count_product: { type: Number, default: 0 }
-
 }, {
   timestamps: true,
   collection: COLLECTION_NAME.CART
