@@ -37,7 +37,7 @@ const cardData = [
     btnVariant: 'outlined',
     btnBorderColor: '#8b5cf6',
     btnColor: '#8b5cf6',
-    path: '/inventory'
+    path: '/manager/inventory'
   },
   {
     key: 'discount',
@@ -53,7 +53,7 @@ const cardData = [
     btnVariant: 'outlined',
     btnBorderColor: '#f59e0b',
     btnColor: '#f59e0b',
-    path: '/discount'
+    path: '/manager/discount'
   },
   {
     key: 'schedule',

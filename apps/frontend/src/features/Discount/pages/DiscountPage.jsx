@@ -11,7 +11,7 @@ import { DiscountList } from '../components/DiscountPage/DiscountList'
 import { DiscountStat } from '../components/DiscountPage/DiscountStat'
 import { DeleteDialog } from '../components/shared/DeleteDialog'
 import { DiscountFilterBar } from '../components/shared/DiscountFilterBar'
-import { useDebounce } from '../hook/useDebounce'
+import { useDebounce } from '~/common/hooks/useDebounce'
 import { useDiscounts } from '../hook/useDiscounts'
 
 

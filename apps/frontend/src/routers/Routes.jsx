@@ -38,8 +38,8 @@ const AppRoutes = () => {
       {/* PRODUCT forms */}
       <Route path="/products/form" element={<ProductFormPage />} />
       <Route path="/products/form/:id" element={<ProductFormPage />} />
-      <Route path='/inventory' element={<InventoryPage />} />
-      <Route path='/discount' element={<DiscountPage />} />
+      <Route path='/manager/inventory' element={<InventoryPage />} />
+      <Route path='/manager/discount' element={<DiscountPage />} />
 
       {/* SHOP DASHBOARD */}
       <Route path='/dashboard/shop' element={<DashboardShop />}>

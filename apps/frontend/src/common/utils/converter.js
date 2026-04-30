@@ -7,6 +7,28 @@ export const toDateInputValue = (value) => {
 }
 
 
+export const toQueryString = (params = {}) => {
+  const searchParams = new URLSearchParams()
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return
+
+    if (key === 'limit') {
+      const numericLimit = Number(value)
+      if (Number.isFinite(numericLimit)) {
+        const safeLimit = Math.max(1, Math.min(100, Math.trunc(numericLimit)))
+        searchParams.set(key, String(safeLimit))
+        return
+      }
+    }
+
+    searchParams.set(key, String(value))
+  })
+
+  return searchParams.toString()
+}
+
+
 export const toDefaultValuesDiscount = (discount = {}) => ({
   discount_name: discount.discount_name ?? discount.name ?? '',
   discount_description: discount.discount_description ?? discount.description ?? '',
@@ -65,3 +87,5 @@ export const toArrayProducts = (data) => {
   if (data && Array.isArray(data.products)) return data.products
   return []
 }
+
+

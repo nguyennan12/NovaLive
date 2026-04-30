@@ -1,25 +1,5 @@
 import authorizedAxiosInstance from '../custom/authorizeAxios'
-
-const toQueryString = (params = {}) => {
-  const searchParams = new URLSearchParams()
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') return
-
-    if (key === 'limit') {
-      const numericLimit = Number(value)
-      if (Number.isFinite(numericLimit)) {
-        const safeLimit = Math.max(1, Math.min(100, Math.trunc(numericLimit)))
-        searchParams.set(key, String(safeLimit))
-        return
-      }
-    }
-
-    searchParams.set(key, String(value))
-  })
-
-  return searchParams.toString()
-}
+import { toQueryString } from '~/common/utils/converter'
 
 export const getAllDiscountAPI = async (params = {}) => {
   const query = toQueryString(params)

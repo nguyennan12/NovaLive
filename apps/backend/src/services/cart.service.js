@@ -25,6 +25,7 @@ const addToCart = async ({ userId, reqBody }) => {
       cart_count_product: 1
     })
   }
+  if (foundCart.cart_count_product > 99) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cart is limit!')
   //nếu có cart rồi thì check xem có product đó chưa
   const isProductExists = foundCart.cart_products.some(p => p.skuId == skuId)
   //chưa có thì push vô mảng cart_product, tăng số lượng

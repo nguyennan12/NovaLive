@@ -14,15 +14,17 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { gradientText } from '~/theme'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import { useDebounce } from '~/common/hooks/useDebounce'
 
 function AppBar() {
   const [searchValue, setSearchValue] = useState('')
   const navigate = useNavigate()
   const theme = useTheme()
+  const search = useDebounce(searchValue, 280)
 
   const handleSearch = (e) => {
     e.preventDefault()
-    const keyword = searchValue.trim()
+    const keyword = search.trim()
     if (keyword) {
       navigate(`/products?keyword=${encodeURIComponent(keyword)}`)
       setSearchValue('')
