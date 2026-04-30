@@ -111,7 +111,6 @@ const ProductInfo = ({ product, selectedSku }) => {
           fontSize: { xs: '1.6rem', md: '2rem' },
           fontWeight: 800,
           ...gradientText,
-          display: 'inline-block',
           letterSpacing: '-0.02em',
           lineHeight: 1.1
         }}>

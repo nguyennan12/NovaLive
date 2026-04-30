@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { PageSkeleton } from '~/common/components/common/loading/PageSkeleton'
+import { useCartMutations } from '~/features/Cart/hooks/useCartMutations'
 import ProductGridSection from '~/features/Home/components/ProductGridSection'
 import ProductReviewsSection from '~/features/Review/components/ProductReviewsSection'
 import { glassSx } from '~/theme'
@@ -14,8 +15,8 @@ import ProductImageGallery from '../components/ProductDetailPage/ProductImageGal
 import ProductInfo from '../components/ProductDetailPage/ProductInfo'
 import ProductVariantSelector, { SkuPriceLine } from '../components/ProductDetailPage/ProductVariantSelector'
 import ShopInfoCard from '../components/ProductDetailPage/ShopInfoCard'
-import { useProducts } from '../hooks/useProducts'
 import { useProductDetail, useSelectedSku } from '../hooks/useProductDetail'
+import { useProducts } from '../hooks/useProducts'
 
 
 const ProductDetailPage = () => {
@@ -24,7 +25,6 @@ const ProductDetailPage = () => {
   const { data: product, isLoading, isError, error } = useProductDetail(productId)
 
   const [selectedSkuId, setSelectedSkuId] = useState(null)
-  //có thể làm 1 API get product Similar
   const { products } = useProducts()
 
   useEffect(() => {
@@ -44,6 +44,25 @@ const ProductDetailPage = () => {
   const selectedSku = fetchedSku ?? localSku
   const attributes = product?.spu_attributes ?? []
 
+  const { addToCart, isPending } = useCartMutations()
+
+  const handleAddToCart = () => {
+    if (!product) return
+    const skuId = selectedSku?._id
+    if (!skuId) {
+      toast.warning('Vui lòng chọn phiên bản sản phẩm')
+      return
+    }
+    const payload = {
+      skuId,
+      productId: selectedSku.sku_spuId,
+      shopId: product.spu_shopId,
+      quantity: 1
+    }
+    // console.log("🚀 ~ handleAddToCart ~ payload:", payload)
+    addToCart(payload)
+  }
+
   return (
     <Box sx={{ px: { xs: 1.5, sm: 2.5, md: 4 }, pt: { xs: 2, md: 3 }, pb: { xs: '100px', sm: '110px' } }}>
 
@@ -55,19 +74,21 @@ const ProductDetailPage = () => {
               <Box sx={{ p: 2, bgcolor: 'primary.main', ...glassSx, borderRadius: '12px' }}>
                 <ProductImageGallery thumbUrl={product?.spu_thumb} productName={product?.spu_name} />
               </Box>
-
-
             </Box>
           </Grid>
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, bgcolor: 'primary.main', ...glassSx, borderRadius: '12px', height: '100%', justifyContent: 'space-between' }}>
 
+          <Grid size={{ xs: 12, md: 7 }}>
+            <Box sx={{
+              display: 'flex', flexDirection: 'column', gap: 2,
+              bgcolor: 'primary.main', ...glassSx, borderRadius: '12px',
+              height: '100%', justifyContent: 'space-between'
+            }}>
               <ProductInfo product={product} selectedSku={selectedSku} />
 
               {/* Price + action buttons */}
-              <Box >
+              <Box>
                 {skuList.length > 0 && (
-                  <Box >
+                  <Box>
                     <ProductVariantSelector
                       skuList={skuList}
                       selectedSkuId={selectedSkuId}
@@ -76,14 +97,14 @@ const ProductDetailPage = () => {
                     />
                   </Box>
                 )}
-                {/* Info Sku Detail */}
                 <SkuPriceLine selectedSku={selectedSku} basePrice={product?.spu_price} />
 
                 <Box sx={{ display: 'flex', gap: 1.5, mt: 2 }}>
                   <Button
                     variant="outlined" fullWidth
                     startIcon={<ShoppingCartOutlinedIcon />}
-                    onClick={(e) => e.stopPropagation()}
+                    loading={isPending}
+                    onClick={handleAddToCart}
                     sx={{
                       textTransform: 'none', fontWeight: 700, fontSize: '0.9rem',
                       borderRadius: '12px', py: 1.25,
@@ -113,15 +134,13 @@ const ProductDetailPage = () => {
             </Box>
           </Grid>
 
-
           {/* DESCRIPTION + ATTRIBUTE */}
           <Grid container size={12} spacing={2} sx={{ mt: 2 }}>
             {product?.spu_description && (
-              <Grid size={{ xs: 12, md: 7 }} >
+              <Grid size={{ xs: 12, md: 7 }}>
                 <ProductDescription text={product.spu_description} sx={{ height: '100%' }} />
               </Grid>
             )}
-
             {attributes.length > 0 && (
               <Grid size={{ xs: 12, md: 5 }}>
                 <Box sx={{ bgcolor: 'primary.main', ...glassSx }}>
@@ -143,7 +162,6 @@ const ProductDetailPage = () => {
             />
           </Grid>
 
-          {/* Other Product */}
           <Grid size={12}>
             <ProductGridSection products={products} isLoading={isLoading} />
           </Grid>

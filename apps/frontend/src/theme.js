@@ -231,7 +231,8 @@ export const gradientText = {
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',
-  color: 'transparent'
+  color: 'transparent',
+  display: 'inline-block'
 }
 
 export default theme

@@ -12,6 +12,7 @@ import LiveManagerPage from '~/features/LiveSession/pages/LiveManagerPage'
 import { HomePage } from '~/features/Home/pages/HomePage'
 import ProductDetailPage from '~/features/Product/pages/ProductDetailPage'
 import ProductsListPage from '~/features/Product/pages/ProductsListPage'
+import CartPage from '~/features/Cart/pages/CartPage'
 import ConsumerLayout from '~/common/components/layout/ConsumerLayout/ConsumerLayout'
 
 const AppRoutes = () => {
@@ -22,6 +23,7 @@ const AppRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/product/:productId" element={<ProductDetailPage />} />
         <Route path="/products" element={<ProductsListPage />} />
+        <Route path="/cart" element={<CartPage />} />
       </Route>
 
       {/* AUTH */}

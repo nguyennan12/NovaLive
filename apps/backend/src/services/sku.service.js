@@ -121,7 +121,7 @@ const updateSingleSku = async ({ spuId, skuId, payload, userId }) => {
 
 //lấy danh sách sku chi tiết
 const getSkusDetails = async (skuIds) => {
-  //mảng lưu các sku ids
+  //mảng lưu các sku ids (covert qua objectId)
   const objectIds = skuIds.map(id => converter.toObjectId(id))
   //tìm những sku có trong skuIds
   const skus = await skuModel.find({ _id: { $in: objectIds } })
@@ -140,6 +140,7 @@ const getSkusDetails = async (skuIds) => {
     return {
       sku_id: sku._id.toString(),
       sku_price: sku.sku_price,
+      sku_name: sku.sku_name,
       sku_image: sku.sku_image || sku.sku_spuId.spu_thumb,
       sku_attributes: sku.sku_attributes,
       product_id: sku.sku_spuId._id.toString(),

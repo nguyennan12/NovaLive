@@ -7,20 +7,25 @@ import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useCartCount } from '~/features/Cart/hooks/useCart'
 import { glassSx } from '~/theme'
 
-const NAV_ITEMS = [
-  { label: 'Giỏ hàng', Icon: ShoppingCartOutlinedIcon, path: '/cart', badge: 0 },
+const BASE_NAV_ITEMS = [
   { label: 'Đơn hàng', Icon: ArticleOutlinedIcon, path: '/orders' },
   { label: 'Live', Icon: LiveTvIcon, path: '/live' },
   { label: 'Voucher', Icon: LocalOfferOutlinedIcon, path: '/discount' },
   { label: 'Hồ sơ', Icon: AccountCircleOutlinedIcon, path: '/profile' }
-
 ]
 
 function BottomActionBar() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const cartCount = useCartCount()
+
+  const navItems = [
+    { label: 'Giỏ hàng', Icon: ShoppingCartOutlinedIcon, path: '/cart', badge: cartCount },
+    ...BASE_NAV_ITEMS
+  ]
 
   return (
     <Box
@@ -42,7 +47,7 @@ function BottomActionBar() {
         whiteSpace: 'nowrap'
       }}
     >
-      {NAV_ITEMS.map(({ label, Icon, path, badge }) => {
+      {navItems.map(({ label, Icon, path, badge }) => {
         const isActive = pathname === path
 
         return (

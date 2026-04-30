@@ -102,7 +102,7 @@ const Footer = () => {
             fontSize: '0.78rem',
             color: 'text.secondary',
             lineHeight: 1.7,
-            maxWidth: { xs: '100%', sm: 220 }, // Fix: Mobile chiếm full viền, màn to mới giới hạn 220px
+            maxWidth: { xs: '100%', sm: 220 },
             mb: 2.5
           }}>
             Nền tảng mua sắm kết hợp livestream — trải nghiệm mua hàng trực tiếp, nhanh chóng và tin cậy.
@@ -115,7 +115,7 @@ const Footer = () => {
                 key={label}
                 component="a"
                 href={href}
-                target="_blank" // Nên có target="_blank" để mở link MXH ở tab mới
+                target="_blank"
                 rel="noopener noreferrer"
                 sx={{
                   width: 34, height: 34, borderRadius: '50%',
@@ -139,11 +139,9 @@ const Footer = () => {
           </Box>
         </Box>
 
-        {/* Link columns */}
         {LINKS.map(({ title, items }, index) => (
           <Box
             key={title}
-            // Fix: Cột cuối cùng (Hỗ trợ) trên mobile sẽ chiếm full chiều rộng để dàn layout đều hơn
             sx={{ gridColumn: { xs: index === 2 ? '1 / -1' : 'auto', sm: 'auto' } }}
           >
             <Typography sx={{
@@ -168,7 +166,7 @@ const Footer = () => {
 
       <Box sx={{
         display: 'flex',
-        flexDirection: { xs: 'column-reverse', sm: 'row' }, // Fix: Đảo cột trên mobile, canh giữa mượt mà
+        flexDirection: { xs: 'column-reverse', sm: 'row' },
         justifyContent: { xs: 'center', sm: 'space-between' },
         alignItems: 'center',
         gap: { xs: 1.5, sm: 1 }

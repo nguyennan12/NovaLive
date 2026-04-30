@@ -87,6 +87,7 @@ const getCart = async ({ userId }) => {
   }, {})
 
   const cartFormatted = userCart.cart_products.reduce((acc, cartItem) => {
+
     //lấy value(name, thumb, spuId, shopId,...) tương ứng với skuId
     const skuInfo = skuDict[cartItem.skuId]
     //nếu k có tiếp acc khác
@@ -100,10 +101,11 @@ const getCart = async ({ userId }) => {
       price: skuInfo.sku_price,
       name: skuInfo.product_name,
       image: skuInfo.sku_image,
+      skuName: skuInfo.sku_name,
       attributes: skuInfo.sku_attributes
     }
     //kiểm trả shop có tồn tại trong mảng trả về chưa (acc)
-    const safeShopId = skuInfo.shop_id ? skuInfo.shop_id.toString() : 'unknown_shop'
+    const safeShopId = cartItem.shopId ? cartItem.shopId.toString() : 'unknown_shop'
     const existingShopIndex = acc.findIndex(shop => shop.shopId === safeShopId)
 
     if (existingShopIndex !== -1) {
