@@ -2,13 +2,15 @@ import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
 import ShoppingBasketRoundedIcon from '@mui/icons-material/ShoppingBasketRounded'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatSold, formatVND } from '~/common/utils/formatters'
 
-const PortraitCard = ({ product }) => {
+const PortraitCard = React.forwardRef(({ product }, ref) => {
   const navigate = useNavigate()
   return (
     <Box
+      ref={ref}
       onClick={() => navigate(`/product/${product.spu_code}`)}
       sx={{
         bgcolor: 'primary.main',
@@ -98,7 +100,7 @@ const PortraitCard = ({ product }) => {
       </Box>
     </Box >
   )
-}
+})
 
 const LandscapeCard = ({ product }) => {
   const navigate = useNavigate()
@@ -196,7 +198,7 @@ export const HomeProductCardSkeleton = ({ variant = 'portrait' }) => {
   )
 }
 
-export const HomeProductCard = ({ product, variant = 'portrait' }) => {
+export const HomeProductCard = React.forwardRef(({ product, variant = 'portrait' }, ref) => {
   if (variant === 'landscape') return <LandscapeCard product={product} />
-  return <PortraitCard product={product} />
-}
+  return <PortraitCard ref={ref} product={product} />
+})

@@ -5,10 +5,10 @@ import { queryProductAPI } from '~/common/apis/services/productService'
 import { useQuery } from '@tanstack/react-query'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { buildQueryParams } from '~/common/utils/builder'
+import { LIMIT } from '~/common/utils/constant'
 
 const ProductList = () => {
   const [page, setPage] = useState(1)
-  const limit = 8
 
   const { control } = useFormContext()
   const filters = useWatch({ control })
@@ -29,7 +29,7 @@ const ProductList = () => {
 
   const params = buildQueryParams(filters || {})
   params.page = page
-  params.limit = limit
+  params.limit = LIMIT.PRODUCT
   if (debouncedKeyword) {
     params.keyword = debouncedKeyword
   }

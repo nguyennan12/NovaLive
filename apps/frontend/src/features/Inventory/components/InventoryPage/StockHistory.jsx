@@ -6,6 +6,8 @@ import { getHistoryInventoryAPI } from '~/common/apis/services/inventoryService'
 import EmptyState from '../shared/EmptyState'
 import SectionCard from '../shared/SectionCard'
 import StatusBadge from '../shared/StatusBadge'
+import { LIMIT } from '~/common/utils/constant'
+
 
 const fmt = (iso) => {
   const d = new Date(iso)
@@ -16,11 +18,11 @@ const COLS = ['Type', 'Product', 'SKU', 'Qty', 'Time', 'User', 'Note']
 const GRID = '80px 2fr 1fr 60px 1.2fr 1.5fr 2fr'
 
 const StockHistory = ({ loading = false }) => {
-  const limit = 10
+
   const [page, setPage] = useState(1)
   const [type, setType] = useState('all')
 
-  const params = { page, limit, type }
+  const params = { page, limit: LIMIT.INVENTORY, type }
 
   const queryString = new URLSearchParams(params).toString()
   const { data = [] } = useQuery({

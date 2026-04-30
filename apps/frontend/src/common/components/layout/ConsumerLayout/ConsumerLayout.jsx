@@ -17,7 +17,6 @@ function ConsumerLayout() {
         </Box>
       </WaterDropBackground>
 
-
       <BottomActionBar />
     </Box>
   )

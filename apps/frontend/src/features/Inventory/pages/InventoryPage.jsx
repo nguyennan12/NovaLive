@@ -11,15 +11,15 @@ import StockHistory from '../components/InventoryPage/StockHistory'
 import StockInForm from '../components/InventoryPage/StockInForm'
 import StockOutForm from '../components/InventoryPage/StockOutForm'
 import StockOverviewChart from '../components/InventoryPage/StockOverviewChart'
+import { LIMIT } from '~/common/utils/constant'
 
 
 const InventoryPage = () => {
-  const limit = 10
   const [params, setParams] = useState({
     keyword: '',
     page: 1,
     stock: 'all',
-    limit
+    limit: LIMIT.INVENTORY
   })
 
   const queryString = new URLSearchParams(params).toString()

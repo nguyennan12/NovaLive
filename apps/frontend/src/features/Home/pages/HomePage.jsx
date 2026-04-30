@@ -8,6 +8,7 @@ import ProductBestSellerSection from '../components/ProductBestSellerSection'
 import ProductGridSection from '../components/ProductGridSection'
 import ProductScrollSection from '../components/ProductScrollSection'
 import { useHomeProducts } from '../hooks/useHomeProducts'
+import { useRef } from 'react'
 
 const DEFAULT_FILTERS = { priceRange: [0, 50_000_000], sort: 'newest' }
 
@@ -19,12 +20,23 @@ export const HomePage = () => {
   }, [])
 
   const {
-    isFiltering,
-    filteredProducts, filterLoading,
+    isFiltering, filteredProducts, filterLoading,
     featuredProducts, bestSellers, newArrivals,
-    isLoading
+    isLoading, fetchNextPage, hasNextPage, isFetchingNextPage
   } = useHomeProducts(filters)
 
+  const observer = useRef()
+  const lastProductRef = useCallback(node => {
+    if (isFiltering || isFetchingNextPage) return
+    if (observer.current) observer.current.disconnect()
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage()
+      }
+    })
+
+    if (node) observer.current.observe(node)
+  }, [isFiltering, isFetchingNextPage, hasNextPage, fetchNextPage])
   return (
     <Box sx={{
       maxWidth: 1440,
@@ -47,7 +59,6 @@ export const HomePage = () => {
 
       <PosterFirst />
 
-      {/* FilterBar luôn hiện để user có thể thay đổi filter */}
       <HomeFilterBar filters={filters} onFilterChange={handleFilterChange} />
 
       {isFiltering ? (
@@ -63,7 +74,9 @@ export const HomePage = () => {
           hideSeeMore
         />
       ) : (
-        <ProductGridSection products={newArrivals} isLoading={isLoading} />
+        <ProductGridSection products={newArrivals} isLoading={isLoading}
+          lastItemRef={lastProductRef}
+          isFetchingNextPage={isFetchingNextPage} />
       )}
     </Box>
   )

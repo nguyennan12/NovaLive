@@ -14,7 +14,7 @@ import ProductImageGallery from '../components/ProductDetailPage/ProductImageGal
 import ProductInfo from '../components/ProductDetailPage/ProductInfo'
 import ProductVariantSelector, { SkuPriceLine } from '../components/ProductDetailPage/ProductVariantSelector'
 import ShopInfoCard from '../components/ProductDetailPage/ShopInfoCard'
-import { useProduct } from '../hooks/useProduct'
+import { useProducts } from '../hooks/useProducts'
 import { useProductDetail, useSelectedSku } from '../hooks/useProductDetail'
 
 
@@ -25,7 +25,7 @@ const ProductDetailPage = () => {
 
   const [selectedSkuId, setSelectedSkuId] = useState(null)
   //có thể làm 1 API get product Similar
-  const { products } = useProduct()
+  const { products } = useProducts()
 
   useEffect(() => {
     if (isError) {

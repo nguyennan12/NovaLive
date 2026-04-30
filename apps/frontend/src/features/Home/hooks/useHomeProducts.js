@@ -1,14 +1,12 @@
-import { useMemo } from 'react'
+/* eslint-disable indent */
 import { useQuery } from '@tanstack/react-query'
-import { getAllProductsAPI, queryProductAPI } from '~/common/apis/services/productService'
+import { useMemo } from 'react'
+import { queryProductAPI } from '~/common/apis/services/productService'
 import { buildQueryParams } from '~/common/utils/builder'
+import { toArrayProducts } from '~/common/utils/converter'
+import { useInfiniteProducts } from '~/features/Product/hooks/useProducts'
 import { PRICE_SLIDER_MAX, PRICE_SLIDER_MIN } from '../configs/homeFilter.config'
 
-const toArray = (data) => {
-  if (Array.isArray(data)) return data
-  if (data && Array.isArray(data.products)) return data.products
-  return []
-}
 
 const sortList = (list, sort) => {
   const arr = [...list]
@@ -23,29 +21,23 @@ const sortList = (list, sort) => {
 export const useHomeProducts = (filters = {}) => {
   const [minPrice, maxPrice] = filters.priceRange ?? [PRICE_SLIDER_MIN, PRICE_SLIDER_MAX]
 
-  /* Chỉ gọi queryProductAPI khi slider lệch khỏi giá trị mặc định */
   const isFiltering = minPrice > PRICE_SLIDER_MIN || maxPrice < PRICE_SLIDER_MAX
 
+  //xử lý query params
   const queryString = useMemo(() => {
     if (!isFiltering) return ''
     const params = buildQueryParams({
       sort: filters.sort,
       minPrice,
-      /* Không gửi maxPrice nếu là giá trị max để tránh lọc sản phẩm giá cao hơn slider max */
       ...(maxPrice < PRICE_SLIDER_MAX ? { maxPrice } : {})
     })
     return new URLSearchParams(params).toString()
   }, [isFiltering, minPrice, maxPrice, filters.sort])
 
-  /* Fetch all — dùng khi không lọc giá */
-  const { data: rawAll = [], isLoading } = useQuery({
-    queryKey: ['home_products'],
-    queryFn: () => getAllProductsAPI({ page: 1, limit: 48 }),
-    staleTime: 5 * 60 * 1000,
-    enabled: !isFiltering
-  })
+  //fetch product base
+  const { products, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteProducts()
 
-  /* Fetch filtered — dùng khi user kéo slider */
+  //fetch product filter
   const { data: rawFiltered = [], isLoading: filterLoading } = useQuery({
     queryKey: ['home_filtered_price', queryString],
     queryFn: () => queryProductAPI(queryString),
@@ -53,19 +45,20 @@ export const useHomeProducts = (filters = {}) => {
     enabled: isFiltering && !!queryString
   })
 
-  const allProducts = useMemo(() => toArray(rawAll), [rawAll])
+  //get product filter
   const filteredProducts = useMemo(
-    () => sortList(toArray(rawFiltered), filters.sort),
+    () => sortList(toArrayProducts(rawFiltered), filters.sort),
     [rawFiltered, filters.sort]
   )
 
-  /* Sections khi không lọc */
-  const sortedAll = useMemo(() => sortList(allProducts, filters.sort), [allProducts, filters.sort])
+  const sortedAll = useMemo(() => sortList(products, filters.sort), [products, filters.sort])
   const featuredProducts = useMemo(() => sortedAll.slice(0, 10), [sortedAll])
+  //get products best seller
   const bestSellers = useMemo(
-    () => [...allProducts].sort((a, b) => (b.total_sold || 0) - (a.total_sold || 0)).slice(0, 6),
-    [allProducts]
+    () => [...products].sort((a, b) => (b.total_sold || 0) - (a.total_sold || 0)).slice(0, 6),
+    [products]
   )
+  //list product cuối cùng
   const newArrivals = useMemo(() => sortedAll, [sortedAll])
 
   return {
@@ -75,6 +68,9 @@ export const useHomeProducts = (filters = {}) => {
     featuredProducts,
     bestSellers,
     newArrivals,
-    isLoading
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
   }
 }

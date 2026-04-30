@@ -7,6 +7,7 @@ import {
   queryDiscountAPI,
   updateDiscountAPI
 } from '~/common/apis/services/discountService'
+import { LIMIT } from '~/common/utils/constant'
 
 const toDateKey = (value) => {
   if (!value) return ''
@@ -45,7 +46,7 @@ export const useDiscounts = (search = '', statusFilter = 'all', typeFilter = 'al
 
   const listQueryParams = useMemo(() => {
     const params = {
-      limit: 20,
+      limit: LIMIT.DISCOUNT,
       page: 1
     }
     if (search?.trim()) params.search = search.trim()
@@ -70,7 +71,7 @@ export const useDiscounts = (search = '', statusFilter = 'all', typeFilter = 'al
 
   const { data: allDiscounts = [] } = useQuery({
     queryKey: ['discounts', 'stats'],
-    queryFn: () => getAllDiscountAPI({ limit: 100, page: 1 }),
+    queryFn: () => getAllDiscountAPI({ limit: LIMIT.DISCOUNT, page: 1 }),
     staleTime: 20 * 1000,
     select: (raw) => safeArray(raw).map(normalizeDiscount)
   })

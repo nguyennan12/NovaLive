@@ -8,6 +8,7 @@ import { formatDate, formatLiveDurationClock, formatVND } from '~/common/utils/f
 import SectionCard from '~/features/Inventory/components/shared/SectionCard'
 import { useSessionHistory } from '../../hooks/useLiveSessions'
 import LiveStatusBadge from '../shared/LiveStatusBadge'
+import { LIMIT } from '~/common/utils/constant'
 
 const ExpandedDetail = ({ session }) => {
   return (
@@ -126,14 +127,13 @@ const HEADER_CELLS = [
 ]
 
 const LiveHistoryTable = () => {
-  const limit = 10
   const [page, setPage] = useState(1)
   const [status, setStatus] = useState('all')
 
   const handlePageChange = (event, value) => {
     setPage(value)
   }
-  const params = { page, limit, status }
+  const params = { page, limt: LIMIT.INVENTORY, status }
 
   const queryString = new URLSearchParams(params).toString()
   const { sessions, totalPages } = useSessionHistory(queryString)

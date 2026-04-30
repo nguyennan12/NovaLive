@@ -120,7 +120,7 @@ File: `src/features/Home/components/HomeProductCard.jsx`
 
 ---
 
-## Filter bar (HomeSearchBar)
+## Filter bar (HomeFilterBar)
 
 - Chỉ có: **select danh mục** + **select sắp xếp** (không có ô search text)
 - Style select: `bgcolor: #f5f5f5`, `borderRadius: 10px`, `height: 38`

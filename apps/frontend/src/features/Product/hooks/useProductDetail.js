@@ -10,8 +10,7 @@ export const useProductDetail = (productId) => {
   })
 }
 
-// Gọi khi user chọn 1 SKU — lấy giá + stock mới nhất từ server
-// selectedSku từ sku_list dùng làm placeholder trong khi fetch
+
 export const useSelectedSku = (spuId, skuId) => {
   return useQuery({
     queryKey: ['sku_detail', spuId, skuId],

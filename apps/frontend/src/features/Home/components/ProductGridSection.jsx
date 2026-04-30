@@ -1,8 +1,9 @@
 import { Box, Typography } from '@mui/material'
 import { HomeProductCard, HomeProductCardSkeleton } from './HomeProductCard'
 import { SectionHeader } from '~/features/Product/components/shared/SectionHeader'
+import { CircularProgress } from '@mui/material'
 
-const ProductGridSection = ({ products = [], isLoading }) => {
+const ProductGridSection = ({ products = [], isLoading, lastItemRef, isFetchingNextPage }) => {
   return (
     <Box sx={{
       background: 'rgba(255, 255, 255, 0.1)',
@@ -35,13 +36,17 @@ const ProductGridSection = ({ products = [], isLoading }) => {
           },
           gap: 1.5
         }}>
-          {products.map((product) => (
-            <HomeProductCard
-              key={product.spu_code || product.mongo_id || product._id}
-              product={product}
-              variant="portrait"
-            />
-          ))}
+          {products.map((product, index) => {
+            const isLast = index === products.length - 1
+            return (
+              <HomeProductCard
+                key={product.spu_code || product.mongo_id || product._id}
+                product={product}
+                variant="portrait"
+                ref={isLast ? lastItemRef : null}
+              />
+            )
+          })}
           {products.length === 0 && (
             <Box sx={{ gridColumn: '1 / -1', py: 5, textAlign: 'center' }}>
               <Typography sx={{ fontSize: '0.9rem', color: '#bbb' }}>
@@ -49,6 +54,11 @@ const ProductGridSection = ({ products = [], isLoading }) => {
               </Typography>
             </Box>
           )}
+        </Box>
+      )}
+      {isFetchingNextPage && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+          <CircularProgress size={30} />
         </Box>
       )}
     </Box>

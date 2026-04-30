@@ -59,3 +59,9 @@ export const slugCateToNameCate = (categoriesSlug = [], categories = []) =>
     const found = categories.find((c) => c.cat_slug === catId)
     return { id: catId, label: found?.cat_name ?? catId.slice(-6) }
   })
+
+export const toArrayProducts = (data) => {
+  if (Array.isArray(data)) return data
+  if (data && Array.isArray(data.products)) return data.products
+  return []
+}
