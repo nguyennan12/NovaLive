@@ -24,6 +24,7 @@ import TvRoundedIcon from '@mui/icons-material/TvRounded'
 import WatchRoundedIcon from '@mui/icons-material/WatchRounded'
 import { Box, Typography } from '@mui/material'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { selectCategories } from '~/common/redux/product/categorySlice'
 
 const GRADIENTS = [
@@ -83,8 +84,7 @@ const getIcon = (slug = '', name = '') => {
   return CategoryRoundedIcon
 }
 
-const CategoryCard = ({ category, gradient, onClick }) => {
-  const Icon = getIcon(category.cat_slug, category.cat_name)
+const CategoryCard = ({ category, gradient, onClick, Icon }) => {
   return (
     <Box
       onClick={onClick}
@@ -130,7 +130,8 @@ const CategoryCard = ({ category, gradient, onClick }) => {
   )
 }
 
-const CategorySection = ({ onCategorySelect }) => {
+const CategorySection = () => {
+  const navigate = useNavigate()
   const categories = useSelector(selectCategories)
   const popular = (categories || []).slice(0, 20)
 
@@ -138,7 +139,6 @@ const CategorySection = ({ onCategorySelect }) => {
 
   return (
     <Box sx={{ my: { xs: 2.5, md: 3 } }}>
-
       <Box sx={{
         display: 'grid',
         gridTemplateColumns: {
@@ -148,14 +148,18 @@ const CategorySection = ({ onCategorySelect }) => {
         },
         gap: { xs: 1, sm: 1.25 }
       }}>
-        {popular.map((cat, idx) => (
-          <CategoryCard
-            key={cat._id || cat.id || cat.cat_slug}
-            category={cat}
-            gradient={GRADIENTS[idx % GRADIENTS.length]}
-            onClick={() => onCategorySelect?.(cat.cat_slug)}
-          />
-        ))}
+        {popular.map((cat, idx) => {
+          const Icon = getIcon(cat.cat_slug, cat.cat_name)
+          return (
+            <CategoryCard
+              key={cat._id || cat.id || cat.cat_slug}
+              category={cat}
+              gradient={GRADIENTS[idx % GRADIENTS.length]}
+              Icon={Icon}
+              onClick={() => navigate(`/products?category=${cat.cat_slug}`)}
+            />
+          )
+        })}
       </Box>
     </Box>
   )

@@ -13,6 +13,7 @@ export const buildQueryParams = (filters) => {
         params.category = validCategories.map(formatStringToSlug);
     }
 
+    if (filters.keyword && filters.keyword.trim()) { params.keyword = filters.keyword.trim(); }
     if (filters.status && filters.status !== 'all') { params.status = filters.status; }
     if (filters.stock && filters.stock !== 'all') { params.stock = filters.stock; }
     if (filters.minPrice !== undefined && filters.minPrice > 0) { params.minPrice = filters.minPrice; }

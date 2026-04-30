@@ -11,7 +11,7 @@ import App from './App'
 import { store } from './common/redux/store'
 import theme from './theme'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
-import ScrollToTop from './common/hooks/ScrollToTop'
+import ScrollToTop from './common/hooks/useScroll'
 
 
 const persitor = persistStore(store)

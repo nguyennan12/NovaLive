@@ -1,6 +1,7 @@
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded'
 import { Box, Divider } from '@mui/material'
 import { useCallback, useState } from 'react'
+import { useInfiniteScroll } from '~/common/hooks/useScroll'
 import { BannerHomePage, PosterFirst } from '../components/BannerHomePage'
 import CategorySection from '../components/CategorySection'
 import HomeFilterBar from '../components/HomeFilterBar'
@@ -8,9 +9,8 @@ import ProductBestSellerSection from '../components/ProductBestSellerSection'
 import ProductGridSection from '../components/ProductGridSection'
 import ProductScrollSection from '../components/ProductScrollSection'
 import { useHomeProducts } from '../hooks/useHomeProducts'
-import { useRef } from 'react'
 
-const DEFAULT_FILTERS = { priceRange: [0, 50_000_000], sort: 'newest' }
+import { DEFAULT_FILTERS } from '~/common/utils/constant'
 
 export const HomePage = () => {
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
@@ -19,24 +19,9 @@ export const HomePage = () => {
     setFilters(prev => ({ ...prev, [key]: value }))
   }, [])
 
-  const {
-    isFiltering, filteredProducts, filterLoading,
-    featuredProducts, bestSellers, newArrivals,
-    isLoading, fetchNextPage, hasNextPage, isFetchingNextPage
-  } = useHomeProducts(filters)
+  const { isFiltering, filteredProducts, filterLoading, featuredProducts, bestSellers, newArrivals, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useHomeProducts(filters)
+  const lastProductRef = useInfiniteScroll({ isFiltering, isFetchingNextPage, hasNextPage, fetchNextPage })
 
-  const observer = useRef()
-  const lastProductRef = useCallback(node => {
-    if (isFiltering || isFetchingNextPage) return
-    if (observer.current) observer.current.disconnect()
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasNextPage) {
-        fetchNextPage()
-      }
-    })
-
-    if (node) observer.current.observe(node)
-  }, [isFiltering, isFetchingNextPage, hasNextPage, fetchNextPage])
   return (
     <Box sx={{
       maxWidth: 1440,
@@ -49,7 +34,7 @@ export const HomePage = () => {
     }}>
       <BannerHomePage />
 
-      <CategorySection onCategorySelect={() => { }} />
+      <CategorySection />
 
       <Divider sx={{ mb: { xs: 2, md: 3 }, opacity: 0.4 }} />
 

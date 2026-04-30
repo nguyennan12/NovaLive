@@ -10,7 +10,7 @@ export const useProducts = (params = {}) => {
     queryFn: () => getAllProductsAPI(params),
     staleTime: 2 * 60 * 1000
   })
-  const { products } = data
+  const products = data?.products ?? []
   return { products }
 }
 

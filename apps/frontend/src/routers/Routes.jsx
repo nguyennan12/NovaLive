@@ -11,6 +11,7 @@ import { DiscountPage } from '~/features/Discount/pages/DiscountPage'
 import LiveManagerPage from '~/features/LiveSession/pages/LiveManagerPage'
 import { HomePage } from '~/features/Home/pages/HomePage'
 import ProductDetailPage from '~/features/Product/pages/ProductDetailPage'
+import ProductsListPage from '~/features/Product/pages/ProductsListPage'
 import ConsumerLayout from '~/common/components/layout/ConsumerLayout/ConsumerLayout'
 
 const AppRoutes = () => {
@@ -20,6 +21,7 @@ const AppRoutes = () => {
       <Route element={<ConsumerLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/product/:productId" element={<ProductDetailPage />} />
+        <Route path="/products" element={<ProductsListPage />} />
       </Route>
 
       {/* AUTH */}

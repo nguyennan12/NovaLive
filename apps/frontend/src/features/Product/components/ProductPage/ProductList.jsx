@@ -29,7 +29,7 @@ const ProductList = () => {
 
   const params = buildQueryParams(filters || {})
   params.page = page
-  params.limit = LIMIT.PRODUCT
+  params.limit = LIMIT.PRODUCTS
   if (debouncedKeyword) {
     params.keyword = debouncedKeyword
   }

@@ -19,6 +19,16 @@ function AppBar() {
   const [searchValue, setSearchValue] = useState('')
   const navigate = useNavigate()
   const theme = useTheme()
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    const keyword = searchValue.trim()
+    if (keyword) {
+      navigate(`/products?keyword=${encodeURIComponent(keyword)}`)
+      setSearchValue('')
+    }
+  }
+
   return (
     <Box
       component="header"
@@ -67,25 +77,30 @@ function AppBar() {
 
       {/* Search */}
       <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          width: '100%',
-          maxWidth: { xs: '100%', md: '600px' },
-          height: '40px',
-          borderRadius: '50px',
-          background: 'rgba(52,133,247,0.05)',
-          border: '1.5px solid rgba(52,133,247,0.12)',
-          px: 2,
-          transition: 'all 0.22s ease',
-          '&:focus-within': {
-            background: 'rgba(52,133,247,0.08)',
-            border: '1.5px solid rgba(52,133,247,0.38)',
-            boxShadow: '0 0 0 3px rgba(52,133,247,0.08)'
-          }
-        }}>
-          <SearchIcon sx={{ fontSize: 18, color: 'rgba(52,133,247,0.55)', flexShrink: 0 }} />
+        <Box component="form"
+          onSubmit={handleSearch}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            width: '100%',
+            maxWidth: { xs: '100%', md: '600px' },
+            height: '40px',
+            borderRadius: '50px',
+            background: 'rgba(52,133,247,0.05)',
+            border: '1.5px solid rgba(52,133,247,0.12)',
+            px: 2,
+            transition: 'all 0.22s ease',
+            '&:focus-within': {
+              background: 'rgba(52,133,247,0.08)',
+              border: '1.5px solid rgba(52,133,247,0.38)',
+              boxShadow: '0 0 0 3px rgba(52,133,247,0.08)'
+            }
+          }}>
+          <IconButton type="submit" edge="end">
+            <SearchIcon sx={{ fontSize: 18, color: 'rgba(52,133,247,0.55)', flexShrink: 0 }} />
+          </IconButton>
+
           <InputBase
             placeholder="Tìm kiếm sản phẩm, shop..."
             value={searchValue}

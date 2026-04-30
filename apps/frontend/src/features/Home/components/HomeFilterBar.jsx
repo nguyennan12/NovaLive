@@ -2,10 +2,10 @@ import TuneRoundedIcon from '@mui/icons-material/TuneRounded'
 import { Box, MenuItem, Select, Slider, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { formatVND } from '~/common/utils/formatters'
-import { PRICE_SLIDER_MAX, PRICE_SLIDER_MIN, PRICE_SLIDER_STEP, SORT_OPTIONS } from '../configs/homeFilter.config'
+import { PRICE_SLIDER_MAX, PRICE_SLIDER_MIN, SORT_OPTIONS, PRICE_SLIDER_STEP } from '~/common/utils/constant'
 import { glassSx } from '~/theme'
 
-/* Label gọn cho tooltip slider: 1500000 → "1.5M", 500000 → "500k" */
+
 const sliderLabel = (v) => {
   if (v === 0) return '0'
   if (v >= 1_000_000) {
@@ -16,10 +16,9 @@ const sliderLabel = (v) => {
 }
 
 const HomeFilterBar = ({ filters, onFilterChange }) => {
-  /* Local state để slider phản hồi mượt khi kéo, chỉ emit lên parent khi nhả chuột */
   const [localRange, setLocalRange] = useState(filters.priceRange)
 
-  /* Sync khi parent reset filter từ bên ngoài */
+
   useEffect(() => {
     setLocalRange(filters.priceRange)
   }, [filters.priceRange])

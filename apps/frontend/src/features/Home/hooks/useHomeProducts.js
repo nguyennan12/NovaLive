@@ -21,18 +21,20 @@ const sortList = (list, sort) => {
 export const useHomeProducts = (filters = {}) => {
   const [minPrice, maxPrice] = filters.priceRange ?? [PRICE_SLIDER_MIN, PRICE_SLIDER_MAX]
 
-  const isFiltering = minPrice > PRICE_SLIDER_MIN || maxPrice < PRICE_SLIDER_MAX
+  const isFiltering = minPrice > PRICE_SLIDER_MIN || maxPrice < PRICE_SLIDER_MAX || !!filters.category || !!filters.keyword
 
   //xử lý query params
   const queryString = useMemo(() => {
     if (!isFiltering) return ''
     const params = buildQueryParams({
       sort: filters.sort,
+      category: filters.category,
+      keyword: filters.keyword,
       minPrice,
       ...(maxPrice < PRICE_SLIDER_MAX ? { maxPrice } : {})
     })
     return new URLSearchParams(params).toString()
-  }, [isFiltering, minPrice, maxPrice, filters.sort])
+  }, [isFiltering, minPrice, maxPrice, filters.sort, filters.category, filters.keyword])
 
   //fetch product base
   const { products, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteProducts()
