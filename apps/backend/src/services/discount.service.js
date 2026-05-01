@@ -9,12 +9,14 @@ import spuRepo from '#models/repository/spu.repo.js'
 
 
 const craeteDiscount = async (reqBody) => {
-  const { discount_end_date, discount_max_uses, discount_scope, discount_shopId } = reqBody
+  const { discount_end_date, discount_max_uses, discount_shopId } = reqBody
   const checkDiscount = new DiscountValidate(reqBody).checkDate()
   const discountCode = generateDisId()
+  const discount_scope = discount_shopId ? 'shop' : 'global'
   const newDiscount = await discountModel.create(
     {
       discount_code: discountCode,
+      discount_scope,
       discount_shopId: converter.toObjectId(discount_shopId),
       ...reqBody
     })

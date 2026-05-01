@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useDispatch } from 'react-redux'
 import { getCartAPI } from '~/common/apis/services/cartService'
-import { clearVoucher, deselectAll, setVoucher, toggleSelect } from '~/common/redux/cart/cartSlice'
+import { clearShopDiscount, clearVoucher, deselectAll, setShopDiscount, setVoucher, toggleSelect } from '~/common/redux/cart/cartSlice'
 import { useCartCalc } from './useCartCalc'
 import { useCartMutations } from './useCartMutations'
 
@@ -16,12 +16,9 @@ export const useCart = () => {
     queryFn: getCartAPI,
     staleTime: 1000 * 30
   })
-  console.log("🚀 ~ useCart ~ shopGroups:", shopGroups)
 
   const calculations = useCartCalc(shopGroups)
-
   const mutations = useCartMutations()
-
 
   return {
     ...calculations,
@@ -31,7 +28,9 @@ export const useCart = () => {
     toggleSelect: (skuId) => dispatch(toggleSelect(skuId)),
     deselectAll: () => dispatch(deselectAll()),
     setVoucher: (v) => dispatch(setVoucher(v)),
-    clearVoucher: () => dispatch(clearVoucher())
+    clearVoucher: () => dispatch(clearVoucher()),
+    setShopDiscount: (shopId, discount) => dispatch(setShopDiscount({ shopId, discount })),
+    clearShopDiscount: (shopId) => dispatch(clearShopDiscount(shopId))
   }
 }
 

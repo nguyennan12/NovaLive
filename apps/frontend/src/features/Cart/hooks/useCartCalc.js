@@ -1,13 +1,13 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { selectAppliedVoucher, selectSelectedIds } from '~/common/redux/cart/cartSlice'
+import { selectAppliedVoucher, selectSelectedIds, selectShopDiscounts } from '~/common/redux/cart/cartSlice'
 
 
 export const useCartCalc = (shopGroups) => {
   const selectedIds = useSelector(selectSelectedIds)
   const appliedVoucher = useSelector(selectAppliedVoucher)
+  const shopDiscounts = useSelector(selectShopDiscounts)
 
-  // Flatten items trong card
   const allItems = useMemo(
     () => shopGroups.flatMap(g =>
       g.items.map(item => ({ ...item, shopId: g.shopId, shopName: g.shopName }))
@@ -15,7 +15,6 @@ export const useCartCalc = (shopGroups) => {
     [shopGroups]
   )
 
-  // lọc ra những item dc chọn
   const selectedItems = useMemo(
     () => allItems.filter(i => selectedIds.includes(String(i.skuId))),
     [allItems, selectedIds]
@@ -28,7 +27,27 @@ export const useCartCalc = (shopGroups) => {
     () => selectedItems.reduce((s, i) => s + i.price * i.quantity, 0),
     [selectedItems]
   )
-  //call api lấy amount
+
+  // Tổng giảm giá từ mã shop (mỗi shop một mã)
+  const shopDiscountTotal = useMemo(() => {
+    return shopGroups.reduce((acc, group) => {
+      const discount = shopDiscounts?.[String(group.shopId)]
+      if (!discount) return acc
+
+      const groupSelected = group.items.filter(i => selectedIds.includes(String(i.skuId)))
+      if (!groupSelected.length) return acc
+
+      const groupSubtotal = groupSelected.reduce((s, i) => s + i.price * i.quantity, 0)
+      if (discount.discount_min_value && groupSubtotal < discount.discount_min_value) return acc
+
+      if (discount.discount_type === 'percentage') {
+        const d = (groupSubtotal * discount.value) / 100
+        return acc + (discount.maxValue ? Math.min(d, discount.discount_max_value) : d)
+      }
+      return acc + Math.min(discount.discount_value, groupSubtotal)
+    }, 0)
+  }, [shopGroups, shopDiscounts, selectedIds])
+
   const voucherDiscount = useMemo(() => {
     if (!appliedVoucher) return 0
     const { type, value, max_value } = appliedVoucher
@@ -39,13 +58,14 @@ export const useCartCalc = (shopGroups) => {
     return Math.min(value, subtotal)
   }, [appliedVoucher, subtotal])
 
-  const total = Math.max(0, subtotal - voucherDiscount)
+  const total = Math.max(0, subtotal - shopDiscountTotal - voucherDiscount)
 
   return {
     selectedIds,
     allItems,
     selectedItems,
     subtotal,
+    shopDiscountTotal,
     voucherDiscount,
     total,
     isAllSelected
