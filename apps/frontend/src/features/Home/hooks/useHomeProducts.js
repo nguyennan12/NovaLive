@@ -6,6 +6,7 @@ import { buildQueryParams } from '~/common/utils/builder'
 import { toArrayProducts } from '~/common/utils/converter'
 import { useInfiniteProducts } from '~/features/Product/hooks/useProducts'
 import { PRICE_SLIDER_MAX, PRICE_SLIDER_MIN } from '../configs/homeFilter.config'
+import { useDebounce } from '~/common/hooks/useDebounce'
 
 
 const sortList = (list, sort) => {
@@ -20,21 +21,25 @@ const sortList = (list, sort) => {
 
 export const useHomeProducts = (filters = {}) => {
   const [minPrice, maxPrice] = filters.priceRange ?? [PRICE_SLIDER_MIN, PRICE_SLIDER_MAX]
-
-  const isFiltering = minPrice > PRICE_SLIDER_MIN || maxPrice < PRICE_SLIDER_MAX || !!filters.category || !!filters.keyword
-
+  const isFiltering = minPrice > PRICE_SLIDER_MIN || maxPrice < PRICE_SLIDER_MAX
+    || !!filters.category || !!filters.keyword || !!filters.shopId
+    || !!filters.stock || !!filters.status
+  const search = useDebounce(filters.keyword, 280)
   //xử lý query params
   const queryString = useMemo(() => {
     if (!isFiltering) return ''
     const params = buildQueryParams({
       sort: filters.sort,
       category: filters.category,
-      keyword: filters.keyword,
+      keyword: search,
+      stock: filters.stock,
+      status: filters.status,
+      shopId: filters.shopId,
       minPrice,
       ...(maxPrice < PRICE_SLIDER_MAX ? { maxPrice } : {})
     })
     return new URLSearchParams(params).toString()
-  }, [isFiltering, minPrice, maxPrice, filters.sort, filters.category, filters.keyword])
+  }, [isFiltering, minPrice, maxPrice, filters.sort, filters.category, search, filters.shopId, filters.status, filters.stock])
 
   //fetch product base
   const { products, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteProducts()

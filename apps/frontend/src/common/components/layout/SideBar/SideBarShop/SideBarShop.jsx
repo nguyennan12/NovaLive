@@ -1,24 +1,31 @@
-import { useState } from 'react'
-import { Box, IconButton, Typography } from '@mui/material'
 import KeyboardDoubleArrowLeftRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowLeftRounded'
 import KeyboardDoubleArrowRightRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowRightRounded'
-import { NAV_SECTIONS } from '~/common/configs/sidebar.config'
-import SidebarSection from './components/SidebarSection'
-import SidebarStoreSelect from './components/SidebarStoreSelect'
-import SidebarProfile from './components/SidebarProfile'
-import { useNavigate } from 'react-router-dom'
-import { gradientText } from '~/theme'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { NAV_SECTIONS } from '~/common/configs/sidebar.config'
+import { gradientText } from '~/theme'
+import SidebarProfile from './components/SidebarProfile'
+import SidebarSection from './components/SidebarSection'
 
 const SIDEBAR_EXPANDED = 240
 const SIDEBAR_COLLAPSED = 60
 
 const Sidebar = () => {
-  const [collapsed, setCollapsed] = useState(false)
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
+  const [collapsed, setCollapsed] = useState(isMobile)
   const [activeKey, setActiveKey] = useState('dashboard')
+
+  useEffect(() => {
+    setCollapsed(isMobile)
+  }, [isMobile])
 
   const width = collapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED
   const navigate = useNavigate()
+
   return (
     <Box
       component='nav'

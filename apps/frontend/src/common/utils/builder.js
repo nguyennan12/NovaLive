@@ -1,45 +1,47 @@
-import { formatStringToSlug } from "./formatters";
+/* eslint-disable indent */
+import { formatStringToSlug } from './formatters'
 
 export const buildQueryParams = (filters) => {
-    const params = {};
+    const params = {}
     const categories = Array.isArray(filters.category)
         ? filters.category
         : filters.category
             ? [filters.category]
-            : [];
+            : []
 
-    const validCategories = categories.filter(c => c && c !== 'all');
+    const validCategories = categories.filter(c => c && c !== 'all')
     if (validCategories.length > 0) {
-        params.category = validCategories.map(formatStringToSlug);
+        params.category = validCategories.map(formatStringToSlug)
     }
 
-    if (filters.keyword && filters.keyword.trim()) { params.keyword = filters.keyword.trim(); }
-    if (filters.status && filters.status !== 'all') { params.status = filters.status; }
-    if (filters.stock && filters.stock !== 'all') { params.stock = filters.stock; }
-    if (filters.minPrice !== undefined && filters.minPrice > 0) { params.minPrice = filters.minPrice; }
-    if (filters.maxPrice !== undefined) { params.maxPrice = filters.maxPrice; }
+    if (filters.keyword && filters.keyword.trim()) { params.keyword = filters.keyword.trim() }
+    if (filters.status && filters.status !== 'all') { params.status = filters.status }
+    if (filters.stock && filters.stock !== 'all') { params.stock = filters.stock }
+    if (filters.shopId !== undefined) { params.shopId = filters.shopId }
+    if (filters.minPrice !== undefined && filters.minPrice > 0) { params.minPrice = filters.minPrice }
+    if (filters.maxPrice !== undefined) { params.maxPrice = filters.maxPrice }
 
     switch (filters.sort) {
         case 'price_asc':
-            params.sortBy = 'price';
-            params.sortOrder = 'asc';
-            break;
+            params.sortBy = 'price'
+            params.sortOrder = 'asc'
+            break
         case 'price_desc':
-            params.sortBy = 'price';
-            params.sortOrder = 'desc';
-            break;
+            params.sortBy = 'price'
+            params.sortOrder = 'desc'
+            break
         case 'name_az':
-            params.sortBy = 'name';
-            params.sortOrder = 'desc';
-            break;
+            params.sortBy = 'name'
+            params.sortOrder = 'desc'
+            break
         case 'newest':
         default:
-            params.sortBy = 'time';
-            params.sortOrder = 'desc';
-            break;
+            params.sortBy = 'time'
+            params.sortOrder = 'desc'
+            break
     }
 
-    return params;
+    return params
 }
 
 export const buildFlattenedSkus = (skus) => {
@@ -60,7 +62,6 @@ export const buildFlattenedSkus = (skus) => {
             })
         } else {
             list.push({
-                spu_id: spu._id,
                 spu_id: spu._id,
                 spu_name: spu.spu_name,
                 spu_code: spu.spu_code,

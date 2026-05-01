@@ -167,7 +167,7 @@ const getDraftProduct = async ({ userId, limit = 50, page = 1 }) => {
 }
 
 const getAllProducts = async ({ limit = 50, sort = 'ctime', page = 1 }, shopId) => {
-  const filter = { isPublished: true, isDeleted: false, ...(shopId && { shopId }), spu_quantity: { $gt: 0 } }
+  const filter = { isPublished: true, isDeleted: false, ...(shopId && { spu_shopId: converter.toObjectId(shopId) }), spu_quantity: { $gt: 0 } }
   const select = ['spu_name', 'spu_code', 'spu_price', 'spu_thumb', 'spu_quantity', 'is_flash_sale']
   const limitNumber = Number(limit)
   const pageNumber = Number(page)
@@ -204,7 +204,7 @@ const deleteProduct = async ({ productId, userId }) => {
   return { success: 'success' }
 }
 
-const searchProduct = async ({ keyword, category, minPrice, status, stock, sortBy, sortOrder = 'desc', maxPrice, page = 1, limit = 20 }) => {
+const searchProduct = async ({ keyword, category, minPrice, status, stock, sortBy, sortOrder = 'desc', maxPrice, page = 1, limit = 20 }, shopId) => {
   const must = []
   const filter = []
   if (keyword) {
@@ -228,6 +228,7 @@ const searchProduct = async ({ keyword, category, minPrice, status, stock, sortB
       }
     })
   }
+  if (shopId) filter.push({ term: { spu_shopId: shopId } })
 
   if (category) {
     const categoryArray = Array.isArray(category) ? category : [category]

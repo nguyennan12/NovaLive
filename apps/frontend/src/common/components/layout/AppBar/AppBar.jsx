@@ -1,6 +1,7 @@
 import ChatBubbleOutlineRoundedIcon from '@mui/icons-material/ChatBubbleOutlineRounded'
 import ClearIcon from '@mui/icons-material/Clear'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import SearchIcon from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import Badge from '@mui/material/Badge'
@@ -13,18 +14,15 @@ import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { gradientText } from '~/theme'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import { useDebounce } from '~/common/hooks/useDebounce'
 
 function AppBar() {
   const [searchValue, setSearchValue] = useState('')
   const navigate = useNavigate()
   const theme = useTheme()
-  const search = useDebounce(searchValue, 280)
 
   const handleSearch = (e) => {
     e.preventDefault()
-    const keyword = search.trim()
+    const keyword = searchValue
     if (keyword) {
       navigate(`/products?keyword=${encodeURIComponent(keyword)}`)
       setSearchValue('')

@@ -1,5 +1,6 @@
 import authorizedAxiosInstance from '../custom/authorizeAxios'
 import { toast } from 'react-toastify'
+import { toQueryString } from '~/common/utils/converter'
 
 
 export const addProductAPI = async (data) => {
@@ -7,8 +8,9 @@ export const addProductAPI = async (data) => {
   toast.success(`${response.message}`)
   return response.metadata
 }
-export const getAllProductsAPI = async ({ page = 1, limit = 10 }) => {
-  const response = await authorizedAxiosInstance.get(`product?page=${page}&limit=${limit}`)
+export const getAllProductsAPI = async ({ page = 1, limit = 10, shopId } = {}) => {
+  const query = toQueryString({ page, limit, ...(shopId && { shopId }) })
+  const response = await authorizedAxiosInstance.get(`product?${query}`)
   return response.metadata
 }
 export const getAllProductWithStockAPI = async (query) => {

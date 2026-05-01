@@ -80,7 +80,7 @@ const getAllProducts = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Get list product successfully!',
-    metadata: await spuService.getAllProducts(req.query, req?.user?.shopId)
+    metadata: await spuService.getAllProducts(req.query, req.query.shopId)
   }).send(res)
 }
 const querySkusList = async (req, res, next) => {
@@ -111,7 +111,7 @@ const searchProduct = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Search product successfully!',
-    metadata: await spuService.searchProduct(req.query)
+    metadata: await spuService.searchProduct(req.query, req.query.shopId)
   }).send(res)
 }
 

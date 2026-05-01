@@ -1,53 +1,23 @@
-import { useState, useEffect } from 'react'
-import { Box, Typography, Pagination } from '@mui/material'
-import ProductCard from './ProductCard'
-import { queryProductAPI } from '~/common/apis/services/productService'
-import { useQuery } from '@tanstack/react-query'
+import { Box, CircularProgress, Typography } from '@mui/material'
 import { useFormContext, useWatch } from 'react-hook-form'
-import { buildQueryParams } from '~/common/utils/builder'
-import { LIMIT } from '~/common/utils/constant'
+import { useSelector } from 'react-redux'
+import { useInfiniteScroll } from '~/common/hooks/useScroll'
+import { selectCurrentUser } from '~/common/redux/user/userSlice'
+import { useHomeProducts } from '~/features/Home/hooks/useHomeProducts'
+import ProductCard from './ProductCard'
 
 const ProductList = () => {
-  const [page, setPage] = useState(1)
-
+  const user = useSelector(selectCurrentUser)
   const { control } = useFormContext()
-  const filters = useWatch({ control })
+  const labelFiltler = useWatch({ control })
 
-  const [debouncedKeyword, setDebouncedKeyword] = useState(filters?.keyword || '')
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedKeyword(filters?.keyword || '')
-      setPage(1)
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [filters?.keyword])
-
-  useEffect(() => {
-    setPage(1)
-  }, [filters?.category, filters?.status, filters?.stock, filters?.sort])
-
-  const params = buildQueryParams(filters || {})
-  params.page = page
-  params.limit = LIMIT.PRODUCTS
-  if (debouncedKeyword) {
-    params.keyword = debouncedKeyword
+  const filters = {
+    ...labelFiltler,
+    shopId: user.user_shop
   }
 
-  const queryString = new URLSearchParams(params).toString()
-  const { data = [] } = useQuery({
-    queryKey: ['products', queryString],
-    queryFn: () => queryProductAPI(queryString)
-  })
-
-
-  const products = data?.products || []
-  const totalPages = data?.totalPages || 1
-  const totalItems = data?.totalItems || 0
-
-  const handlePageChange = (event, value) => {
-    setPage(value)
-  }
+  const { isFiltering, filteredProducts, fetchNextPage, hasNextPage, isFetchingNextPage } = useHomeProducts(filters)
+  const lastProductRef = useInfiniteScroll({ isFiltering, isFetchingNextPage, hasNextPage, fetchNextPage })
 
   return (
     <>
@@ -56,7 +26,7 @@ const ProductList = () => {
           Product List
         </Typography>
         <Typography sx={{ fontSize: '0.75rem', color: 'primary.contrastText', opacity: 0.45 }}>
-          Showing {products.length} of {totalItems}
+          Total {filteredProducts.length} items
         </Typography>
       </Box>
 
@@ -70,28 +40,20 @@ const ProductList = () => {
           gap: 1.5,
           width: '100%',
           justifyContent: 'center',
-          maxHeight: { xs: 'calc(2 * 245px + 12px)', sm: 'calc(2 * 310px + 12px)' },
-          overflowY: 'auto',
-          p: 1,
-          scrollbarWidth: '-moz-initial',
-          '&::-webkit-scrollbar': { width: '2px' },
-          '&::-webkit-scrollbar-thumb': { bgcolor: '#d1d5db', borderRadius: '4px' }
+          p: 1
         }}
       >
-        {products.map((product, i) => (
-          <Box key={product.spu_code} >
-            <ProductCard product={product} index={i} />
-          </Box>
-        ))}
-      </Box>
-
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 2 }}>
-        <Pagination
-          count={totalPages}
-          page={page}
-          onChange={handlePageChange}
-          color="primary"
-        />
+        {filteredProducts.map((product, idx) => {
+          const isLast = filteredProducts.length === idx + 1
+          return (
+            <Box key={product.spu_code} ref={isLast ? lastProductRef : null} >
+              <ProductCard product={product} index={idx} />
+            </Box>
+          )
+        })}
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 1 }}>
+          <CircularProgress size={20} />
+        </Box>
       </Box>
     </>
   )

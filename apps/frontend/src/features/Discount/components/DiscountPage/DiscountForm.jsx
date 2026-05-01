@@ -1,17 +1,20 @@
-import { useEffect } from 'react'
-import { useForm, Controller, useWatch } from 'react-hook-form'
-import {
-  Box, TextField, FormControl, InputLabel, Select, MenuItem,
-  ToggleButton, ToggleButtonGroup, Typography, Divider, Paper
-} from '@mui/material'
-import { useTheme } from '@mui/material/styles'
-import PercentRoundedIcon from '@mui/icons-material/PercentRounded'
+import AllInclusiveRoundedIcon from '@mui/icons-material/AllInclusiveRounded'
 import AttachMoneyRoundedIcon from '@mui/icons-material/AttachMoneyRounded'
-import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
 import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded'
-import { toApiPayloadDiscount, toDefaultValuesDiscount } from '~/common/utils/converter'
-import { selectCurrentUser } from '~/common/redux/user/userSlice'
+import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
+import PercentRoundedIcon from '@mui/icons-material/PercentRounded'
+import TuneRoundedIcon from '@mui/icons-material/TuneRounded'
+import { Box, Divider, FormControl, InputLabel, MenuItem, Paper, Select, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import { useEffect, useState } from 'react'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { useSelector } from 'react-redux'
+import { useInfiniteScroll } from '~/common/hooks/useScroll'
+import { selectCurrentUser } from '~/common/redux/user/userSlice'
+import { toApiPayloadDiscount, toDefaultValuesDiscount } from '~/common/utils/converter'
+import { useHomeProducts } from '~/features/Home/hooks/useHomeProducts'
+import { SelectProductForForm } from '../shared/SelectProductForForm'
+
 
 const cardSx = {
   boxShadow: 'none',
@@ -62,11 +65,16 @@ export const DiscountForm = ({ onSubmit, editData }) => {
   const sectionLabel = theme.customStyles?.discountForm?.sectionLabel || {}
   const user = useSelector(selectCurrentUser)
 
-  const { control, handleSubmit, reset, formState: { errors } } =
-    useForm({ defaultValues: DEFAULT_VALUES })
+  const [productSearch, setProductSearch] = useState('')
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({ defaultValues: DEFAULT_VALUES })
 
   const watchType = useWatch({ control, name: 'discount_type' })
   const watchStart = useWatch({ control, name: 'discount_start_date' })
+  const watchAppliesTo = useWatch({ control, name: 'discount_applies_to' })
+
+  const filters = { shopId: user.user_shop, keyword: productSearch }
+  const { isFiltering, filteredProducts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useHomeProducts(filters)
+  const lastProductRef = useInfiniteScroll({ isFiltering, isFetchingNextPage, hasNextPage, fetchNextPage })
 
   useEffect(() => {
     reset(editData ? { ...DEFAULT_VALUES, ...toDefaultValuesDiscount(editData) } : DEFAULT_VALUES)
@@ -75,7 +83,8 @@ export const DiscountForm = ({ onSubmit, editData }) => {
   const onFormSubmit = (data) => {
     const payload = {
       ...data,
-      discount_shopId: user.user_shop
+      discount_shopId: user.user_shop,
+      discount_product_ids: data.discount_applies_to === 'all' ? [] : data.discount_product_ids
     }
     onSubmit(toApiPayloadDiscount(payload))
     reset(DEFAULT_VALUES)
@@ -102,7 +111,6 @@ export const DiscountForm = ({ onSubmit, editData }) => {
           <Typography sx={sectionLabel}>General information</Typography>
           <Divider sx={{ borderStyle: 'dashed', mb: 1.5 }} />
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            {/* Program name - full width */}
             <Controller
               name="discount_name" control={control}
               rules={{ required: 'Required', minLength: { value: 3, message: 'Minimum 3 characters' } }}
@@ -112,7 +120,6 @@ export const DiscountForm = ({ onSubmit, editData }) => {
                   placeholder="e.g. Summer Flash Sale" sx={inputSx} />
               )}
             />
-            {/* Code + Uses per user */}
             <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
               <Controller
                 name="discount_code" control={control}
@@ -183,18 +190,24 @@ export const DiscountForm = ({ onSubmit, editData }) => {
                   </FormControl>
                 )}
               />
-              <Controller name="discount_scope" control={control}
-                render={({ field }) => (
-                  <FormControl size="small" fullWidth sx={inputSx}>
-                    <InputLabel>Scope</InputLabel>
-                    <Select {...field} label="Scope">
-                      <MenuItem value="global">Global</MenuItem>
-                      <MenuItem value="shop">Shop</MenuItem>
-                      <MenuItem value="live">Live</MenuItem>
-                    </Select>
-                  </FormControl>
-                )}
-              />
+              {/* Applies to — replaces Scope select */}
+              <Box>
+                <Controller name="discount_applies_to" control={control}
+                  render={({ field }) => (
+                    <ToggleButtonGroup exclusive size="small" value={field.value}
+                      onChange={(_, v) => v && field.onChange(v)}
+                      sx={toggleSx('#0d9488', '#f0fdf4')}
+                    >
+                      <ToggleButton value="all">
+                        <AllInclusiveRoundedIcon sx={{ fontSize: 13 }} /> All
+                      </ToggleButton>
+                      <ToggleButton value="specific">
+                        <TuneRoundedIcon sx={{ fontSize: 13 }} /> Specific
+                      </ToggleButton>
+                    </ToggleButtonGroup>
+                  )}
+                />
+              </Box>
             </Box>
           </Box>
         </Paper>
@@ -293,6 +306,20 @@ export const DiscountForm = ({ onSubmit, editData }) => {
         </Paper>
 
       </Box>
+
+      {/*  PRODUCT PICKER  */}
+      <SelectProductForForm
+        control={control}
+        errors={errors}
+        watchAppliesTo={watchAppliesTo}
+        productSearch={productSearch}
+        setProductSearch={setProductSearch}
+        filteredProducts={filteredProducts}
+        isLoading={isLoading}
+        cardSx={cardSx}
+        sectionLabel={sectionLabel}
+        lastProductRef={lastProductRef}
+      />
     </Box>
   )
 }
