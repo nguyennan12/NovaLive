@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { queryProductAPI } from '~/common/apis/services/productService'
-import { buildQueryParams } from '~/common/utils/builder'
+import { buildQueryParamsProducts } from '~/common/utils/builder'
 import { toArrayProducts } from '~/common/utils/converter'
 import { useInfiniteProducts } from '~/features/Product/hooks/useProducts'
 import { PRICE_SLIDER_MAX, PRICE_SLIDER_MIN } from '../configs/homeFilter.config'
@@ -28,7 +28,7 @@ export const useHomeProducts = (filters = {}) => {
   //xử lý query params
   const queryString = useMemo(() => {
     if (!isFiltering) return ''
-    const params = buildQueryParams({
+    const params = buildQueryParamsProducts({
       sort: filters.sort,
       category: filters.category,
       keyword: search,

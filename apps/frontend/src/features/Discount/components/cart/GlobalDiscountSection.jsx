@@ -1,41 +1,23 @@
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded'
-import {
-  Box, Button, CircularProgress, Collapse, Divider,
-  InputAdornment, Tab, Tabs, TextField, Typography
-} from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
+import { Box, Button, CircularProgress, Collapse, Divider, InputAdornment, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { validateVoucherAPI } from '~/common/apis/services/cartService'
-import { queryDiscountAPI } from '~/common/apis/services/discountService'
 import { formatVND } from '~/common/utils/formatters'
 import { glassSx } from '~/theme'
+import { useDiscounts } from '../../hook/useDiscounts'
 import { normalizeDiscount } from '../../utils/normalizeDiscount'
 import { DiscountCardMini } from './DiscountCardMini'
 
 function GlobalDiscountSection({ appliedVoucher, setVoucher, clearVoucher, subtotal = 0 }) {
   const [open, setOpen] = useState(false)
-  const [view, setView] = useState(0) // 0 = nhập mã, 1 = chọn mã
   const [code, setCode] = useState('')
   const [applying, setApplying] = useState(false)
 
-  // Fetch danh sách voucher toàn sàn khi mở tab "chọn mã"
-  const { data: globalDiscounts = [], isLoading: loadingGlobal } = useQuery({
-    queryKey: ['discounts', 'global', 'active'],
-    queryFn: () => queryDiscountAPI({ scope: 'global', status: 'active' }),
-    enabled: open && view === 1,
-    staleTime: 2 * 60 * 1000,
-    select: (raw) => {
-      const list = Array.isArray(raw) ? raw : raw?.items ?? []
-      return list.map(normalizeDiscount).filter(d => d.status === 'active')
-    }
-  })
-
-  // globalDiscounts đã qua normalizeDiscount → category: 'product' | 'freeship'
-  const productVouchers = globalDiscounts.filter(d => d.category === 'product')
-  const freeshipVouchers = globalDiscounts.filter(d => d.category === 'freeship')
+  const filters = { scope: 'global', status: 'active', search: code }
+  const { filtered, productDiscounts, shippingDiscounts, isLoading } = useDiscounts(filters)
 
   const handleApplyCode = async () => {
     const trimmed = code.trim()
@@ -127,119 +109,99 @@ function GlobalDiscountSection({ appliedVoucher, setVoucher, clearVoucher, subto
             </Box>
           )}
 
-          {/* View tabs */}
-          <Tabs
-            value={view}
-            onChange={(_, v) => setView(v)}
-            sx={{
-              minHeight: 32,
-              borderBottom: '1px solid', borderColor: 'divider',
-              '& .MuiTab-root': { textTransform: 'none', fontSize: '0.78rem', minHeight: 32, py: 0.4, px: 1.5 },
-              '& .MuiTabs-indicator': { bgcolor: 'secondary.main', height: 2 }
+          <TextField
+            fullWidth size="small"
+            placeholder="Nhập mã voucher toàn sàn..."
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            onKeyDown={(e) => e.key === 'Enter' && handleApplyCode()}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Button
+                      size="small"
+                      disabled={!code.trim() || applying}
+                      onClick={handleApplyCode}
+                      sx={{
+                        textTransform: 'none', fontWeight: 600, fontSize: '0.73rem',
+                        borderRadius: '7px', py: 0.35, px: 1.4,
+                        bgcolor: 'secondary.main', color: '#fff',
+                        '&:hover': { bgcolor: '#4e96f6' },
+                        '&.Mui-disabled': { bgcolor: 'rgba(0,0,0,0.1)' }
+                      }}
+                    >
+                      {applying
+                        ? <CircularProgress size={11} sx={{ color: '#fff' }} />
+                        : 'Áp dụng'
+                      }
+                    </Button>
+                  </InputAdornment>
+                )
+              }
             }}
-          >
-            <Tab label="Nhập mã" />
-            <Tab label={`Chọn mã${globalDiscounts.length ? ` (${globalDiscounts.length})` : ''}`} />
-          </Tabs>
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '10px', fontSize: '0.82rem', bgcolor: '#f5f7ff', pr: 0.5
+              }
+            }}
+          />
 
-          {/* Tab 0: nhập mã */}
-          {view === 0 && (
-            <TextField
-              fullWidth size="small"
-              placeholder="Nhập mã voucher toàn sàn..."
-              value={code}
-              onChange={(e) => setCode(e.target.value.toUpperCase())}
-              onKeyDown={(e) => e.key === 'Enter' && handleApplyCode()}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Button
-                        size="small"
-                        disabled={!code.trim() || applying}
-                        onClick={handleApplyCode}
-                        sx={{
-                          textTransform: 'none', fontWeight: 600, fontSize: '0.73rem',
-                          borderRadius: '7px', py: 0.35, px: 1.4,
-                          bgcolor: 'secondary.main', color: '#fff',
-                          '&:hover': { bgcolor: '#4e96f6' },
-                          '&.Mui-disabled': { bgcolor: 'rgba(0,0,0,0.1)' }
-                        }}
-                      >
-                        {applying
-                          ? <CircularProgress size={11} sx={{ color: '#fff' }} />
-                          : 'Áp dụng'
-                        }
-                      </Button>
-                    </InputAdornment>
-                  )
-                }
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '10px', fontSize: '0.82rem', bgcolor: '#f5f7ff', pr: 0.5
-                }
-              }}
-            />
-          )}
-
-          {/* Tab 1: duyệt danh sách toàn sàn */}
-          {view === 1 && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-              {loadingGlobal ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
-                  <CircularProgress size={24} sx={{ color: 'secondary.main' }} />
-                </Box>
-              ) : globalDiscounts.length === 0 ? (
-                <Box sx={{ py: 3, textAlign: 'center' }}>
-                  <LocalOfferRoundedIcon sx={{ fontSize: 34, color: 'rgba(45,45,45,0.18)', mb: 0.75, display: 'block', mx: 'auto' }} />
-                  <Typography sx={{ fontSize: '0.78rem', color: 'rgba(45,45,45,0.42)' }}>
-                    Không có voucher toàn sàn
-                  </Typography>
-                </Box>
-              ) : (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  {/* Nhóm sản phẩm */}
-                  {productVouchers.length > 0 && (
-                    <Box>
-                      <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(45,45,45,0.45)', mb: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Giảm sản phẩm
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        {productVouchers.map(d => (
-                          <DiscountCardMini
-                            key={d._id} discount={d}
-                            selected={appliedVoucher?.id === d.id}
-                            onSelect={() => handleSelectDiscount(d)}
-                            subtotal={subtotal}
-                          />
-                        ))}
-                      </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            {isLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+                <CircularProgress size={24} sx={{ color: 'secondary.main' }} />
+              </Box>
+            ) : filtered.length === 0 ? (
+              <Box sx={{ py: 3, textAlign: 'center' }}>
+                <LocalOfferRoundedIcon sx={{ fontSize: 34, color: 'rgba(45,45,45,0.18)', mb: 0.75, display: 'block', mx: 'auto' }} />
+                <Typography sx={{ fontSize: '0.78rem', color: 'rgba(45,45,45,0.42)' }}>
+                  Không có voucher toàn sàn
+                </Typography>
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                {/* Nhóm sản phẩm */}
+                {productDiscounts.length > 0 && (
+                  <Box>
+                    <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(45,45,45,0.45)', mb: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Giảm sản phẩm
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      {productDiscounts.map(d => (
+                        <DiscountCardMini
+                          key={d._id} discount={d}
+                          selected={appliedVoucher?.id === d.id}
+                          onSelect={() => handleSelectDiscount(d)}
+                          subtotal={subtotal}
+                        />
+                      ))}
                     </Box>
-                  )}
+                  </Box>
+                )}
 
-                  {/* Nhóm freeship */}
-                  {freeshipVouchers.length > 0 && (
-                    <Box>
-                      <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(45,45,45,0.45)', mb: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Freeship
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        {freeshipVouchers.map(d => (
-                          <DiscountCardMini
-                            key={d.id} discount={d}
-                            selected={appliedVoucher?.id === d.id}
-                            onSelect={() => handleSelectDiscount(d)}
-                            subtotal={subtotal}
-                          />
-                        ))}
-                      </Box>
+                {/* Nhóm freeship */}
+                {shippingDiscounts.length > 0 && (
+                  <Box>
+                    <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(45,45,45,0.45)', mb: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Freeship
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      {shippingDiscounts.map(d => (
+                        <DiscountCardMini
+                          key={d.id} discount={d}
+                          selected={appliedVoucher?.id === d.id}
+                          onSelect={() => handleSelectDiscount(d)}
+                          subtotal={subtotal}
+                        />
+                      ))}
                     </Box>
-                  )}
-                </Box>
-              )}
-            </Box>
-          )}
+                  </Box>
+                )}
+              </Box>
+            )}
+          </Box>
+
         </Box>
       </Collapse>
     </Box>

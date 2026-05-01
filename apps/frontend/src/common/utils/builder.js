@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { formatStringToSlug } from './formatters'
 
-export const buildQueryParams = (filters) => {
+export const buildQueryParamsProducts = (filters) => {
     const params = {}
     const categories = Array.isArray(filters.category)
         ? filters.category
@@ -73,4 +73,17 @@ export const buildFlattenedSkus = (skus) => {
         }
     })
     return list
+}
+
+export const buildQueryParamsDiscounts = (filters) => {
+    const params = { limit: filters.limit, page: filters.page || 1 }
+
+    if (filters.shopId !== undefined) params.shopId = filters.shopId
+    if (filters.search && filters.search.trim()) params.search = filters.search.trim()
+    if (filters.status && filters.status !== 'all') params.status = filters.status
+    if (filters.scope && filters.scope !== 'all') params.scope = filters.scope
+    if (filters.type && filters.type !== 'all') params.type = filters.type === 'fixed' ? 'fixed_amount' : filters.type
+    if (filters.category && filters.category !== 'all') params.target = filters.category === 'freeship' ? 'shipping' : filters.category
+
+    return params
 }

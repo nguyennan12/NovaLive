@@ -4,30 +4,23 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import StorefrontRoundedIcon from '@mui/icons-material/StorefrontRounded'
 import {
   Box, Button, CircularProgress, Dialog, DialogContent,
-  DialogTitle, Divider, IconButton, InputAdornment, Tab, Tabs, TextField, Typography
+  DialogTitle, Divider, IconButton, InputAdornment,
+  TextField, Typography
 } from '@mui/material'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearShopDiscount, selectShopDiscounts, setShopDiscount } from '~/common/redux/cart/cartSlice'
-import { useShopDiscount } from '../../hook/useShopDiscount'
+import { useDiscounts } from '../../hook/useDiscounts'
 import { DiscountCardMini } from './DiscountCardMini'
-
-const TAB_LABELS = ['Tất cả', 'Sản phẩm', 'Free ship']
 
 function ShopDiscountPopup({ open, onClose, shopId, shopName, subtotal = 0 }) {
   const dispatch = useDispatch()
   const shopDiscounts = useSelector(selectShopDiscounts)
   const appliedDiscount = shopDiscounts?.[String(shopId)]
-
-  const [tab, setTab] = useState(0)
   const [codeInput, setCodeInput] = useState('')
 
-  const { discounts, productDiscounts, freeshipDiscounts, isLoading } = useShopDiscount(shopId, open)
-
-  const tabDiscounts = [discounts, productDiscounts, freeshipDiscounts]
-  const tabCounts = [discounts.length, productDiscounts.length, freeshipDiscounts.length]
-  console.log("🚀 ~ ShopDiscountPopup ~ freeshipDiscounts:", freeshipDiscounts)
-  const displayed = tabDiscounts[tab] ?? discounts
+  const filters = { shopId, search: codeInput, status: 'active' }
+  const { filtered, isLoading } = useDiscounts(filters)
 
   const handleSelect = (discount) => {
     if (appliedDiscount?.id === discount.id) {
@@ -41,7 +34,7 @@ function ShopDiscountPopup({ open, onClose, shopId, shopName, subtotal = 0 }) {
   const handleApplyCode = () => {
     const trimmed = codeInput.trim().toUpperCase()
     if (!trimmed) return
-    const found = discounts.find(d => d.code?.toUpperCase() === trimmed)
+    const found = filtered.find(d => d.code?.toUpperCase() === trimmed)
     if (found) {
       handleSelect(found)
       setCodeInput('')
@@ -64,7 +57,8 @@ function ShopDiscountPopup({ open, onClose, shopId, shopName, subtotal = 0 }) {
       }}
     >
       {/* Header */}
-      <DialogTitle sx={{ px: 2.5, py: 2, pb: 1.5 }}>
+      < DialogTitle sx={{ px: 2.5, py: 2, pb: 1.5 }
+      }>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Box sx={{
             width: 32, height: 32, borderRadius: '9px',
@@ -88,7 +82,7 @@ function ShopDiscountPopup({ open, onClose, shopId, shopName, subtotal = 0 }) {
             <CloseRoundedIcon sx={{ fontSize: 18 }} />
           </IconButton>
         </Box>
-      </DialogTitle>
+      </DialogTitle >
 
       <Divider />
 
@@ -154,28 +148,11 @@ function ShopDiscountPopup({ open, onClose, shopId, shopName, subtotal = 0 }) {
           }}
         />
 
-        {/* Tabs */}
-        <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          sx={{
-            minHeight: 34,
-            borderBottom: '1px solid', borderColor: 'divider',
-            '& .MuiTab-root': { textTransform: 'none', fontSize: '0.79rem', minHeight: 34, py: 0.5, px: 1.5 },
-            '& .MuiTabs-indicator': { bgcolor: 'secondary.main', height: 2 }
-          }}
-        >
-          {TAB_LABELS.map((label, i) => (
-            <Tab key={label} label={`${label} (${tabCounts[i]})`} />
-          ))}
-        </Tabs>
-
-        {/* List */}
         {isLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
             <CircularProgress size={26} sx={{ color: 'secondary.main' }} />
           </Box>
-        ) : displayed.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <Box sx={{ py: 5, textAlign: 'center' }}>
             <LocalOfferRoundedIcon sx={{ fontSize: 38, color: 'rgba(45,45,45,0.18)', mb: 1, display: 'block', mx: 'auto' }} />
             <Typography sx={{ fontSize: '0.8rem', color: 'rgba(45,45,45,0.42)' }}>
@@ -184,7 +161,7 @@ function ShopDiscountPopup({ open, onClose, shopId, shopName, subtotal = 0 }) {
           </Box>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, pb: 0.5 }}>
-            {displayed.map(discount => (
+            {filtered.map(discount => (
               <DiscountCardMini
                 key={discount.id}
                 discount={discount}
@@ -196,7 +173,7 @@ function ShopDiscountPopup({ open, onClose, shopId, shopName, subtotal = 0 }) {
           </Box>
         )}
       </DialogContent>
-    </Dialog>
+    </Dialog >
   )
 }
 

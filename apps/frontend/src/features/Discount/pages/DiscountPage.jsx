@@ -4,27 +4,28 @@ import InventoryIcon from '@mui/icons-material/Inventory'
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
 import { Box, Breadcrumbs, Button, Link, Typography } from '@mui/material'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link as RouterLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { selectCurrentUser } from '~/common/redux/user/userSlice'
 import { DiscountForm } from '../components/DiscountPage/DiscountForm'
 import { DiscountList } from '../components/DiscountPage/DiscountList'
 import { DiscountStat } from '../components/DiscountPage/DiscountStat'
 import { DeleteDialog } from '../components/shared/DeleteDialog'
 import { DiscountFilterBar } from '../components/shared/DiscountFilterBar'
-import { useDebounce } from '~/common/hooks/useDebounce'
 import { useDiscounts } from '../hook/useDiscounts'
 
 
 export const DiscountPage = () => {
-
-  const [searchInput, setSearchInput] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
-  const [typeFilter, setTypeFilter] = useState('all')
-  const [categoryFilter, setCategoryFilter] = useState('all')
-  const search = useDebounce(searchInput, 280)
+  const user = useSelector(selectCurrentUser)
+  const [search, setSearch] = useState('')
+  const [status, setStatus] = useState('all')
+  const [type, setType] = useState('all')
+  const [category, setCategory] = useState('all')
+  const filters = { search, status, type, category, shopId: user.user_shop }
 
   const { filtered, stats, addDiscount, updateDiscount, deleteDiscount, isLoading, isFetching, isMutating } =
-    useDiscounts(search, statusFilter, typeFilter, categoryFilter)
+    useDiscounts(filters)
 
   const [editData, setEditData] = useState(null)
 
@@ -78,7 +79,7 @@ export const DiscountPage = () => {
     }
   }
 
-  const hasFilter = !!searchInput || statusFilter !== 'all' || typeFilter !== 'all' || categoryFilter !== 'all'
+  const hasFilter = !!search || status !== 'all' || type !== 'all' || category !== 'all'
   const handleCancel = () => setEditData(null)
 
   return (
@@ -182,14 +183,14 @@ export const DiscountPage = () => {
       {/* ── LIST SECTION ── */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <DiscountFilterBar
-          search={searchInput}
-          status={statusFilter}
-          type={typeFilter}
-          category={categoryFilter}
-          onSearchChange={setSearchInput}
-          onStatusChange={setStatusFilter}
-          onTypeChange={setTypeFilter}
-          onCategoryChange={setCategoryFilter}
+          search={search}
+          status={status}
+          type={type}
+          category={category}
+          onSearchChange={setSearch}
+          onStatusChange={setStatus}
+          onTypeChange={setType}
+          onCategoryChange={setCategory}
         />
         <DiscountList
           discounts={filtered}

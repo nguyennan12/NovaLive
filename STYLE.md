@@ -144,10 +144,10 @@ File: `src/features/Home/components/HomeProductCard.jsx`
 
 ```js
 import { formatVND, formatDate, formatLiveDurationClock } from '~/common/utils/formatters'
-import { buildQueryParams } from '~/common/utils/builder'
+import { buildQueryParamsProducts } from '~/common/utils/builder'
 
 formatVND(1500000)              // "1.500.000 ₫"
-buildQueryParams(filters)       // → object params → new URLSearchParams(params).toString()
+buildQueryParamsProducts(filters)       // → object params → new URLSearchParams(params).toString()
 
 // Scroll section scroll button
 const scrollRef = useRef(null)
