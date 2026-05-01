@@ -1,18 +1,18 @@
 # 📦 E-commerce Project Overview
 
 **Repo:** https://github.com/nguyennan12/E-commerce  
-**Cập nhật:** 30/04/2026 (Cart hoàn thành)  
+**Cập nhật:** 01/05/2026 (Cart + Checkout flow + Backend order fixes hoàn thành)  
 **Mục tiêu:** Tăng tốc phát triển frontend các tính năng chính, tối ưu cho teamwork với AI code assistant.
 
 ---
 
 ## 1. Trạng thái hiện tại
 
-- **Backend:** Hoàn thiện 80% (tạo/xem/sửa/Xóa sản phẩm, kho, API chuẩn REST đã sẵn sàng).
+- **Backend:** Hoàn thiện 85% — API core xong, order/checkout flow đã được fix và hoàn chỉnh (payment COD + VNPay, discount marking, stock reservation).
 - **Frontend:**
   - Đã có UI quản lý sản phẩm, kho với các component/module chính (hiển thị, filter, tạo & sửa sản phẩm, nhập/xuất kho, thống kê tồn kho).
   - **Trang Home** (consumer) đã hoàn thành: banner slider, danh mục, 3 layout list sản phẩm, filter bar.
-  - **Trang Cart** (consumer) đã hoàn thành: layout 7/3, list theo shop, checkbox chọn/xóa, tăng/giảm số lượng, CartSummary tính tiền realtime, voucher input.
+  - **Trang Cart** (consumer) đã hoàn thành: layout 7/3, list theo shop, checkbox chọn/xóa, tăng/giảm số lượng, CartSummary tính tiền realtime, chọn discount shop + global với API check availability, tính tổng có tích hợp discount.
   - Các phần còn lại (đơn hàng, customer, phân quyền, analytics) CHƯA LÀM.
 
 ---
@@ -47,6 +47,23 @@ Chi tiết từng feature (components, hooks, layout, TODO) xem tại **[FEATURE
 - **UI/UX:** Giữ phong cách đồng bộ với style chung (xem Mục 9), responsive, đẹp gọn, chuyên nghiệp.
 - **Kết hợp Redux/React-query:** Ưu tiên react-query nếu cần đồng bộ dữ liệu realtime với server.
 
+### C. **Query Architecture Pattern (đã chuẩn hóa)**
+
+Pattern áp dụng nhất quán cho product, discount, order — **khi tạo feature mới phải theo pattern này**:
+
+1. **Util** (`src/common/utils/`): hàm build query params — `toQueryString(params)`, không logic business.
+2. **API service** (`src/common/apis/services/`): nhận params đã build, chỉ gọi HTTP.
+3. **Hook** (`src/features/<Feature>/hooks/`): nhận `filters` object từ component, xử lý query key + `useQuery`/`useMutation`. Không để component gọi API trực tiếp.
+4. **Component**: chỉ truyền `filters` vào hook. Không biết về query key hay API endpoint.
+
+```
+Component  →  useDiscounts(filters)  →  discountService  →  API
+               (hook xử lý)            (build URL)
+```
+
+- Shop quản lý riêng: filter `{ shopId }` → query theo shop; bỏ `shopId` → query global/all.
+- `useDiscounts`, `useCheckout`, `useProducts` đều theo pattern này.
+
 ### B. **Các phần còn lại cần AI hỗ trợ**:
 - ~~Trang **giỏ hàng (Cart)**~~ ✅ HOÀN THÀNH (xem FEATURE.md)
 - Trang **đơn hàng (Orders)**: list, chi tiết, trạng thái thanh toán/vận chuyển.
@@ -70,9 +87,9 @@ Chi tiết từng feature (components, hooks, layout, TODO) xem tại **[FEATURE
 
 ---
 
-## 6. Tiến độ (tính tới 30/04/2026)
+## 6. Tiến độ (tính tới 01/05/2026)
 
-- Backend: 80% (API core đã xong)
+- Backend: 85% (order flow hoàn chỉnh — checkout, COD, VNPay, discount marking, stock)
 - Frontend:
   - ✅ Quản lý sản phẩm (shop)
   - ✅ Quản lý kho (shop)
@@ -80,7 +97,7 @@ Chi tiết từng feature (components, hooks, layout, TODO) xem tại **[FEATURE
   - ✅ Quản lý phiên live (shop)
   - ✅ **Trang Home (consumer)** — banner, danh mục, 3 layout list sản phẩm
   - ✅ **Trang Product Detail (consumer)** — ảnh, SKU cards, giá, attributes, shop card, description
-  - ✅ **Trang Cart (consumer)** — layout 7/3, danh sách theo shop, checkbox, stepper, summary, voucher
+  - ✅ **Trang Cart (consumer)** — layout 7/3, danh sách theo shop, checkbox, stepper, summary, discount shop + global, checkout summary realtime
   - ⬜ **Order / Customer / Auth / Dashboard**
 
 ---

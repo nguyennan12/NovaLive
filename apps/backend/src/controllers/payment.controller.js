@@ -29,10 +29,18 @@ const vnpayIpn = async (req, res, next) => {
     metadata: await paymentService.vnpayIpn(req.query)
   }).send(res)
 }
+const confirmCodPayment = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Confirm cod payment successfully!',
+    metadata: await paymentService.confirmCodPayment(req.body)
+  }).send(res)
+}
 
 
 export default {
   createPaymentUrl,
   vnpayReturn,
-  vnpayIpn
+  vnpayIpn,
+  confirmCodPayment
 }

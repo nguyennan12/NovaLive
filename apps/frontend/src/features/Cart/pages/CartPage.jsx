@@ -9,7 +9,7 @@ function CartPage() {
       sx={{ pt: { xs: 2.5, md: 4 }, pb: { xs: '110px', md: '100px' } }}
     >
 
-      <Grid container columns={10} spacing={{ xs: 2, md: 3 }} alignItems="flex-start">
+      <Grid container columns={10} spacing={{ xs: 2, md: 3 }}>
         <Grid size={{ xs: 10, md: 7 }}>
           <CartList />
         </Grid>

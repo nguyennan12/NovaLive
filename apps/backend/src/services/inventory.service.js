@@ -116,7 +116,7 @@ const reserveStock = async ({ userId, orderId, items }) => {
 }
 
 //nhã kho hàng
-const releaseStock = async (orderId, items) => {
+const releaseStock = async (orderId, items, session) => {
   if (!items || items.length === 0) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cart is blank!')
   const bulkOperations = items.map(item => {
     return {
@@ -132,7 +132,7 @@ const releaseStock = async (orderId, items) => {
       }
     }
   })
-  const result = await inventoryModel.bulkWrite(bulkOperations)
+  const result = await inventoryModel.bulkWrite(bulkOperations, { session })
   //hhi nhã xong cập nhật là redis  stock dc nhã ra cho product
   await Promise.all(items.map(async (item) => {
     const prefix = `${PREFIX.INVENTORY_SKU}:${item.skuId}:stock`

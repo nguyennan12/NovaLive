@@ -1,11 +1,15 @@
 import inventoryService from '#services/inventory.service.js'
 import orderModel from '#models/order.model.js'
+import discountService from '#services/discount.service'
+import mongoose from 'mongoose'
 
 const listenToCancelOrderQueue = async (channel) => {
   //action khi nhận massage
   const CANCEL_QUEUE = 'order_cancel_queue'
   channel.consume(CANCEL_QUEUE, async (msg) => {
     if (msg !== null) {
+      const session = await mongoose.startSession()
+      session.startTransaction()
       try {
         //nhận dc orderId
         const { orderId } = JSON.parse(msg.content.toString())
@@ -14,6 +18,7 @@ const listenToCancelOrderQueue = async (channel) => {
         const order = await orderModel.findOne({ order_trackingNumber: orderId })
         if (!order || order.order_status !== 'pending') {
           console.log(`[DLX] Order ${data.orderId} is processed before, skip cancel`)
+          await session.abortTransaction()
           return channel.ack(msg) //nếu kh có ordeer đó thì xóa message
         }
         //nếu sau 15p mà status của order vẫn là pending thì xóa
@@ -21,23 +26,29 @@ const listenToCancelOrderQueue = async (channel) => {
           console.log(`[DLX] Order ${orderId} expired. Cancelling order and releasing stock...`)
           await orderModel.updateOne(
             { _id: order._id },
-            {
-              order_status: 'cancelled',
-              'order_payment.paymentStatus': 'failed'
-            }
+            { order_status: 'cancelled', 'order_payment.paymentStatus': 'failed' },
+            { session }
           )
           //danh sách các sản phẩm bị cancel để nhả kho
           const itemsToRelease = order.order_products.map(item => ({ skuId: item.skuId, quantity: item.quantity }))
           //bắt đầu nhả kho
-          await inventoryService.releaseStock(order.order_trackingNumber, itemsToRelease)
+          await inventoryService.releaseStock(order.order_trackingNumber, itemsToRelease, session)
+          //cancel discount đã sử dụng
+          await discountService.cancelDiscountCode(order.order_appliedDiscountCodes, order.order_userId, session)
           console.log(`[DLX] Cancel ordere ${orderId} successfully! sku comback inventory.`)
+          await session.commitTransaction()
         } else {
+          await session.abortTransaction()
           console.log(`[DLX] Order ${orderId} is processed.`)
         }
         channel.ack(msg)
       }
       catch (error) {
+        await session.abortTransaction()
         console.error('[DLX] Error when cancel order:', error)
+      }
+      finally {
+        session.endSession()
       }
     }
   })

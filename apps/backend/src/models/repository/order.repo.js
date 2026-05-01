@@ -1,12 +1,12 @@
 import orderModel from '#models/order.model.js'
 
 const changeStatusOrder = async ({ orderId, statusOrder = '', statusPayment = '' }) => {
+  const update = {}
+  if (statusOrder) update.order_status = statusOrder
+  if (statusPayment) update['order_payment.paymentStatus'] = statusPayment
   return await orderModel.findOneAndUpdate(
     { order_trackingNumber: orderId },
-    {
-      'order_payment.paymentStatus': statusPayment,
-      order_status: statusOrder
-    },
+    update,
     { returnDocument: 'after' }
   )
 }
@@ -22,6 +22,7 @@ const getOrderDetail = async ({ orderId, userId }) => {
     })
     .lean()
 }
+
 
 export default {
   changeStatusOrder,

@@ -85,39 +85,42 @@ const deleteDiscount = async (discountCode) => {
   )
 }
 
-const cancelDiscountCode = async (discountCode, userId) => {
-  const foundDiscount = await discountRepo.findDiscoutByCode(discountCode)
-  if (!foundDiscount) throw (new ApiError(StatusCodes.BAD_REQUEST, 'Discount does not exists'))
-  return await discountModel.findOneAndUpdate(
-    { discount_code: discountCode },
-    {
-      $pull: {
-        discount_users_used: converter.toObjectId(userId)
-      },
-      $inc: {
-        discount_max_uses: 1,
-        discount_uses_count: -1
+const markDiscountsAsUsed = async (discountCodes, userId) => {
+  if (!discountCodes?.length) return
+  const ops = discountCodes.map(code => ({
+    updateOne: {
+      filter: { discount_code: code },
+      update: {
+        $addToSet: { discount_users_used: converter.toObjectId(userId) },
+        $inc: { discount_max_uses: -1, discount_uses_count: 1 }
       }
     }
-  )
+  }))
+  await discountModel.bulkWrite(ops)
 }
 
-const getDiscountAmout = async ({ userId, reqBody }) => {
-  const { code, shopId, totalOrder } = reqBody
+const cancelDiscountCode = async (discountCodes, userId, session) => {
+  const rollbackOps = discountCodes.map(code => ({
+    updateOne: {
+      filter: { discount_code: code, discount_users_used: converter.toObjectId(userId) },
+      update: {
+        $pull: { discount_users_used: converter.toObjectId(userId) },
+        $inc: { discount_max_uses: 1, discount_uses_count: -1 }
+      },
+    }
+  }))
+  await discountModel.bulkWrite(rollbackOps, { session })
+}
+
+const getDiscountAmout = async ({ reqBody }) => {
+  const { code, totalOrder } = reqBody
   const foundDiscount = await discountRepo.findDiscoutByCode(code)
   if (!foundDiscount) throw (new ApiError(StatusCodes.BAD_REQUEST, 'Discount does not exists'))
-
-  new DiscountValidate(foundDiscount)
-    .checkShopOwnership(shopId)
-    .checkMinOrder(totalOrder)
-    .isLimitByUser(userId)
-    .isNotExpired()
-    .isOverLimit()
-    .isActive()
 
   const { discount_type, discount_value } = foundDiscount
   let amount = discount_type === 'fixed_amount' ? discount_value : totalOrder * (discount_value / 100)
   if (amount > foundDiscount.discount_max_value) amount = foundDiscount.discount_max_value
+
   return {
     totalOrder,
     discountAmout: amount,
@@ -170,6 +173,7 @@ export default {
   getProductsByDiscount,
   deleteDiscount,
   updateDiscount,
+  markDiscountsAsUsed,
   cancelDiscountCode,
   getDiscountAmout,
   applyDiscounts,

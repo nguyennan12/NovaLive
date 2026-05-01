@@ -7,6 +7,12 @@ import orderModel from '#models/order.model.js'
 import inventoryService from './inventory.service.js'
 import orderRepo from '#models/repository/order.repo.js'
 import spuRepo from '#models/repository/spu.repo.js'
+import OtpModel from '#models/otp.model.js'
+import userRepo from '#models/repository/user.repo.js'
+import ApiError from '#core/error.response.js'
+import { StatusCodes } from 'http-status-codes'
+import emailService from './email.service.js'
+import MyLogger from '#loggers/MyLogger.js'
 
 const createPaymentUrl = async ({ reqBody, ipAddr }) => {
   const { orderId, amount, bankCode, language } = reqBody
@@ -81,7 +87,7 @@ const vnpayIpn = async (vnp_Params) => {
       await Promise.all([
         orderRepo.changeStatusOrder({ orderId: orderId, statusOrder: 'processing', statusPayment: 'paid' }),
         inventoryService.confirmDeductStock(orderId, items),
-        spuRepo.incrementProductSold(order.order_products.prodcutId, order.order_products.quantity)
+        ...order.order_products.map(p => spuRepo.incrementProductSold(p.productId, p.quantity))
       ])
       console.log(`[VNPAY] Đơn ${orderId} thanh toán THÀNH CÔNG. Đã trừ kho!`)
     } else {
@@ -119,8 +125,27 @@ const vnpayReturn = async (vnp_Params) => {
   }
 }
 
+const hanldeCodPayment = async (userId) => {
+  const foundUser = await userRepo.findUserById(userId)
+  if (!foundUser) throw new ApiError(StatusCodes.BAD_REQUEST, 'User does not exists')
+  await emailService.sendVerificationEmail({ email: foundUser.user_email })
+    .catch(() => MyLogger.error(`Lỗi gửi email xác nhận thanh toán cho user ${foundUser.user_email}`, 'EMAIL'))
+}
+
+const confirmCodPayment = async ({ orderId, email, otpToken }) => {
+  const foundOrder = await orderModel.findById(orderId)
+  if (!foundOrder) throw new ApiError(StatusCodes.BAD_REQUEST, 'Order does not exists')
+
+  const lastOtpToken = await OtpModel.findOne({ otp_email: email }).sort({ createdAt: -1 })
+  if (!lastOtpToken || lastOtpToken.otp_token != otpToken) throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid OTP code!')
+
+  return await orderRepo.changeStatusOrder({ orderId, statusOrder: 'confirmed', statusPayment: 'pending' })
+}
+
 export default {
   createPaymentUrl,
   vnpayIpn,
-  vnpayReturn
+  vnpayReturn,
+  hanldeCodPayment,
+  confirmCodPayment
 }

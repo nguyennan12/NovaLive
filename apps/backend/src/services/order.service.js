@@ -13,6 +13,7 @@ import discountService from './discount.service.js'
 import inventoryService from './inventory.service.js'
 import shippingService from './shipping.service.js'
 import socketService from './socket.service.js'
+import paymentService from './payment.service.js'
 
 const checkoutReview = async ({ userId, reqBody }) => {
   const { cartId, shopOrderIds, userAddressId, productDiscountCode, shippingDiscountCode } = reqBody
@@ -57,7 +58,8 @@ const checkoutReview = async ({ userId, reqBody }) => {
         feeShipApplyDiscount: feeShip,
         discountAmountProduct: 0,
         priceApplyDiscount: rawPrice,
-        item_products
+        item_products,
+        appliedCodes: []
       }
 
       //nếu có discount áp dụng
@@ -80,10 +82,12 @@ const checkoutReview = async ({ userId, reqBody }) => {
         if (amountDiscountProduct > 0) {
           itemCheckout.priceApplyDiscount -= amountDiscountProduct
           itemCheckout.discountAmountProduct = amountDiscountProduct
+          itemCheckout.appliedCodes.push(discountMap['product'].code)
         }
         if (amountDiscountShipping > 0) {
           itemCheckout.feeShipApplyDiscount -= amountDiscountShipping
           itemCheckout.discountAmountFeeShip = amountDiscountShipping
+          itemCheckout.appliedCodes.push(discountMap['freeship'].code)
         }
 
       }
@@ -107,25 +111,38 @@ const checkoutReview = async ({ userId, reqBody }) => {
     shippingOrderTotal: checkoutOrder.finalCheckout,
   })
 
+  const globalAppliedCodes = []
+  if (amountDiscountProduct > 0 && productDiscountCode) globalAppliedCodes.push(productDiscountCode)
+  if (amountDiscountShipping > 0 && shippingDiscountCode) globalAppliedCodes.push(shippingDiscountCode)
+
+  const shopAppliedCodes = shopOrderIdsNew.flatMap(shop => shop.appliedCodes)
+  const appliedDiscountCodes = [...new Set([...shopAppliedCodes, ...globalAppliedCodes])]
+
   return {
     shopOrderIds,
     shopOrderIdsNew,
     checkoutOrder,
     amoutGlobalDiscountProduct: amountDiscountProduct,
-    amoutGlobalDiscountShipping: amountDiscountShipping
+    amoutGlobalDiscountShipping: amountDiscountShipping,
+    appliedDiscountCodes
   }
 }
 
 const orderByUser = async ({ userId, reqBody }) => {
   const { cartId, shopOrderIds, userAddressId, userPayment = 'cod', client_totalCheckout } = reqBody
-  const { checkoutOrder } = await checkoutReview({ userId, reqBody: { cartId, shopOrderIds, userAddressId } })
+  const { checkoutOrder, appliedDiscountCodes } = await checkoutReview({ userId, reqBody })
   const userAddress = await addressModel.findOne({ _id: converter.toObjectId(userAddressId), owner_type: 'user' })
   //mếu số tiền client gửi về khác với số tiền checkout thì throw lỗi
   if (checkoutOrder.finalCheckout !== client_totalCheckout) throw new ApiError(StatusCodes.BAD_REQUEST, 'Price product is change, please check again!')
 
   const orderCode = generateOrderCode()
   //biến object lồng nhau thành dạng phẳng (flatMap)
-  const allProducts = shopOrderIds.flatMap(shop => shop.item_products)
+  const allProducts = shopOrderIds.flatMap(shop =>
+    shop.item_products.map(item => ({
+      ...item,
+      shopId: shop.shopId
+    }))
+  )
   //bắc đầu giữ kho từng product
   const reserveResults = await Promise.all(
     allProducts.map(async (item) => {
@@ -152,25 +169,34 @@ const orderByUser = async ({ userId, reqBody }) => {
     order_userId: userId,
     order_checkout: checkoutOrder,
     order_shipping: userAddress,
-    order_payment: userPayment,
+    order_payment: { method: userPayment },
     order_products: allProducts,
-    order_trackingNumber: orderCode
+    order_trackingNumber: orderCode,
+    order_appliedDiscountCodes: appliedDiscountCodes
   })
   //nếu là order qua cart thì remove product khỏi cart
   if (cartId) {
     const skuIdsToRemove = allProducts.map(item => item.skuId)
     await cartService.removeFromCart({ userId: userId, reqBody: { skuIds: skuIdsToRemove } })
   }
+  await discountService.markDiscountsAsUsed(appliedDiscountCodes, userId)
 
-  try {
-    //gửi order vào message_queue để nó xử lý trong vòng 15p order có dc thanh toán k
-    // nếu không thì hủy order và nhả kho lại
-    await RabbitMQClient.sendOrderToDelayQueue(orderCode)
-  } catch (error) {
-    console.error('Error add queue:', error)
+  if (newOrder.order_payment.method !== 'cod') {
+    try {
+      await RabbitMQClient.sendOrderToDelayQueue(orderCode)
+    } catch (error) {
+      console.error('Error add queue:', error)
+    }
+  } else {
+    try {
+      await paymentService.hanldeCodPayment(newOrder.order_userId)
+    } catch (error) {
+      console.error('Error sending COD email:', error)
+    }
   }
   return newOrder
 }
+
 
 const getAllOrderByUser = async ({ userId, status, limit = 20, page = 1 }) => {
   const query = { order_userId: userId }

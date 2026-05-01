@@ -29,10 +29,12 @@ const orderSchema = new Schema(
         quantity: Number
       }
     ],
+    order_appliedDiscountCodes: { type: [String], default: [] },
     order_trackingNumber: { type: String },
     order_status: {
       type: String, enum: ['pending', 'processing', 'confirmed', 'shipped', 'cancelled', 'delivered'], default: 'pending'
-    }
+    },
+    deliveredAt: { type: Date }
   },
   {
     timestamps: true,
