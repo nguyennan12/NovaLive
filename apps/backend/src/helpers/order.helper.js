@@ -1,0 +1,13 @@
+import { skuModel } from '#models/sku.model.js'
+import ApiError from '#core/error.response.js'
+import { StatusCodes } from 'http-status-codes'
+
+export const validateBuyNowItems = async ({ shopOrderIds }) => {
+  //trường hợp mua ngay
+  const skusFromClient = shopOrderIds.flatMap(shop => shop.item_products.map(item => item.skuId.toString()))
+  const validSkusCount = await skuModel.countDocuments({ _id: { $in: skusFromClient } })
+  //nếu prodcut khác thì throw lỗi
+  if (validSkusCount !== skusFromClient.length) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Do not have product in system')
+  }
+}

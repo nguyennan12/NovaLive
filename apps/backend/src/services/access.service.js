@@ -89,7 +89,7 @@ const login = async ({ email, password }) => {
     refreshToken: tokens.refreshToken
   })
   return {
-    user: data.getInfo(['_id', 'user_name', 'user_email', 'user_shop'], foundUser),
+    user: data.getInfo(['_id', 'user_name', 'user_email', 'user_shop', 'default_address_id'], foundUser),
     tokens
   }
 }

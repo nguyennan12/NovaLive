@@ -87,3 +87,25 @@ export const buildQueryParamsDiscounts = (filters) => {
 
     return params
 }
+
+export const buildShopOrderIds = (selectedItems, shopDiscountMap = {}) => {
+    const shopMap = {}
+
+    selectedItems.forEach(item => {
+        const { shopId, productId, skuId, quantity } = item
+        if (!shopMap[shopId]) {
+            shopMap[shopId] = []
+        }
+        shopMap[shopId].push({ productId, skuId, quantity })
+    })
+    return Object.entries(shopMap).map(([shopId, item_products]) => {
+        const discount = shopDiscountMap[shopId] || []
+        const result = { shopId, item_products }
+        if (discount && discount.code) {
+            result.shop_discount = [
+                { id: discount.id, code: discount.code, target: discount.category }
+            ]
+        }
+        return result
+    })
+}

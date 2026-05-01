@@ -104,7 +104,7 @@ const reserveStock = async ({ userId, orderId, items }) => {
     keys.push(key)
     args.push(item.quantity.toString())
   }
-  //tạp 1 transactions để đảm bảo tính trọn vẹn của stock khi đang trong quá trình order
+  //tạo 1 transactions để đảm bảo tính trọn vẹn của stock khi đang trong quá trình order
   //và trừ đi số lượng trong kho nếu stock hợp lệ
   const result = await redisClient.eval(reserveStockScript, { keys, arguments: args })
   if (result === 0) throw new ApiError(StatusCodes.BAD_REQUEST, 'Have a product is sold out! please check again')

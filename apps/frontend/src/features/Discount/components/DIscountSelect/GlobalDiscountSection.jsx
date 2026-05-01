@@ -1,15 +1,13 @@
-/* eslint-disable no-lonely-if */
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded'
 import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
-import { Box, Button, CircularProgress, Collapse, Divider, InputAdornment, TextField, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Collapse, Divider, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { validateVoucherAPI } from '~/common/apis/services/cartService'
+import { checkAvailableAPI } from '~/common/apis/services/discountService'
 import { formatVND } from '~/common/utils/formatters'
 import { glassSx, gradientText } from '~/theme'
-import { normalizeDiscount } from '../../utils/normalizeDiscount'
 import { useDiscounts } from '../../hook/useDiscounts'
 import { DiscountCardMini } from './DiscountCardMini'
 
@@ -47,7 +45,7 @@ function GlobalDiscountSection({
 }) {
   const [open, setOpen] = useState(false)
   const [code, setCode] = useState('')
-  const [applying, setApplying] = useState(false)
+  const [checkingId, setCheckingId] = useState(null)
 
   const { productDiscounts, shippingDiscounts, isLoading } = useDiscounts({
     scope: 'global', status: 'active', search: code
@@ -55,54 +53,37 @@ function GlobalDiscountSection({
 
   const hasAnyVoucher = !!appliedProductVoucher || !!appliedFreeshipVoucher
 
-  // Áp dụng theo target của discount
-  const handleSelectDiscount = (discount) => {
-    if (discount.category === 'freeship') {
-      // Toggle: click lại voucher đang dùng thì bỏ
-      if (appliedFreeshipVoucher?.id === discount.id) {
-        clearFreeshipVoucher()
-      } else {
-        setFreeshipVoucher(discount)
-      }
-    } else {
-      if (appliedProductVoucher?.id === discount.id) {
-        clearProductVoucher()
-      } else {
-        setProductVoucher(discount)
-      }
-    }
-    setCode('')
-  }
+  const handleSelectDiscount = async (discount) => {
+    const isFreeship = discount.category === 'freeship'
+    const isApplied = isFreeship
+      ? appliedFreeshipVoucher?.id === discount.id
+      : appliedProductVoucher?.id === discount.id
 
-  // Áp dụng qua nhập code
-  const handleApplyCode = async () => {
-    const trimmed = code.trim()
-    if (!trimmed) return
-
-    // Tìm trong danh sách đã có sẵn
-    const allLoaded = [...productDiscounts, ...shippingDiscounts]
-    const found = allLoaded.find(d => d.code?.toUpperCase() === trimmed.toUpperCase())
-    if (found) {
-      handleSelectDiscount(found)
+    if (isApplied) {
+      isFreeship ? clearFreeshipVoucher() : clearProductVoucher()
+      setCode('')
       return
     }
 
-    // Không tìm thấy local → validate qua API
-    setApplying(true)
+    setCheckingId(discount.id)
     try {
-      const result = await validateVoucherAPI(trimmed)
-      if (result) {
-        const raw = Array.isArray(result) ? result[0] : result
-        const normalized = normalizeDiscount(raw)
-        handleSelectDiscount(normalized)
-        toast.success('Áp dụng mã voucher thành công!')
-      }
+      await toast.promise(
+        checkAvailableAPI(discount.code, subtotal),
+        {
+          pending: 'Đang kiểm tra voucher...',
+          success: 'Áp dụng voucher thành công!',
+          error: { render: ({ data }) => data?.response?.data?.message || data?.message || 'Voucher không khả dụng' }
+        }
+      )
+      isFreeship ? setFreeshipVoucher(discount) : setProductVoucher(discount)
     } catch {
-      toast.error('Mã voucher không hợp lệ hoặc đã hết hạn')
+      // toast.promise đã hiển thị lỗi
     } finally {
-      setApplying(false)
+      setCheckingId(null)
+      setCode('')
     }
   }
+
 
   return (
     <Box sx={{
@@ -156,29 +137,6 @@ function GlobalDiscountSection({
             placeholder="Nhập mã voucher toàn sàn..."
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            onKeyDown={(e) => e.key === 'Enter' && handleApplyCode()}
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Button
-                      size="small"
-                      disabled={!code.trim() || applying}
-                      onClick={handleApplyCode}
-                      sx={{
-                        textTransform: 'none', fontWeight: 600, fontSize: '0.73rem',
-                        borderRadius: '7px', py: 0.35, px: 1.4,
-                        bgcolor: 'secondary.main', color: '#fff',
-                        '&:hover': { bgcolor: '#4e96f6' },
-                        '&.Mui-disabled': { bgcolor: 'rgba(0,0,0,0.1)' }
-                      }}
-                    >
-                      {applying ? <CircularProgress size={11} sx={{ color: '#fff' }} /> : 'Áp dụng'}
-                    </Button>
-                  </InputAdornment>
-                )
-              }
-            }}
             sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px', fontSize: '0.82rem', bgcolor: '#f5f7ff', pr: 0.5 } }}
           />
 
@@ -211,6 +169,7 @@ function GlobalDiscountSection({
                         selected={appliedProductVoucher?.id === d.id}
                         onSelect={() => handleSelectDiscount(d)}
                         subtotal={subtotal}
+                        loading={checkingId === d.id}
                       />
                     ))}
                   </Box>
@@ -234,6 +193,7 @@ function GlobalDiscountSection({
                         selected={appliedFreeshipVoucher?.id === d.id}
                         onSelect={() => handleSelectDiscount(d)}
                         subtotal={subtotal}
+                        loading={checkingId === d.id}
                       />
                     ))}
                   </Box>

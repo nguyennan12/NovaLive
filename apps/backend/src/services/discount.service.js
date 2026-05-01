@@ -6,6 +6,8 @@ import { DiscountValidate } from '#validations/discount.vallidation.js'
 import converter from '#utils/converter.js'
 import { PREFIX } from '#utils/constant.js'
 import spuRepo from '#models/repository/spu.repo.js'
+import ApiError from '#core/error.response.js'
+import { StatusCodes } from 'http-status-codes'
 
 
 const craeteDiscount = async (reqBody) => {
@@ -114,13 +116,49 @@ const getDiscountAmout = async ({ userId, reqBody }) => {
     .isActive()
 
   const { discount_type, discount_value } = foundDiscount
-  const amount = discount_type === 'fixed_amount' ? discount_value : totalOrder * (discount_value / 100)
-
+  let amount = discount_type === 'fixed_amount' ? discount_value : totalOrder * (discount_value / 100)
+  if (amount > foundDiscount.discount_max_value) amount = foundDiscount.discount_max_value
   return {
     totalOrder,
     discountAmout: amount,
     priceApplyDiscount: totalOrder - amount
   }
+}
+
+const applyDiscounts = async ({ userId, productDiscountCode, shippingDiscountCode, productOrderTotal, shippingOrderTotal }) => {
+  const [discountProductResult, discountShippingResult] = await Promise.all([
+    productDiscountCode
+      ? getDiscountAmout({
+        userId,
+        reqBody: { code: productDiscountCode, totalOrder: productOrderTotal },
+      })
+      : Promise.resolve(null),
+
+    shippingDiscountCode
+      ? getDiscountAmout({
+        userId,
+        reqBody: { code: shippingDiscountCode, totalOrder: shippingOrderTotal },
+      })
+      : Promise.resolve(null),
+  ])
+  const amountDiscountProduct = discountProductResult?.discountAmout ?? 0
+  const amountDiscountShipping = discountShippingResult?.discountAmout ?? 0
+
+  return { amountDiscountProduct, amountDiscountShipping }
+}
+
+const checkDiscountAvailable = async ({ discountCode, userId, totalOrder }) => {
+  const foundDiscount = await discountRepo.findDiscoutByCode(discountCode)
+  if (!foundDiscount) throw (new ApiError(StatusCodes.BAD_REQUEST, 'Discount does not exists'))
+
+  new DiscountValidate(foundDiscount)
+    .checkMinOrder(totalOrder)
+    .isLimitByUser(userId)
+    .isNotExpired()
+    .isOverLimit()
+    .isActive()
+
+  return true
 }
 
 
@@ -133,5 +171,7 @@ export default {
   deleteDiscount,
   updateDiscount,
   cancelDiscountCode,
-  getDiscountAmout
+  getDiscountAmout,
+  applyDiscounts,
+  checkDiscountAvailable
 }

@@ -4,6 +4,7 @@ import { generateCatId } from '#utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import inventoryService from './inventory.service.js'
 import skuService from './sku.service.js'
+import converter from '#utils/converter.js'
 
 const addToCart = async ({ userId, reqBody }) => {
   const { skuId, quantity } = reqBody
@@ -130,12 +131,28 @@ const getCart = async ({ userId }) => {
     )
   }
 
-  return Array.from(shopMap.values())
+  const items = Array.from(shopMap.values())
+  return { items, cartId: userCart._id, cartCount: userCart.cart_count_product }
+
+}
+
+//kiểm tra các item trong cart có hợp lệ k
+const validateCartItems = async ({ cartId, shopOrderIds }) => {
+  const foundCart = await cartModel.findOne({ _id: converter.toObjectId(cartId), cart_state: 'active' }).lean()
+  if (!foundCart) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cart not found')
+  const skusInDbCart = foundCart.cart_products.map(item => item.skuId.toString())
+  const skusFromClient = shopOrderIds.flatMap(shop => shop.item_products.map(item => item.skuId.toString()))
+  //mảng lưu danh sách sản phẩm trong db khác với sản phẩm do client gửi xuống
+  const hasFakeItem = skusFromClient.some(skuId => !skusInDbCart.includes(skuId))
+  if (skusInDbCart.length === 0 || hasFakeItem) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Product in cart invalid!')
+  }
 }
 
 export default {
   addToCart,
   updateCartItemQuantity,
   removeFromCart,
-  getCart
+  getCart,
+  validateCartItems
 }

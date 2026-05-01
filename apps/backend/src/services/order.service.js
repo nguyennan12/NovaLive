@@ -1,44 +1,28 @@
 import ApiError from '#core/error.response.js'
-import cartModel from '#models/cart.model.js'
+import { RabbitMQClient } from '#database/init.rabbitMQ.js'
+import { validateBuyNowItems } from '#helpers/order.helper.js'
+import { addressModel } from '#models/address.model.js'
 import orderModel from '#models/order.model.js'
+import orderRepo from '#models/repository/order.repo.js'
 import { skuModel } from '#models/sku.model.js'
 import converter from '#utils/converter.js'
-import { StatusCodes } from 'http-status-codes'
 import { generateOrderCode } from '#utils/generator.js'
+import { StatusCodes } from 'http-status-codes'
 import cartService from './cart.service.js'
 import discountService from './discount.service.js'
 import inventoryService from './inventory.service.js'
 import shippingService from './shipping.service.js'
-import { RabbitMQClient } from '#database/init.rabbitMQ.js'
-import orderRepo from '#models/repository/order.repo.js'
 import socketService from './socket.service.js'
-import { addressModel } from '#models/address.model.js'
 
 const checkoutReview = async ({ userId, reqBody }) => {
-  const { cartId, shopOrderIds, userAddressId } = reqBody
+  const { cartId, shopOrderIds, userAddressId, productDiscountCode, shippingDiscountCode } = reqBody
   const isBuyNow = !cartId
   //kiểm tra user mua hàng trong cart hay mua trực tiếp (mua ngay)
   if (!isBuyNow) {
-    //nếu kh phải mua ngay thì kiểm tra trong cart có product đó hay không
-    const foundCart = await cartModel.findOne({ _id: converter.toObjectId(cartId), cart_state: 'active' }).lean()
-    if (!foundCart) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cart not found')
-
-    const skusInDbCart = foundCart.cart_products.map(item => item.skuId.toString())
-    const skusFromClient = shopOrderIds.flatMap(shop => shop.item_products.map(item => item.skuId.toString()))
-    //mảng lưu danh sách sản phẩm trong db khác với sản phẩm do client gửi xuống
-    const hasFakeItem = skusFromClient.some(skuId => !skusInDbCart.includes(skuId))
-    if (skusInDbCart.length === 0 || hasFakeItem) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, 'Product in cart invalid!')
-    }
+    await cartService.validateCartItems({ cartId, shopOrderIds })
   }
   else {
-    //trường hợp mua ngay
-    const skusFromClient = shopOrderIds.flatMap(shop => shop.item_products.map(item => item.skuId.toString()))
-    const validSkusCount = await skuModel.countDocuments({ _id: { $in: skusFromClient } })
-    //nếu prodcut khác thì throw lỗi
-    if (validSkusCount !== skusFromClient.length) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, 'Do not have product in system')
-    }
+    await validateBuyNowItems({ shopOrderIds })
   }
 
   //duyệt order của từng shop
@@ -57,7 +41,7 @@ const checkoutReview = async ({ userId, reqBody }) => {
       }, {})
       const { rawPrice, totalWeight } = item_products.reduce((acc, product) => {
         const sku = skuMap[product.skuId]
-        if (!sku) return acc
+        if (!sku) throw new ApiError(StatusCodes.BAD_REQUEST, `SKU ${product.skuId} not found`)
         acc.rawPrice += (product.quantity * sku.sku_price)
         acc.totalWeight += (product.quantity * sku.sku_weight)
         return acc
@@ -83,37 +67,23 @@ const checkoutReview = async ({ userId, reqBody }) => {
           if (!dict[discount.target]) dict[discount.target] = discount
           return dict
         }, {})
-        const [productResult, shippingResult] = await Promise.all([
-          discountMap['product']?.code
-            ? discountService.getDiscountAmout({
-              userId,
-              reqBody: {
-                code: discountMap['product'].code,
-                shopId,
-                totalOrder: rawPrice
-              }
-            })
-            : Promise.resolve(null),
 
-          discountMap['shipping']?.code
-            ? discountService.getDiscountAmout({
-              userId,
-              reqBody: {
-                code: discountMap['shipping'].code,
-                shopId,
-                totalOrder: feeShip
-              }
-            })
-            : Promise.resolve(null)
-        ])
+        const { amountDiscountProduct, amountDiscountShipping } = await discountService.applyDiscounts({
+          userId,
+          productDiscountCode: discountMap['product']?.code,
+          shippingDiscountCode: discountMap['freeship']?.code,
+          productOrderTotal: rawPrice,
+          shippingOrderTotal: feeShip,
+        })
+
         //tính toán lại giá product và shipping
-        if (productResult && productResult.discountAmout > 0) {
-          itemCheckout.priceApplyDiscount = productResult?.priceApplyDiscount
-          itemCheckout.discountAmountProduct = productResult?.discountAmout
+        if (amountDiscountProduct > 0) {
+          itemCheckout.priceApplyDiscount -= amountDiscountProduct
+          itemCheckout.discountAmountProduct = amountDiscountProduct
         }
-        if (shippingResult && shippingResult.discountAmout > 0) {
-          itemCheckout.feeShipApplyDiscount = shippingResult?.priceApplyDiscount
-          itemCheckout.discountAmountFeeShip = shippingResult?.discountAmout
+        if (amountDiscountShipping > 0) {
+          itemCheckout.feeShipApplyDiscount -= amountDiscountShipping
+          itemCheckout.discountAmountFeeShip = amountDiscountShipping
         }
 
       }
@@ -123,22 +93,31 @@ const checkoutReview = async ({ userId, reqBody }) => {
   )
   //tổng order của tất cả các shop
   const checkoutOrder = shopOrderIdsNew.reduce((acc, shop) => {
-    acc.totalPrice += shop.rawPrice
-    acc.totalDiscount += (shop.discountAmountProduct + shop.discountAmountFeeShip || 0)
-    acc.feeShip += (shop.feeShip || 0)
+    acc.totalRawPrice += shop.rawPrice
+    acc.totalShopDiscount += (shop.discountAmountProduct ?? 0) + (shop.discountAmountFeeShip ?? 0)
+    acc.feeShip += (shop.feeShipApplyDiscount ?? 0)
     return acc
-  }, { totalPrice: 0, feeShip: 0, totalDiscount: 0, finalCheckout: 0 })
+  }, { totalRawPrice: 0, feeShip: 0, totalShopDiscount: 0, finalCheckout: 0 })
   //tính lại giá cuối cùng của order
-  checkoutOrder.finalCheckout = checkoutOrder.totalPrice - checkoutOrder.totalDiscount + checkoutOrder.feeShip
+  checkoutOrder.finalCheckout = checkoutOrder.totalRawPrice - checkoutOrder.totalShopDiscount + checkoutOrder.feeShip
+  //tính amout của discount global
+  const { amountDiscountProduct, amountDiscountShipping } = await discountService.applyDiscounts({
+    userId, productDiscountCode, shippingDiscountCode,
+    productOrderTotal: checkoutOrder.finalCheckout,
+    shippingOrderTotal: checkoutOrder.finalCheckout,
+  })
+
   return {
     shopOrderIds,
     shopOrderIdsNew,
-    checkoutOrder
+    checkoutOrder,
+    amoutGlobalDiscountProduct: amountDiscountProduct,
+    amoutGlobalDiscountShipping: amountDiscountShipping
   }
 }
 
 const orderByUser = async ({ userId, reqBody }) => {
-  const { cartId, shopOrderIds, userAddressId, userPayment, client_totalCheckout } = reqBody
+  const { cartId, shopOrderIds, userAddressId, userPayment = 'cod', client_totalCheckout } = reqBody
   const { checkoutOrder } = await checkoutReview({ userId, reqBody: { cartId, shopOrderIds, userAddressId } })
   const userAddress = await addressModel.findOne({ _id: converter.toObjectId(userAddressId), owner_type: 'user' })
   //mếu số tiền client gửi về khác với số tiền checkout thì throw lỗi

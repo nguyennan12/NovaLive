@@ -18,6 +18,7 @@ Router.get('/amount', asyncHandler(discountController.getDiscountAmout))
 Router.post('/', validate(createDiscountSchema), asyncHandler(discountController.craeteDiscount))
 Router.post('/:discountCode', asyncHandler(discountController.cancelDiscountCode))
 Router.patch('/:discountCode', validate(updateDiscountSchema), asyncHandler(discountController.updateDiscount))
+Router.post('/available/:discountCode', validate(updateDiscountSchema), asyncHandler(discountController.checkDiscountAvailable))
 Router.delete('/:discountCode', asyncHandler(discountController.deleteDiscount))
 
 

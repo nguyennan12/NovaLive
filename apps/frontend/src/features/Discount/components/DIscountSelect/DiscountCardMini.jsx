@@ -1,16 +1,16 @@
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
-import { Box, Button, Tooltip, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Tooltip, Typography } from '@mui/material'
 import { formatVND } from '~/common/utils/formatters'
 import { CATEGORY_THEME, fmtValue } from '../../utils/normalizeDiscount'
 
-export function DiscountCardMini({ discount, selected, onSelect, subtotal = 0 }) {
+export function DiscountCardMini({ discount, selected, onSelect, subtotal = 0, loading = false }) {
   const { name, code, category = 'product', type, value, minOrder, status } = discount
   const theme = CATEGORY_THEME[category] ?? CATEGORY_THEME.product
   const Icon = theme.icon
   const isExpired = status === 'expired'
   const meetsMinOrder = !minOrder || subtotal >= minOrder
-  const isDisabled = isExpired || !meetsMinOrder
+  const isDisabled = isExpired || !meetsMinOrder || loading
   const handleCopy = (e) => {
     e.stopPropagation()
     if (code) navigator.clipboard.writeText(code)
@@ -108,10 +108,11 @@ export function DiscountCardMini({ discount, selected, onSelect, subtotal = 0 })
             }
           </Typography>
 
-          {selected ? (
+          {loading ? (
+            <CircularProgress size={16} sx={{ color: 'secondary.main', flexShrink: 0 }} />
+          ) : selected ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.35, flexShrink: 0 }}>
               <CheckCircleRoundedIcon sx={{ fontSize: 16, color: 'secondary.main' }} />
-
             </Box>
           ) : (
             <Button

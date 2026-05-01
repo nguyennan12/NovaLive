@@ -57,7 +57,14 @@ const cancelDiscountCode = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Cancel discount successfully!',
-    metadata: await discountService.cancelDiscountCode({ discountService: req.params.discountCode, userId: req.user.userId })
+    metadata: await discountService.cancelDiscountCode({ discountCode: req.params.discountCode, userId: req.user.userId })
+  }).send(res)
+}
+const checkDiscountAvailable = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Apply discount successfully!',
+    metadata: await discountService.checkDiscountAvailable({ discountCode: req.params.discountCode, userId: req.user.userId, totalOrder: req.body.totalOrder })
   }).send(res)
 }
 
@@ -79,16 +86,6 @@ export default {
   updateDiscount,
   deleteDiscount,
   cancelDiscountCode,
-  getDiscountAmout
+  getDiscountAmout,
+  checkDiscountAvailable
 }
-
-/*
-getDiscountAmout
-getAllDiscount
-getAllDiscountOfShop
-getProductsByDiscount
-createDiscount
-applyDiscount
-updatediscount
-deletediscount
-*/

@@ -1,8 +1,13 @@
 import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
 import ShoppingCartCheckoutRoundedIcon from '@mui/icons-material/ShoppingCartCheckoutRounded'
 import { Box, Button, Chip, Divider, Typography } from '@mui/material'
-import GlobalDiscountSection from '~/features/Discount/components/cart/GlobalDiscountSection'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/common/redux/user/userSlice'
+import { buildShopOrderIds } from '~/common/utils/builder'
 import { formatVND } from '~/common/utils/formatters'
+import GlobalDiscountSection from '~/features/Discount/components/DIscountSelect/GlobalDiscountSection'
+import { useApplyDiscounts } from '~/features/Discount/hook/useApplyDiscounts'
+import { useCheckout } from '~/features/Order/hooks/useCheckout'
 import { glassSx, gradientText } from '~/theme'
 import { useCart } from '../hooks/useCart'
 
@@ -23,16 +28,26 @@ function SummaryRow({ label, value, highlight = false, isDiscount = false }) {
 }
 
 function CartSummary() {
-  const {
-    selectedItems, subtotal,
-    shopDiscountTotal, productVoucherDiscount, hasFreeshipVoucher,
-    appliedProductVoucher, setProductVoucher, clearProductVoucher,
-    appliedFreeshipVoucher, setFreeshipVoucher, clearFreeshipVoucher,
-    total
-  } = useCart()
+  const { selectedItems, cartId } = useCart()
+  const user = useSelector(selectCurrentUser)
+  const { setProductVoucher, setFreeshipVoucher,
+    clearFreeshipVoucher, clearProductVoucher,
+    appliedFreeshipVoucher, appliedProductVoucher, appliedshopDiscounts } = useApplyDiscounts()
 
+  let payload = {}
   const canCheckout = selectedItems.length > 0
-  const totalDiscount = (shopDiscountTotal || 0) + (productVoucherDiscount || 0)
+  if (canCheckout) {
+    payload = {
+      cartId,
+      shopOrderIds: buildShopOrderIds(selectedItems, appliedshopDiscounts),
+      userAddressId: user.default_address_id,
+      productDiscountCode: appliedProductVoucher?.code ?? '',
+      shippingDiscountCode: appliedFreeshipVoucher?.code ?? ''
+    }
+  }
+  const { totalRawPrice, totalShopDiscount, totalPrice, totalFeeShip, amoutGlobalDiscountProduct, totalDiscount, hasFreeShip } = useCheckout(payload)
+  // const canCheckout = selectedItems.length > 0
+  // const totalDiscount = (shopDiscountTotal || 0) + (productVoucherDiscount || 0)
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, position: { md: 'sticky' }, top: { md: 90 } }}>
@@ -50,21 +65,21 @@ function CartSummary() {
           </Typography>
         </Box>
 
-        <SummaryRow label="Tạm tính" value={subtotal} />
+        <SummaryRow label="Tạm tính" value={totalRawPrice} />
 
-        {shopDiscountTotal > 0 && (
-          <SummaryRow label="Giảm từ shop" value={shopDiscountTotal} isDiscount />
+        {totalShopDiscount > 0 && (
+          <SummaryRow label="Giảm từ shop" value={totalShopDiscount} isDiscount />
         )}
 
-        {productVoucherDiscount > 0 && (
-          <SummaryRow label="Voucher giảm giá" value={productVoucherDiscount} isDiscount />
+        {amoutGlobalDiscountProduct > 0 && (
+          <SummaryRow label="Voucher giảm giá" value={amoutGlobalDiscountProduct} isDiscount />
         )}
 
         {/* Freeship chip — shipping hiện tại = 0, hiển thị thông báo */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 0.4 }}>
           <Typography sx={{ fontSize: '0.8rem', color: 'rgba(45,45,45,0.6)' }}>Phí vận chuyển</Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            {hasFreeshipVoucher && (
+            {hasFreeShip && (
               <Chip
                 icon={<LocalShippingRoundedIcon sx={{ fontSize: '11px !important' }} />}
                 label="Freeship"
@@ -79,7 +94,7 @@ function CartSummary() {
               />
             )}
             <Typography sx={{ fontSize: '0.88rem', fontWeight: 500, color: 'primary.contrastText' }}>
-              {formatVND(0)}
+              {formatVND(totalFeeShip)}
             </Typography>
           </Box>
         </Box>
@@ -98,7 +113,7 @@ function CartSummary() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mb: 2.5 }}>
           <Typography sx={{ fontSize: '0.88rem', fontWeight: 600, color: 'primary.contrastText' }}>Tổng thanh toán</Typography>
           <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: 'secondary.main', lineHeight: 1 }}>
-            {formatVND(total)}
+            {formatVND(totalPrice)}
           </Typography>
         </Box>
 
@@ -129,7 +144,7 @@ function CartSummary() {
         appliedFreeshipVoucher={appliedFreeshipVoucher}
         setFreeshipVoucher={setFreeshipVoucher}
         clearFreeshipVoucher={clearFreeshipVoucher}
-        subtotal={subtotal}
+        subtotal={totalRawPrice}
       />
     </Box>
   )

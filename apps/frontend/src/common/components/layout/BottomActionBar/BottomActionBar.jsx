@@ -7,7 +7,7 @@ import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useCartCount } from '~/features/Cart/hooks/useCart'
+import { useCart } from '~/features/Cart/hooks/useCart'
 import { glassSx } from '~/theme'
 
 const BASE_NAV_ITEMS = [
@@ -20,7 +20,7 @@ const BASE_NAV_ITEMS = [
 function BottomActionBar() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const cartCount = useCartCount()
+  const { cartCount } = useCart()
 
   const navItems = [
     { label: 'Giỏ hàng', Icon: ShoppingCartOutlinedIcon, path: '/cart', badge: cartCount },

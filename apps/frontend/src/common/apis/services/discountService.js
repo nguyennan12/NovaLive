@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify'
 import authorizedAxiosInstance from '../custom/authorizeAxios'
 import { toQueryString } from '~/common/utils/converter'
 
@@ -30,5 +31,9 @@ export const updateDiscountAPI = async (discountCode, payload) => {
 
 export const deleteDiscountAPI = async (discountCode) => {
   const response = await authorizedAxiosInstance.delete(`discount/${discountCode}`)
+  return response.metadata
+}
+export const checkAvailableAPI = async (discountCode, totalOrder) => {
+  const response = await authorizedAxiosInstance.post(`discount/available/${discountCode}`, { totalOrder })
   return response.metadata
 }

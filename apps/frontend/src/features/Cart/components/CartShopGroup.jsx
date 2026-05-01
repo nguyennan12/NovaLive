@@ -4,8 +4,8 @@ import { Box, Button, Checkbox, Chip, Divider, Typography } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectSelectedIds, setSelectedIds } from '~/common/redux/cart/cartSlice'
-import { selectShopDiscounts } from '~/common/redux/discount/discountSlice'
-import ShopDiscountPopup from '~/features/Discount/components/cart/ShopDiscountPopup'
+import { selectAppliedShopDiscounts } from '~/common/redux/discount/discountSlice'
+import ShopDiscountPopup from '~/features/Discount/components/DIscountSelect/ShopDiscountPopup'
 import { glassSx } from '~/theme'
 import CartItem from './CartItem'
 
@@ -14,7 +14,7 @@ function CartShopGroup({ group }) {
   const { shopId, shopName, items } = group
   const dispatch = useDispatch()
   const selectedIds = useSelector(selectSelectedIds)
-  const shopDiscounts = useSelector(selectShopDiscounts)
+  const shopDiscounts = useSelector(selectAppliedShopDiscounts)
   const appliedDiscount = shopDiscounts?.[String(shopId)]
 
   const [discountOpen, setDiscountOpen] = useState(false)
@@ -23,12 +23,12 @@ function CartShopGroup({ group }) {
   const allGroupSelected = groupSkuIds.length > 0 && groupSkuIds.every(id => selectedIds.includes(id))
   const someGroupSelected = groupSkuIds.some(id => selectedIds.includes(id))
 
-  // Subtotal của shop này (chỉ tính item được chọn) để kiểm tra min_order
   const shopSubtotal = useMemo(() => {
     return items
       .filter(i => selectedIds.includes(String(i.skuId)))
       .reduce((s, i) => s + i.price * i.quantity, 0)
   }, [items, selectedIds])
+
 
   const handleToggleGroup = () => {
     if (allGroupSelected) {

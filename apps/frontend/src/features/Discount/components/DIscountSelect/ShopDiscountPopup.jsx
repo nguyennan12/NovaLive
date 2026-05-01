@@ -8,35 +8,55 @@ import {
   TextField, Typography
 } from '@mui/material'
 import { useState } from 'react'
+import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearShopDiscount, selectShopDiscounts, setShopDiscount } from '~/common/redux/discount/discountSlice'
+import { checkAvailableAPI } from '~/common/apis/services/discountService'
+import { selectAppliedShopDiscounts, clearShopDiscount, setShopDiscount } from '~/common/redux/discount/discountSlice'
 import { useDiscounts } from '../../hook/useDiscounts'
 import { DiscountCardMini } from './DiscountCardMini'
 
 function ShopDiscountPopup({ open, onClose, shopId, shopName, subtotal = 0 }) {
   const dispatch = useDispatch()
-  const shopDiscounts = useSelector(selectShopDiscounts)
+  const shopDiscounts = useSelector(selectAppliedShopDiscounts)
   const appliedDiscount = shopDiscounts?.[String(shopId)]
   const [codeInput, setCodeInput] = useState('')
+  const [checkingId, setCheckingId] = useState(null)
 
   const filters = { shopId, search: codeInput, status: 'active' }
   const { filtered, isLoading } = useDiscounts(filters)
 
-  const handleSelect = (discount) => {
+  const handleSelect = async (discount) => {
     if (appliedDiscount?.id === discount.id) {
       dispatch(clearShopDiscount(shopId))
-    } else {
-      dispatch(setShopDiscount({ shopId: String(shopId), discount }))
+      onClose()
+      return
     }
-    onClose()
+
+    setCheckingId(discount.id)
+    try {
+      await toast.promise(
+        checkAvailableAPI(discount.code, subtotal),
+        {
+          pending: 'Đang kiểm tra voucher...',
+          success: 'Áp dụng voucher thành công!',
+          error: { render: ({ data }) => data?.response?.data?.message || data?.message || 'Voucher không khả dụng' }
+        }
+      )
+      dispatch(setShopDiscount({ shopId: String(shopId), discount }))
+      onClose()
+    } catch {
+      // toast.promise đã hiển thị lỗi
+    } finally {
+      setCheckingId(null)
+    }
   }
 
-  const handleApplyCode = () => {
+  const handleApplyCode = async () => {
     const trimmed = codeInput.trim().toUpperCase()
     if (!trimmed) return
     const found = filtered.find(d => d.code?.toUpperCase() === trimmed)
     if (found) {
-      handleSelect(found)
+      await handleSelect(found)
       setCodeInput('')
     }
   }
@@ -168,6 +188,7 @@ function ShopDiscountPopup({ open, onClose, shopId, shopName, subtotal = 0 }) {
                 selected={appliedDiscount?.id === discount.id}
                 onSelect={() => handleSelect(discount)}
                 subtotal={subtotal}
+                loading={checkingId === discount.id}
               />
             ))}
           </Box>
