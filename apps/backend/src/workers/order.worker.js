@@ -1,6 +1,6 @@
 import inventoryService from '#services/inventory.service.js'
 import orderModel from '#models/order.model.js'
-import discountService from '#services/discount.service'
+import discountService from '#services/discount.service.js'
 import mongoose from 'mongoose'
 
 const listenToCancelOrderQueue = async (channel) => {

@@ -17,7 +17,7 @@
 
 ---
 
-## Nền trang — WaterDropBackground
+## Nền trang — WaterDropBackground (hiện tại đã bọc ở layout chung)
 
 Dùng `@emotion/styled(Box)` khi cần `::before`/`::after` hoặc keyframe (MUI `sx` không đủ).
 

@@ -56,6 +56,7 @@ const Footer = () => {
         WebkitBackdropFilter: 'blur(12px)',
         borderTop: '1px solid rgba(255,255,255,0.18)',
         boxShadow: '0 -4px 30px rgba(0,0,0,0.04)',
+        zIndex: 1,
         mt: { xs: 4, md: 6 },
         px: { xs: 2, sm: 4, md: 6, lg: 8 },
         pt: { xs: 4, md: 5 },

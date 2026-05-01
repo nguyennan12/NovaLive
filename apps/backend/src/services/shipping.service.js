@@ -6,8 +6,7 @@ import { env } from '#config/environment.config.js'
 import { PREFIX } from '#utils/constant.js'
 import { redisClient } from '#database/init.redis.js'
 import { addressModel } from '#models/address.model.js'
-import orderModel from '#models/order.model'
-import orderRepo from '#models/repository/order.repo'
+import orderRepo from '#models/repository/order.repo.js'
 
 const calculateFee = async ({ shopId, toAddress, weight }) => {
   try {

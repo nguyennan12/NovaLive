@@ -97,13 +97,17 @@ function GlobalDiscountSection({
         sx={{
           display: 'flex', alignItems: 'center', gap: 1,
           px: 2.5, py: 1.75, cursor: 'pointer',
+          justifyContent: 'space-between',
           '&:hover': { bgcolor: 'rgba(83,155,255,0.04)' },
           transition: 'background 0.18s'
         }}
       >
-        <Typography sx={{ flex: 1, fontSize: '0.86rem', fontWeight: 600, ...gradientText }}>
-          NovaLive voucher
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ width: 3.5, height: 22, borderRadius: '2px', bgcolor: 'secondary.main', flexShrink: 0 }} />
+          <Typography sx={{ fontWeight: 700, fontSize: '0.93rem', ...gradientText }}>
+            Voucher & Ưu đãi
+          </Typography>
+        </Box>
         {hasAnyVoucher && (
           <CheckCircleRoundedIcon sx={{ fontSize: 15, color: 'success.main' }} />
         )}

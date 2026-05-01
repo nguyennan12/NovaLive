@@ -43,6 +43,7 @@ export const useCartMutations = () => {
 
   return {
     addToCart: (data) => addMutation.mutate(data),
+    addToCartAsync: (data) => addMutation.mutateAsync(data),
     //xóa 1 item ra khỏi cart
     removeItem: (skuId) => removeMutation.mutate({ skuIds: [String(skuId)] }),
     //xóa những items đã dc chọn ra khỏi cart

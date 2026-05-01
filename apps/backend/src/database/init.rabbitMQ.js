@@ -37,7 +37,6 @@ const publishMessage = async (queueName, data) => {
 
 //set up những exchange bind và queue (tạo)
 const setupDelayQueue = async (channel) => {
-  const EX = 'order_events_exchange'
   const DELAY_EX = 'order_delay_exchange'
   const DELAY_QUEUE = 'order_delay_queue'
   const CANCEL_QUEUE = 'order_cancel_queue'

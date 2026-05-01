@@ -2,10 +2,13 @@ import LocalMallRoundedIcon from '@mui/icons-material/LocalMallRounded'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import { Box, Button, Grid } from '@mui/material'
 import { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { PageSkeleton } from '~/common/components/common/loading/PageSkeleton'
 import { useAddToCart } from '~/features/Cart/hooks/useAddToCard'
+import { useCartMutations } from '~/features/Cart/hooks/useCartMutations'
+import { setSelectedIds } from '~/common/redux/cart/cartSlice'
 import ProductGridSection from '~/features/Home/components/ProductGridSection'
 import ProductReviewsSection from '~/features/Review/components/ProductReviewsSection'
 import { glassSx } from '~/theme'
@@ -49,7 +52,28 @@ const ProductDetailPage = () => {
   const selectedSku = fetchedSku ?? localSku
   const attributes = product?.spu_attributes ?? []
 
+  const dispatch = useDispatch()
+  const { addToCartAsync } = useCartMutations()
   const { handleAddToCart, isPending } = useAddToCart({ product, selectedSku, quantity })
+
+  const handleBuyNow = async () => {
+    if (!selectedSku?._id) {
+      toast.warning('Vui lòng chọn phiên bản sản phẩm')
+      return
+    }
+    try {
+      await addToCartAsync({
+        skuId: selectedSku._id,
+        productId: selectedSku.sku_spuId,
+        shopId: product.spu_shopId,
+        quantity
+      })
+      dispatch(setSelectedIds([String(selectedSku._id)]))
+      navigate('/order')
+    } catch {
+      // toast đã được xử lý trong addMutation.onSuccess / onError
+    }
+  }
 
   return (
     <Box sx={{ px: { xs: 1.5, sm: 2.5, md: 4 }, pt: { xs: 2, md: 3 }, pb: { xs: '100px', sm: '110px' } }}>
@@ -105,7 +129,8 @@ const ProductDetailPage = () => {
                   <Button
                     variant="contained" fullWidth
                     startIcon={<LocalMallRoundedIcon />}
-                    onClick={(e) => e.stopPropagation()}
+                    loading={isPending}
+                    onClick={handleBuyNow}
                     sx={{
                       textTransform: 'none', fontWeight: 700, fontSize: '0.9rem',
                       borderRadius: '12px', py: 1.25,

@@ -1,6 +1,7 @@
 import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
 import ShoppingCartCheckoutRoundedIcon from '@mui/icons-material/ShoppingCartCheckoutRounded'
 import { Box, Button, Chip, Divider, Typography } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/common/redux/user/userSlice'
 import { buildShopOrderIds } from '~/common/utils/builder'
@@ -28,6 +29,7 @@ function SummaryRow({ label, value, highlight = false, isDiscount = false }) {
 }
 
 function CartSummary() {
+  const navigate = useNavigate()
   const { selectedItems, cartId } = useCart()
   const user = useSelector(selectCurrentUser)
   const { setProductVoucher, setFreeshipVoucher,
@@ -122,6 +124,7 @@ function CartSummary() {
           fullWidth
           disabled={!canCheckout}
           startIcon={<ShoppingCartCheckoutRoundedIcon />}
+          onClick={() => canCheckout && navigate('/order')}
           sx={{
             textTransform: 'none', fontWeight: 700, fontSize: '0.93rem',
             borderRadius: '12px', py: 1.3,

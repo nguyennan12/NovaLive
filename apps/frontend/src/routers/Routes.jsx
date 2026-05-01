@@ -13,6 +13,7 @@ import { HomePage } from '~/features/Home/pages/HomePage'
 import ProductDetailPage from '~/features/Product/pages/ProductDetailPage'
 import ProductsListPage from '~/features/Product/pages/ProductsListPage'
 import CartPage from '~/features/Cart/pages/CartPage'
+import OrderPage from '~/features/Order/pages/OrderPage'
 import ConsumerLayout from '~/common/components/layout/ConsumerLayout/ConsumerLayout'
 
 const AppRoutes = () => {
@@ -24,6 +25,7 @@ const AppRoutes = () => {
         <Route path="/product/:productId" element={<ProductDetailPage />} />
         <Route path="/products" element={<ProductsListPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/order" element={<OrderPage />} />
       </Route>
 
       {/* AUTH */}
@@ -34,6 +36,9 @@ const AppRoutes = () => {
       {/* LIVE feed (standalone, không cần consumer layout) */}
       <Route path='/live' element={<LiveFeedPage />} />
       <Route path='/shop/live/:liveId' element={<ShopLive />} />
+
+      {/* ORDER */}
+
 
       {/* PRODUCT forms */}
       <Route path="/products/form" element={<ProductFormPage />} />
