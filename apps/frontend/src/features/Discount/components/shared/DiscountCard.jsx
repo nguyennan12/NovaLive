@@ -1,50 +1,11 @@
-import { Box, Typography, IconButton, Tooltip } from '@mui/material'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import { Box, IconButton, Tooltip, Typography } from '@mui/material'
+import { formatDate } from '~/common/utils/formatters'
+import { CATEGORY_THEME, fmtValue, fmtValueSub } from '../../utils/normalizeDiscount'
 import { StatusBadge } from './StatusBadge'
-import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
-import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded'
 
-const CATEGORY_THEME = {
-  product: {
-    stubBg: 'rgba(29, 123, 255, 0.8)',
-    stubAccent: '#ffffff',
-    stubText: '#ffffff',
-    dash: 'rgba(255, 255, 255, 0.3)',
-    notchBg: '#e0eeff',
-    icon: LocalOfferRoundedIcon,
-    chipBg: '#dbeafe',
-    chipText: 'secondary.main',
-    chipLabel: 'Sản phẩm',
-    barColor: 'secondary.main'
-  },
-  freeship: {
-    stubBg: 'rgba(255, 172, 29, 0.8)',
-    stubAccent: '#ffffff',
-    stubText: '#ffffff',
-    dash: 'rgba(255, 255, 255, 0.3)',
-    notchBg: '#faf0d1ff',
-    icon: LocalShippingRoundedIcon,
-    chipBg: '#fef3c7',
-    chipText: 'fourth.main',
-    chipLabel: 'Free Ship',
-    barColor: 'fourth.main'
-  }
-}
-
-const fmtValue = (category, type, value) => {
-  if (category === 'freeship') return 'FREE'
-  return type === 'percentage' ? `${value}%` : `${(value / 1000).toFixed(0)}K`
-}
-
-const fmtValueSub = (category, type, value) => {
-  if (category === 'freeship') return `Ship −${(value / 1000).toFixed(0)}K`
-  return type === 'percentage' ? 'GIẢM %' : 'GIẢM TIỀN'
-}
-
-const fmtDate = (iso) =>
-  new Date(iso).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
 
 const usagePct = (used, limit) => Math.min(100, Math.round((used / limit) * 100))
 
@@ -172,9 +133,9 @@ export const DiscountCard = ({ discount, onEdit, onDelete }) => {
 
           {/* Date range */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            <Typography sx={{ fontSize: '0.65rem', color: '#9ca3af' }}>{fmtDate(startDate)}</Typography>
+            <Typography sx={{ fontSize: '0.65rem', color: '#9ca3af' }}>{formatDate(startDate)}</Typography>
             <Box sx={{ width: 12, height: 1, bgcolor: '#e5e7eb' }} />
-            <Typography sx={{ fontSize: '0.65rem', color: '#9ca3af' }}>{fmtDate(endDate)}</Typography>
+            <Typography sx={{ fontSize: '0.65rem', color: '#9ca3af' }}>{formatDate(endDate)}</Typography>
           </Box>
 
           {/* Usage bar */}

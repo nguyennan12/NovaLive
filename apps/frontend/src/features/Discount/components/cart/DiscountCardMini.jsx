@@ -1,42 +1,16 @@
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
-import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded'
-import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
 import { Box, Button, Tooltip, Typography } from '@mui/material'
 import { formatVND } from '~/common/utils/formatters'
+import { CATEGORY_THEME, fmtValue } from '../../utils/normalizeDiscount'
 
-// category sau normalize: 'product' | 'freeship'
-const CATEGORY_THEME = {
-  product: {
-    stubBg: 'rgba(29,123,255,0.85)',
-    stubText: '#fff',
-    dash: 'rgba(255,255,255,0.35)',
-    icon: LocalOfferRoundedIcon
-  },
-  freeship: {
-    stubBg: 'rgba(245,158,11,0.88)',
-    stubText: '#fff',
-    dash: 'rgba(255,255,255,0.35)',
-    icon: LocalShippingRoundedIcon
-  }
-}
-
-// type sau normalize: 'percentage' | 'fixed'
-const fmtValue = (category, type, value) => {
-  if (category === 'freeship') return 'FREE'
-  return type === 'percentage' ? `${value}%` : `${Math.round(value / 1000)}K`
-}
-
-// Nhận normalized discount (từ normalizeDiscount util)
 export function DiscountCardMini({ discount, selected, onSelect, subtotal = 0 }) {
   const { name, code, category = 'product', type, value, minOrder, status } = discount
   const theme = CATEGORY_THEME[category] ?? CATEGORY_THEME.product
   const Icon = theme.icon
-
   const isExpired = status === 'expired'
   const meetsMinOrder = !minOrder || subtotal >= minOrder
   const isDisabled = isExpired || !meetsMinOrder
-
   const handleCopy = (e) => {
     e.stopPropagation()
     if (code) navigator.clipboard.writeText(code)
@@ -136,10 +110,8 @@ export function DiscountCardMini({ discount, selected, onSelect, subtotal = 0 })
 
           {selected ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.35, flexShrink: 0 }}>
-              <CheckCircleRoundedIcon sx={{ fontSize: 12, color: 'secondary.main' }} />
-              <Typography sx={{ fontSize: '0.63rem', fontWeight: 700, color: 'secondary.main' }}>
-                Đang dùng
-              </Typography>
+              <CheckCircleRoundedIcon sx={{ fontSize: 16, color: 'secondary.main' }} />
+
             </Box>
           ) : (
             <Button

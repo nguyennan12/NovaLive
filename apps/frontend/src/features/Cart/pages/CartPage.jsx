@@ -1,4 +1,4 @@
-import { Container, Grid, Typography } from '@mui/material'
+import { Container, Grid } from '@mui/material'
 import CartList from '../components/CartList'
 import CartSummary from '../components/CartSummary'
 

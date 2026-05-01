@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearShopDiscount, selectShopDiscounts, setShopDiscount } from '~/common/redux/cart/cartSlice'
+import { clearShopDiscount, selectShopDiscounts, setShopDiscount } from '~/common/redux/discount/discountSlice'
 import { useDiscounts } from '../../hook/useDiscounts'
 import { DiscountCardMini } from './DiscountCardMini'
 

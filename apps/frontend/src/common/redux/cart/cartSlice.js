@@ -1,9 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+// Cart slice chỉ lưu UI state — server là source of truth cho data giỏ hàng
 const initialState = {
-  selectedIds: [],
-  appliedVoucher: null,
-  shopDiscounts: {} // { [shopId]: discountObject }
+  selectedIds: [] // skuId[] đang được chọn để thanh toán
 }
 
 export const cartSlice = createSlice({
@@ -23,31 +22,12 @@ export const cartSlice = createSlice({
     },
     deselectAll: (state) => {
       state.selectedIds = []
-    },
-    setVoucher: (state, action) => {
-      state.appliedVoucher = action.payload
-    },
-    clearVoucher: (state) => {
-      state.appliedVoucher = null
-    },
-    setShopDiscount: (state, action) => {
-      const { shopId, discount } = action.payload
-      state.shopDiscounts[String(shopId)] = discount
-    },
-    clearShopDiscount: (state, action) => {
-      delete state.shopDiscounts[String(action.payload)]
     }
   }
 })
 
-export const {
-  toggleSelect, setSelectedIds, deselectAll,
-  setVoucher, clearVoucher,
-  setShopDiscount, clearShopDiscount
-} = cartSlice.actions
+export const { toggleSelect, setSelectedIds, deselectAll } = cartSlice.actions
 
 export const selectSelectedIds = (state) => state.cart.selectedIds
-export const selectAppliedVoucher = (state) => state.cart.appliedVoucher
-export const selectShopDiscounts = (state) => state.cart.shopDiscounts
 
 export const CartReducer = cartSlice.reducer
