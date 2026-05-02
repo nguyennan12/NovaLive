@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { registerUserAPI } from '~/common/apis/services/userService'
-import FieldErrorAlert from '~/common/components/common/Form/FieldErrorAlert'
+import FieldErrorAlert from '~/common/components/common/form/FieldErrorAlert'
 import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,

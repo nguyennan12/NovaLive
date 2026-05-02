@@ -1,6 +1,6 @@
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded'
 import { Box, CircularProgress, Typography } from '@mui/material'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import { useInfiniteScroll } from '~/common/hooks/useScroll'
@@ -22,18 +22,17 @@ const ProductsListPage = () => {
     return found?.cat_name ?? categorySlug
   }, [categories, categorySlug])
 
-  const [filters, setFilters] = useState(DEFAULT_FILTERS)
+  const [userFilters, setUserFilters] = useState(DEFAULT_FILTERS)
   const handleFilterChange = useCallback((key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }))
+    setUserFilters(prev => ({ ...prev, [key]: value }))
   }, [])
 
-  useEffect(() => {
-    setFilters(prev => ({
-      ...prev,
-      category: categorySlug,
-      keyword: keyword
-    }))
-  }, [categorySlug, keyword])
+  // URL params là source of truth cho category/keyword — merge trực tiếp thay vì dùng useEffect
+  const filters = useMemo(() => ({
+    ...userFilters,
+    category: categorySlug,
+    keyword: keyword
+  }), [userFilters, categorySlug, keyword])
 
   const { isFiltering, filteredProducts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useHomeProducts(filters)
   const lastProductRef = useInfiniteScroll({ isFiltering, isFetchingNextPage, hasNextPage, fetchNextPage })

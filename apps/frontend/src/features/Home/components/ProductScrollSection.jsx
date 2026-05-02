@@ -2,7 +2,7 @@ import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRound
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import { Box, IconButton, Typography } from '@mui/material'
-import { useRef, useMemo } from 'react'
+import { useRef, useState } from 'react'
 import { HomeProductCard, HomeProductCardSkeleton } from './HomeProductCard'
 import { FlashSaleCountdown } from '~/common/components/common/countdown/CoundownBox'
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
@@ -61,8 +61,7 @@ const SCROLL_AMOUNT = 460
 
 const ProductScrollSection = ({ products = [], isLoading }) => {
   const scrollRef = useRef(null)
-  // useMemo để Date.now() chỉ tính 1 lần lúc mount, tránh vi phạm react-hooks/purity
-  const flashSaleEndTime = useMemo(() => new Date(Date.now() + 40 * 60 * 1000 + 7 * 1000), [])
+  const [flashSaleEndTime] = useState(() => new Date(Date.now() + 40 * 60 * 1000 + 7 * 1000))
 
   const scroll = (dir) => {
     scrollRef.current?.scrollBy({ left: dir * SCROLL_AMOUNT, behavior: 'smooth' })
