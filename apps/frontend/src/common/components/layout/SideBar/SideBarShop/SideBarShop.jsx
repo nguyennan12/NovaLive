@@ -2,7 +2,7 @@ import KeyboardDoubleArrowLeftRoundedIcon from '@mui/icons-material/KeyboardDoub
 import KeyboardDoubleArrowRightRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowRightRounded'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { NAV_SECTIONS } from '~/common/configs/sidebar.config'
 import { gradientText } from '~/theme'
@@ -17,11 +17,14 @@ const Sidebar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   const [collapsed, setCollapsed] = useState(isMobile)
+  const [prevIsMobile, setPrevIsMobile] = useState(isMobile)
   const [activeKey, setActiveKey] = useState('dashboard')
 
-  useEffect(() => {
+  // Set state during render (React pattern) thay vì useEffect để tránh cascade render
+  if (prevIsMobile !== isMobile) {
+    setPrevIsMobile(isMobile)
     setCollapsed(isMobile)
-  }, [isMobile])
+  }
 
   const width = collapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED
   const navigate = useNavigate()

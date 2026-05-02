@@ -9,35 +9,7 @@ export async function createRealApp() {
     default: { db: { url: globalThis.__MONGO_URI__, maxPoolSize: 10 } },
   }))
 
-  // Redis: ../../src/database/init.redis.js
-  jest.unstable_mockModule('../../src/database/init.redis.js', () => ({
-    redisClient: {
-      get: jest.fn(async () => null),
-      set: jest.fn(async () => 'OK'),
-      del: jest.fn(async () => 1),
-      exists: jest.fn(async () => 0),
-      eval: jest.fn(async () => 1),
-      incrBy: jest.fn(async () => 1),
-      decrBy: jest.fn(async () => 1),
-      mGet: jest.fn(async () => []),
-      mSet: jest.fn(async () => 'OK'),
-      multi: jest.fn(() => ({
-        set: jest.fn().mockReturnThis(),
-        get: jest.fn().mockReturnThis(),
-        del: jest.fn().mockReturnThis(),
-        exec: jest.fn(async () => []),
-      })),
-      duplicate: jest.fn(() => ({
-        connect: jest.fn(async () => { }),
-        subscribe: jest.fn(async () => { }),
-        on: jest.fn(() => { }),
-      })),
-      publish: jest.fn(async () => 1),
-      connect: jest.fn(async () => { }),
-      quit: jest.fn(async () => { }),
-      on: jest.fn(() => { }),
-    },
-  }))
+  // Redis: handled via moduleNameMapper in jest.config.cjs → tests/mocks/redis.mock.js
 
   // RabbitMQ service: ../../src/database/init.rabbitMQ.js
   jest.unstable_mockModule('../../src/database/init.rabbitMQ.js', () => ({

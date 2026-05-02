@@ -12,6 +12,7 @@ module.exports = {
   detectOpenHandles: true,
   clearMocks: true,
   moduleNameMapper: {
+    '^#database/init\\.redis\\.js$': '<rootDir>/tests/mocks/redis.mock.js',
     '^#(.*)$': '<rootDir>/src/$1',
   },
 }

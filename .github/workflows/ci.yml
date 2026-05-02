@@ -6,15 +6,12 @@ on:
   pull_request:
     branches: [master]
 
-# Cancel in-progress run của cùng branch khi có push mới
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # ─────────────────────────────────────────────
   # Job 1 & 2: Lint chạy song song
-  # ─────────────────────────────────────────────
   lint-backend:
     name: Lint / Backend
     runs-on: ubuntu-latest
@@ -49,14 +46,11 @@ jobs:
       - name: ESLint
         run: yarn workspace livestream-ecommerce-frontend lint
 
-  # ─────────────────────────────────────────────
-  # Job 3: Integration tests (dùng mongodb-memory-server, không cần DB thật)
-  # ─────────────────────────────────────────────
+  # Job 3: Integration tests 
   test-backend:
     name: Test / Backend
     runs-on: ubuntu-latest
     env:
-      # Cố định thư mục download binary của mongodb-memory-server để cache được
       MONGOMS_DOWNLOAD_DIR: ~/.cache/mongodb-binaries
 
     steps:
@@ -74,7 +68,6 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/mongodb-binaries
-          # Bump key suffix (v1→v2) nếu cần force re-download binary
           key: mongodb-binaries-${{ runner.os }}-v1
 
       - name: Run integration tests with coverage
@@ -88,9 +81,7 @@ jobs:
           path: apps/backend/coverage/
           retention-days: 7
 
-  # ─────────────────────────────────────────────
   # Job 4: Verify Vite build frontend không lỗi
-  # ─────────────────────────────────────────────
   build-frontend:
     name: Build / Frontend
     runs-on: ubuntu-latest
@@ -108,13 +99,11 @@ jobs:
       - name: Vite build
         run: yarn workspace livestream-ecommerce-frontend build
         env:
-          # Dummy URL để Vite không lỗi nếu có VITE_ env vars được đọc lúc build
           VITE_API_URL: http://localhost:3031
 
-  # ─────────────────────────────────────────────
   # Job 5: Verify production Docker images build được
   # Chỉ chạy khi push lên master (không chạy trên PR để tiết kiệm runner)
-  # ─────────────────────────────────────────────
+
   docker-build:
     name: Docker Build / Production
     runs-on: ubuntu-latest
@@ -124,7 +113,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # BuildKit hỗ trợ layer cache và multi-platform
       - uses: docker/setup-buildx-action@v3
 
       - name: Build backend production image
@@ -134,7 +122,6 @@ jobs:
           file: apps/backend/Dockerfile
           target: production
           push: false
-          # Dùng GitHub Actions cache để tái dùng layer giữa các run
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
 

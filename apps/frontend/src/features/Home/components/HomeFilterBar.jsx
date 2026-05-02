@@ -1,6 +1,6 @@
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded'
 import { Box, MenuItem, Select, Slider, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { formatVND } from '~/common/utils/formatters'
 import { PRICE_SLIDER_MAX, PRICE_SLIDER_MIN, SORT_OPTIONS, PRICE_SLIDER_STEP } from '~/common/utils/constant'
 import { glassSx } from '~/theme'
@@ -17,11 +17,12 @@ const sliderLabel = (v) => {
 
 const HomeFilterBar = ({ filters, onFilterChange }) => {
   const [localRange, setLocalRange] = useState(filters.priceRange)
+  const [prevPriceRange, setPrevPriceRange] = useState(filters.priceRange)
 
-
-  useEffect(() => {
+  if (prevPriceRange !== filters.priceRange) {
+    setPrevPriceRange(filters.priceRange)
     setLocalRange(filters.priceRange)
-  }, [filters.priceRange])
+  }
 
   const handleSliderChange = (_, newValue) => setLocalRange(newValue)
   const handleSliderCommit = (_, newValue) => onFilterChange('priceRange', newValue)

@@ -14,20 +14,23 @@ const RESEND_COOLDOWN = 60
 
 function CodOtpDialog({ open, onClose, orderId, email, onSuccess }) {
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''))
+  const [prevOpen, setPrevOpen] = useState(open)
   const inputRefs = useRef([])
 
+  // Reset OTP khi dialog đóng — set state during render tránh cascade
+  if (prevOpen !== open) {
+    setPrevOpen(open)
+    if (!open) setOtp(Array(OTP_LENGTH).fill(''))
+  }
 
   const { resendCooldown, setResendCooldown, canResend } = useOtpTimer(RESEND_COOLDOWN, open)
   const { confirmMutation, resendMutation } = useOrderMutation({
     onSuccessConfirm: onSuccess
   })
+
+  // Chỉ giữ DOM side effect (focus) trong useEffect
   useEffect(() => {
-    if (!open) {
-      setOtp(Array(OTP_LENGTH).fill(''))
-    } else {
-      // Auto focus vào ô đầu tiên khi mở Dialog
-      setTimeout(() => inputRefs.current[0]?.focus(), 100)
-    }
+    if (open) setTimeout(() => inputRefs.current[0]?.focus(), 100)
   }, [open])
 
   const handleChange = (index, value) => {
