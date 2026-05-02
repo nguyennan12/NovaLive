@@ -1,3 +1,4 @@
+
 /* eslint-disable indent */
 export const removeUndefinedObject = obj => {
   if (typeof obj !== 'object' || obj === null) return obj

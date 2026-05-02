@@ -8,7 +8,9 @@
     "#*": "./src/*"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --runInBand",
+    "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --watch --runInBand",
+    "test:cov": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --coverage --runInBand",
     "dev": "cross-env NODE_ENV=dev nodemon -e js,json,lua server.js",
     "pro": "cross-env NODE_ENV=pro node server.js",
     "swagger": "node src/config/swagger.config.js"
@@ -56,6 +58,9 @@
     "eslint": "^10.1.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^17.4.0",
-    "nodemon": "^3.1.14"
+    "jest": "^30.3.0",
+    "mongodb-memory-server": "^11.1.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
   }
 }

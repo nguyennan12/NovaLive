@@ -66,7 +66,7 @@ const addAttributeToCategory = async ({ categoryId, reqBody }) => {
         }
       }
     },
-    { new: true, runValidators: true }
+    { returnDocument: 'after', runValidators: true }
   )
   if (!updatedCategory) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Category not found or Attribute already exists in this category')
@@ -114,7 +114,7 @@ const addAttributesToCategoryBulk = async ({ categoryId, reqBody }) => {
         }
       }
     },
-    { new: true, runValidators: true }
+    { returnDocument: 'after', runValidators: true }
   )
 
   return updatedCategory

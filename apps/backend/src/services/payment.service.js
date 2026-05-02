@@ -16,6 +16,9 @@ import MyLogger from '#loggers/MyLogger.js'
 
 const createPaymentUrl = async ({ reqBody, ipAddr }) => {
   const { orderId, amount, bankCode, language } = reqBody
+  if (!orderId || !amount) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Missing orderId or amount')
+  }
   const tmnCode = env.VNP_TMN_CODE
   const secretKey = env.VNP_HASH_SECRET
   let vnpUrl = env.VNP_URL
@@ -132,7 +135,7 @@ const vnpayReturn = async (vnp_Params) => {
         'order_payment.paymentStatus': code === '00' ? 'paid' : 'failed'
       }
     },
-    { new: true }
+    { returnDocument: 'after' }
   )
 
   if (claimed) {

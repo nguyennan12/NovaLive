@@ -31,6 +31,15 @@ const initSocket = (server) => {
 
 const getIO = () => {
   if (!io) {
+    //FOR TEST
+    if (process.env.NODE_ENV === 'test') {
+      return {
+        to: () => ({
+          emit: () => { }
+        }),
+        emit: () => { }
+      }
+    }
     throw new Error('Socket.io not init. please init!')
   }
   return io

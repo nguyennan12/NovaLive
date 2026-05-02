@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes'
 import { redisClient } from '#database/init.redis.js'
 import { PREFIX } from '#utils/constant.js'
 
-const grantAcess = (actions, resource) => {
+const grantAccess = (actions, resource) => {
   return async (req, res, next) => {
     const userId = req.user?.userId
 
@@ -14,10 +14,14 @@ const grantAcess = (actions, resource) => {
       //action có thể thêm nhiều nếu có nhiều role có quyền truy cập -> tạo list array
       const actionList = Array.isArray(actions) ? actions : [actions]
       let permission = null
-      //kiểm tra xem có permisson ko
       const hasPermission = actionList.some(action => {
-        if (typeof ac.can(roleName)[action] === 'function') {
-          const p = ac.can(roleName)[action](resource)
+        // Convert create:any -> createAny or use directly
+        const methodName = action.includes(':') 
+          ? action.split(':').map((s, i) => i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1)).join('')
+          : action
+
+        if (ac.can(roleName) && typeof ac.can(roleName)[methodName] === 'function') {
+          const p = ac.can(roleName)[methodName](resource)
           if (p.granted) {
             permission = p
             return true
@@ -34,4 +38,4 @@ const grantAcess = (actions, resource) => {
   }
 }
 
-export default grantAcess
+export default grantAccess

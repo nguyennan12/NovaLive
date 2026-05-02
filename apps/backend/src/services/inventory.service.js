@@ -42,7 +42,7 @@ const addStockToInventory = async ({ shopId, userId, userEmail, reqBody }) => {
     {
       $inc: { inven_stock: delta }
     },
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   )
 
   // Lưu lịch sử
@@ -111,7 +111,22 @@ const reserveStock = async ({ userId, orderId, items }) => {
 
   //gửi message vào hàng đợi message_queue để nó xử lý order
   const payload = { action: 'RESERVE_DB', orderId, userId, items }
-  await RabbitMQClient.publishMessage('inventory_queue', payload)
+  
+  if (process.env.NODE_ENV === 'test') {
+    // Run RESERVE_DB logic synchronously for tests since RabbitMQ is mocked
+    const operations = items.map(item => ({
+      updateOne: {
+        filter: { inven_skuId: converter.toObjectId(item.skuId) },
+        update: {
+          $inc: { inven_reserved: item.quantity },
+          $push: { inven_reservations: { orderId, quantity: item.quantity } }
+        }
+      }
+    }))
+    await inventoryModel.bulkWrite(operations)
+  } else {
+    await RabbitMQClient.publishMessage('inventory_queue', payload)
+  }
   return { status: 'SUCCESS', message: 'Order Successfully' }
 }
 

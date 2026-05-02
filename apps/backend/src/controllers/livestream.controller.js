@@ -42,7 +42,7 @@ const pinProduct = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'pin product successfully!',
-    metadata: await livestreamService.pinProduct({ userId: req.user.userId, liveId: req.params.liveId, productId: req.body })
+    metadata: await livestreamService.pinProduct({ userId: req.user.userId, liveId: req.params.liveId, productId: req.body.productId })
   }).send(res)
 }
 const unpinProduct = async (req, res, next) => {

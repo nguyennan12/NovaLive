@@ -40,7 +40,7 @@ const createSpu = async ({ reqBody, userId, userEmail }) => {
   if (!foundShop) throw new ApiError(StatusCodes.BAD_REQUEST, 'Shop does not exists!')
 
   //tạo 1 spu
-  const newSpu = await spuModel.create({
+  let newSpu = await spuModel.create({
     spu_code: generateSpuId(),
     ...spuData,
     spu_shopId: converter.toObjectId(spu_shopId),
@@ -77,6 +77,7 @@ const createSpu = async ({ reqBody, userId, userEmail }) => {
         productId: newSpu._id,
         skuId: newSku._id,
         stock: newSpu.spu_quantity,
+        type: 'IN',
         note: 'phiếu nhập kho ban đầu'
       }
     })

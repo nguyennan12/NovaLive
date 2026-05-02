@@ -6,15 +6,15 @@ const findLiveByIdAndType = async (liveId, type) => {
 }
 
 const findLiveByIdAndShopId = async (liveId, shopId) => {
-  return await livestreamModel.findOnd({ _id: converter.toObjectId(liveId), live_shopId: converter.toObjectId(shopId) }).lean()
+  return await livestreamModel.findOne({ _id: converter.toObjectId(liveId), live_shopId: converter.toObjectId(shopId) }).lean()
 }
 
 const addProductToLiveSession = async (liveId, products) => {
   return await livestreamModel.findOneAndUpdate(
-    { _id: converter.toObjectId(liveId), live_status: 'active' },
+    { _id: converter.toObjectId(liveId), live_status: { $in: ['scheduled', 'live'] } },
     {
       $push: {
-        live_products: products
+        live_products: { $each: products }
       }
     },
     { returnDocument: 'after' }

@@ -4,7 +4,7 @@ import converter from '#utils/converter.js'
 const createKeyStore = async ({ userId, publicKey, privateKey, refreshToken }) => {
   const filter = { userId: userId }
   const update = { publicKey, privateKey, refreshTokenUsed: [], refreshToken }
-  const options = { upsert: true, new: true, setDefaultsOnInsert: true }
+  const options = { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
 
   return await tokenModel.findOneAndUpdate(filter, update, options)
 }

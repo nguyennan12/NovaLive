@@ -109,18 +109,25 @@ const getUpommingLiveSessions = async ({ shopId, page = 1, limit = 50 }) => {
 const pinProduct = async ({ userId, liveId, productId }) => {
   const foundLive = await livestreamModel.findById(liveId).lean()
   if (!foundLive || foundLive.live_streamerId.toString() !== userId.toString()) throw new ApiError(StatusCodes.BAD_REQUEST, 'live session invalid')
+  const liveObjectId = converter.toObjectId(liveId)
+  const productObjectId = converter.toObjectId(productId)
+
   await livestreamModel.findOneAndUpdate(
-    { _id: liveId },
+    { _id: liveObjectId },
     { $set: { 'live_products.$[].is_featured': false, } },
-    { new: true }
+    { returnDocument: 'after' }
   )
   const finalUpdate = await livestreamModel.findOneAndUpdate(
-    { _id: liveId, 'live_products.productId': productId },
+    { _id: liveObjectId, 'live_products.productId': productObjectId },
     { $set: { 'live_products.$.is_featured': true } },
-    { new: true }
+    { returnDocument: 'after' }
   ).lean()
 
-  const pinnedProduct = finalUpdate.live_products.find(item => item.productId.toString() === productId)
+  if (!finalUpdate) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Product not found in this live session')
+  }
+
+  const pinnedProduct = finalUpdate.live_products.find(item => item.productId.toString() === productId.toString())
   socketService.pinnedProductPopup(pinnedProduct, foundLive.live_code)
   return pinnedProduct
 }
@@ -131,7 +138,7 @@ const unpinProduct = async ({ userId, liveId }) => {
   await livestreamModel.findOneAndUpdate(
     { _id: liveId },
     { $set: { 'live_products.$[].is_featured': false, } },
-    { new: true }
+    { returnDocument: 'after' }
   )
 }
 

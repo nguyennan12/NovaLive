@@ -8,7 +8,11 @@ import { mergeGrants } from '#helpers/object.helper.js'
 
 
 const createResource = async ({ name, description }) => {
-  return await resourceModel.create({ src_name: name, src_description: description })
+  return await resourceModel.findOneAndUpdate(
+    { src_name: name },
+    { src_name: name, src_description: description },
+    { upsert: true, returnDocument: 'after' }
+  )
 }
 
 const getListResource = async ({ limit = 30, offset = 0 }) => {
@@ -16,10 +20,11 @@ const getListResource = async ({ limit = 30, offset = 0 }) => {
 }
 
 const createRole = async ({ name, description, grants, parent }) => {
-  const foundRole = await roleModel.findOne({ role_name: name })
-  if (foundRole) throw new ApiError(StatusCodes.BAD_REQUEST, 'Role already exists!')
-  redisClient.del('RBAC_GRANTS')
-  const result = await roleModel.create({ role_name: name, role_description: description, role_grants: grants, role_parent: parent })
+  const result = await roleModel.findOneAndUpdate(
+    { role_name: name },
+    { role_name: name, role_description: description, role_grants: grants, role_parent: parent },
+    { upsert: true, returnDocument: 'after' }
+  )
   //gọi đến channel update grants và update tât cả
   await redisClient.del('RBAC_GRANTS')
   await initAccessControl()

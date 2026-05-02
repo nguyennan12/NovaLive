@@ -3,7 +3,7 @@ import asyncHandler from '#helpers/asyncHandler.js'
 import authentication from '#middlewares/authentication.middleware.js'
 import express from 'express'
 // import { productValidation } from '#validations/product.validation.js'
-// import grantAcess from '#middlewares/rbac.middleware.js'
+import grantAccess from '#middlewares/rbac.middleware.js'
 
 const Router = express.Router()
 // === User ===
@@ -16,19 +16,18 @@ Router.get('/:productId', asyncHandler(productController.getProductDetail))
 //  === Authentication ===
 Router.use(authentication)
 // === Shop ===
-Router.get('/stats', asyncHandler(productController.getProductStats))
-Router.get('/me/public', asyncHandler(productController.getPublishedProduct))
-Router.get('/me/draft', asyncHandler(productController.getDraftProduct))
+Router.get('/stats', grantAccess('read:own', 'PRODUCT'), asyncHandler(productController.getProductStats))
+Router.get('/me/public', grantAccess('read:own', 'PRODUCT'), asyncHandler(productController.getPublishedProduct))
+Router.get('/me/draft', grantAccess('read:own', 'PRODUCT'), asyncHandler(productController.getDraftProduct))
 
 
-//Router.post('', validate(productValidation.create), grantAcess('createAny', 'product'), asyncHandler(productController.createProduct))
-Router.post('/', asyncHandler(productController.createProduct))
+Router.post('/', grantAccess('create:own', 'PRODUCT'), asyncHandler(productController.createProduct))
 
-Router.patch('/:productId', asyncHandler(productController.updateProduct))
-Router.patch('/:productId/sku/:skuId', asyncHandler(productController.updateSingleSku))
-Router.patch('/:productId/publish', asyncHandler(productController.publishProduct))
-Router.patch('/:productId/unpublish', asyncHandler(productController.unPublishProduct))
+Router.patch('/:productId', grantAccess('update:own', 'PRODUCT'), asyncHandler(productController.updateProduct))
+Router.patch('/:productId/sku/:skuId', grantAccess('update:own', 'PRODUCT'), asyncHandler(productController.updateSingleSku))
+Router.patch('/:productId/publish', grantAccess('update:own', 'PRODUCT'), asyncHandler(productController.publishProduct))
+Router.patch('/:productId/unpublish', grantAccess('update:own', 'PRODUCT'), asyncHandler(productController.unPublishProduct))
 
-Router.delete('/:productId', asyncHandler(productController.deleteProduct))
+Router.delete('/:productId', grantAccess('delete:own', 'PRODUCT'), asyncHandler(productController.deleteProduct))
 
 export const ProductRouter = Router

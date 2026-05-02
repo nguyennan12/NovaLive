@@ -103,7 +103,7 @@ const updateSingleSku = async ({ spuId, skuId, payload, userId }) => {
   const updatedSku = await skuModel.findOneAndUpdate(
     { sku_id: skuId, sku_spuId: foundProduct._id },
     allowedData,
-    { new: true }
+    { returnDocument: 'after' }
   )
   if (!updatedSku) throw new ApiError(StatusCodes.NOT_FOUND, 'SKU not found!')
 
