@@ -92,36 +92,31 @@ function GlobalDiscountSection({
       border: '1px solid', borderColor: 'divider'
     }}>
       {/* Header toggle */}
-      <Box
-        onClick={() => setOpen(v => !v)}
-        sx={{
-          display: 'flex', alignItems: 'center', gap: 1,
-          px: 2.5, py: 1.75, cursor: 'pointer',
-          justifyContent: 'space-between',
-          '&:hover': { bgcolor: 'rgba(83,155,255,0.04)' },
-          transition: 'background 0.18s'
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ width: 3.5, height: 22, borderRadius: '2px', bgcolor: 'secondary.main', flexShrink: 0 }} />
-          <Typography sx={{ fontWeight: 700, fontSize: '0.93rem', ...gradientText }}>
-            Voucher & Ưu đãi
-          </Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }} >
+        <Box onClick={() => setOpen(v => !v)}
+          sx={{
+            display: 'flex', alignItems: 'center', px: 2.5, py: 1.75, cursor: 'pointer',
+            justifyContent: 'space-between',
+            '&:hover': { bgcolor: 'rgba(83,155,255,0.04)' },
+            transition: 'background 0.18s'
+          }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ width: 3.5, height: 22, borderRadius: '2px', bgcolor: 'secondary.main', flexShrink: 0 }} />
+            <Typography sx={{ fontWeight: 700, fontSize: '0.93rem', ...gradientText }}>
+              Voucher & Ưu đãi
+            </Typography>
+            {hasAnyVoucher && (
+              <CheckCircleRoundedIcon sx={{ fontSize: 15, color: 'success.main' }} />
+            )}
+          </Box>
+
+          <ExpandMoreRoundedIcon sx={{
+            fontSize: 19, color: 'rgba(45,45,45,0.38)',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s'
+          }} />
         </Box>
-        {hasAnyVoucher && (
-          <CheckCircleRoundedIcon sx={{ fontSize: 15, color: 'success.main' }} />
-        )}
-        <ExpandMoreRoundedIcon sx={{
-          fontSize: 19, color: 'rgba(45,45,45,0.38)',
-          transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-          transition: 'transform 0.2s'
-        }} />
-      </Box>
-
-      <Collapse in={open}>
-        <Divider sx={{ borderColor: 'divider' }} />
-        <Box sx={{ px: 2.5, py: 1.75, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-
+        <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
           {appliedProductVoucher && (
             <AppliedBadge voucher={appliedProductVoucher} onClear={clearProductVoucher} />
           )}
@@ -134,6 +129,13 @@ function GlobalDiscountSection({
               borderColor="rgba(245,158,11,0.22)"
             />
           )}
+        </Box>
+      </Box >
+
+
+      <Collapse in={open}>
+        <Divider sx={{ borderColor: 'divider' }} />
+        <Box sx={{ px: 2.5, py: 1.75, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
 
           {/* Input nhập code */}
           <TextField
@@ -207,7 +209,7 @@ function GlobalDiscountSection({
           )}
         </Box>
       </Collapse>
-    </Box>
+    </Box >
   )
 }
 

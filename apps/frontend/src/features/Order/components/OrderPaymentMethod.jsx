@@ -34,7 +34,6 @@ const PAYMENT_METHODS = [
   }
 ]
 
-// Props: control — từ useForm() của OrderPage
 function OrderPaymentMethod({ control }) {
   return (
     <Box sx={{

@@ -7,17 +7,9 @@ import { selectCurrentUser } from '~/common/redux/user/userSlice'
 import { glassSx, gradientText } from '~/theme'
 import AddressModal from './AddressModal'
 
-// TODO: Khi có getUserAddressAPI, fetch danh sách địa chỉ user và hiển thị address mặc định
-// TODO: user.default_address chưa chắc có field này — kiểm tra lại schema user từ backend
-// TODO: Sau khi user chọn địa chỉ mới, lưu vào state OrderPage và truyền userAddressId vào payload
-
-function OrderAddressSection({ address, onAddressChange }) {
-  const user = useSelector(selectCurrentUser)
+function OrderAddressSection({ selectedAddress, onAddressChange, allAddressUser }) {
   const [open, setOpen] = useState(false)
-
-  // Ưu tiên địa chỉ đã chọn mới, fallback về default_address từ Redux user
-  // TODO: Replace user.default_address with real API response field khi backend expose đủ
-  const displayAddress = address ?? user?.default_address ?? null
+  const user = useSelector(selectCurrentUser)
 
   const handleSelect = (addr) => {
     onAddressChange(addr)
@@ -38,21 +30,19 @@ function OrderAddressSection({ address, onAddressChange }) {
         </Typography>
       </Box>
 
-      {displayAddress ? (
+      {selectedAddress ? (
         <>
           <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.2 }}>
             <LocationOnRoundedIcon sx={{ fontSize: 18, color: 'secondary.main', mt: 0.25, flexShrink: 0 }} />
             <Box sx={{ flex: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 0.4 }}>
                 <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'primary.contrastText' }}>
-                  {displayAddress.recipientName || user?.usr_name || 'Người nhận'}
+                  {selectedAddress.owner_name || user?.usr_name || 'Người nhận'}
                 </Typography>
-                {(displayAddress.phone || user?.usr_phone) && (
-                  <Typography sx={{ fontSize: '0.8rem', color: 'rgba(45,45,45,0.55)' }}>
-                    | {displayAddress.phone || user?.usr_phone}
-                  </Typography>
-                )}
-                {!address && (
+                <Typography sx={{ fontSize: '0.8rem', color: 'rgba(45,45,45,0.55)' }}>
+                  | {selectedAddress.owner_phone}
+                </Typography>
+                {!selectedAddress && (
                   <Chip
                     label="Mặc định"
                     size="small"
@@ -66,7 +56,7 @@ function OrderAddressSection({ address, onAddressChange }) {
                 )}
               </Box>
               <Typography sx={{ fontSize: '0.81rem', color: 'rgba(45,45,45,0.65)', lineHeight: 1.55 }}>
-                {displayAddress.fullAddress || displayAddress.address || 'Chưa có địa chỉ chi tiết'}
+                {selectedAddress.fullAddress || 'Chưa có địa chỉ chi tiết'}
               </Typography>
             </Box>
           </Box>
@@ -112,7 +102,9 @@ function OrderAddressSection({ address, onAddressChange }) {
         open={open}
         onClose={() => setOpen(false)}
         onSelect={handleSelect}
-        defaultValues={displayAddress}
+        userId={user?.id}
+        selectedAddress={selectedAddress}
+        addresses={allAddressUser}
       />
     </Box>
   )

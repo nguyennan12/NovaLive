@@ -8,7 +8,7 @@ const Router = express.Router()
 Router.use(authentication)
 Router.post('/', asyncHandler(addressController.creatAddress))
 Router.get('/', asyncHandler(addressController.getAllAddresses))
-Router.get('/addressId', asyncHandler(addressController.getAddressDetail))
+Router.get('/:addressId', asyncHandler(addressController.getAddressDetail))
 
 
 export const addressRouter = Router

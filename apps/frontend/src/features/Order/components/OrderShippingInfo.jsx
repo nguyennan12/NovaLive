@@ -1,5 +1,4 @@
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
 import { Box, Chip, Typography } from '@mui/material'
 import { LOGO } from '~/common/utils/constant'
 import { formatVND } from '~/common/utils/formatters'
@@ -15,10 +14,7 @@ const SHIPPING_POLICIES = [
   'Đóng gói cẩn thận, phụ phí bảo vệ hàng dễ vỡ: +10.000 ₫.'
 ]
 
-// Props:
-//   feeShip   — từ useCheckout().totalFeeShip (sau khi đã trừ freeship voucher)
-//   hasFreeShip — từ useCheckout().hasFreeShip
-function OrderShippingInfo({ feeShip = 0, hasFreeShip = false }) {
+function OrderShippingInfo({ feeShip = 0, hasFreeShip = false, amountFreeShip = 0 }) {
   return (
     <Box sx={{
       bgcolor: 'primary.main', ...glassSx,
@@ -71,10 +67,10 @@ function OrderShippingInfo({ feeShip = 0, hasFreeShip = false }) {
                   fontSize: '0.78rem', color: 'rgba(45,45,45,0.45)',
                   textDecoration: 'line-through'
                 }}>
-                  {formatVND(feeShip)}
+                  {formatVND(feeShip + amountFreeShip)}
                 </Typography>
                 <Typography sx={{ fontSize: '0.85rem', fontWeight: 800, color: '#d97706' }}>
-                  0 ₫
+                  {formatVND(feeShip)}
                 </Typography>
               </>
             ) : (

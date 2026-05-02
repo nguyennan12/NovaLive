@@ -71,7 +71,7 @@ const ProductDetailPage = () => {
       dispatch(setSelectedIds([String(selectedSku._id)]))
       navigate('/order')
     } catch {
-      // toast đã được xử lý trong addMutation.onSuccess / onError
+      // toast đã được xử lý trong addMutation
     }
   }
 

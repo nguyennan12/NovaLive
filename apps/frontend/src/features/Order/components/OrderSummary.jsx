@@ -46,12 +46,10 @@ function ShipRow({ value, hasFreeShip }) {
   )
 }
 
-// Props đến từ useCheckout() được pass xuống từ OrderPage
-// TODO: Tất cả props này được tính từ useCheckout() — xem features/Order/hooks/useCheckout.js
 function OrderSummary({
   totalRawPrice = 0,
   totalShopDiscount = 0,
-  amoutGlobalDiscountProduct = 0,  // Note: typo "amout" giữ nguyên theo backend
+  amoutGlobalDiscountProduct = 0,
   totalFeeShip = 0,
   totalDiscount = 0,
   totalPrice = 0,

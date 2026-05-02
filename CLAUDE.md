@@ -1,7 +1,7 @@
 # 📦 E-commerce Project Overview
 
 **Repo:** https://github.com/nguyennan12/E-commerce  
-**Cập nhật:** 01/05/2026 (Cart + Checkout flow + Backend order fixes hoàn thành)  
+**Cập nhật:** 01/05/2026 (Order Page UI hoàn thành — review SP, địa chỉ, PTTT, voucher, summary)  
 **Mục tiêu:** Tăng tốc phát triển frontend các tính năng chính, tối ưu cho teamwork với AI code assistant.
 
 ---
@@ -13,7 +13,8 @@
   - Đã có UI quản lý sản phẩm, kho với các component/module chính (hiển thị, filter, tạo & sửa sản phẩm, nhập/xuất kho, thống kê tồn kho).
   - **Trang Home** (consumer) đã hoàn thành: banner slider, danh mục, 3 layout list sản phẩm, filter bar.
   - **Trang Cart** (consumer) đã hoàn thành: layout 7/3, list theo shop, checkbox chọn/xóa, tăng/giảm số lượng, CartSummary tính tiền realtime, chọn discount shop + global với API check availability, tính tổng có tích hợp discount.
-  - Các phần còn lại (đơn hàng, customer, phân quyền, analytics) CHƯA LÀM.
+  - **Trang Order** (consumer) đã hoàn thành: review sản phẩm theo shop, chọn địa chỉ giao hàng (modal RHF), thông tin vận chuyển GHN, voucher (reuse từ Cart), tóm tắt đơn hàng, chọn PTTT (COD/VNPay/MoMo), nút đặt hàng sticky mobile qua React Portal. Navigate vào từ "Mua ngay" (ProductDetail) và "Thanh toán" (Cart).
+  - Các phần còn lại (order list/detail, customer, phân quyền, analytics) CHƯA LÀM.
 
 ---
 
@@ -66,7 +67,8 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
 
 ### B. **Các phần còn lại cần AI hỗ trợ**:
 - ~~Trang **giỏ hàng (Cart)**~~ ✅ HOÀN THÀNH (xem FEATURE.md)
-- Trang **đơn hàng (Orders)**: list, chi tiết, trạng thái thanh toán/vận chuyển.
+- ~~Trang **Order (đặt hàng)**~~ ✅ HOÀN THÀNH — review SP, địa chỉ, vận chuyển, voucher, PTTT, sticky mobile bar (xem FEATURE.md)
+- Trang **đơn hàng của tôi (Order List/Detail)**: list đơn, chi tiết, trạng thái thanh toán/vận chuyển.
 - Trang **customer/profile**: info khách hàng, lịch sử mua hàng.
 - **Đăng nhập/đăng ký**: sử dụng API Auth Backend.
 - **Dashboard** cho admin: tổng quan chỉ số, số sản phẩm, doanh thu.
@@ -98,7 +100,8 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
   - ✅ **Trang Home (consumer)** — banner, danh mục, 3 layout list sản phẩm
   - ✅ **Trang Product Detail (consumer)** — ảnh, SKU cards, giá, attributes, shop card, description
   - ✅ **Trang Cart (consumer)** — layout 7/3, danh sách theo shop, checkbox, stepper, summary, discount shop + global, checkout summary realtime
-  - ⬜ **Order / Customer / Auth / Dashboard**
+  - ✅ **Trang Order (consumer)** — layout 7/3, danh sách SP theo shop, địa chỉ giao hàng, vận chuyển GHN, voucher (reuse GlobalDiscountSection + ShopDiscountPopup), tóm tắt đơn, PTTT (COD/VNPay/MoMo), mobile sticky bar qua Portal
+  - ⬜ **Order List / Order Detail / Customer / Auth / Dashboard**
 
 ---
 

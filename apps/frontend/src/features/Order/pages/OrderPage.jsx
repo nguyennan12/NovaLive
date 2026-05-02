@@ -13,14 +13,15 @@ import { buildShopOrderIds } from '~/common/utils/builder'
 import { formatVND } from '~/common/utils/formatters'
 import { useCart } from '~/features/Cart/hooks/useCart'
 import { useApplyDiscounts } from '~/features/Discount/hook/useApplyDiscounts'
-import { useCheckout } from '../hooks/useCheckout'
 import OrderAddressSection from '../components/OrderAddressSection'
 import OrderPaymentMethod from '../components/OrderPaymentMethod'
 import OrderProductList from '../components/OrderProductList'
 import OrderShippingInfo from '../components/OrderShippingInfo'
 import OrderSummary from '../components/OrderSummary'
 import OrderVoucherSection from '../components/OrderVoucherSection'
-import { WaterDropBackground } from '~/common/components/common/style/WaterDropBackground'
+import { useCheckout } from '../hooks/useCheckout'
+import { useEffect } from 'react'
+import { useAddress } from '~/features/Address/hooks/useAddresss'
 
 // TODO: Khi payment_method là 'vnpay' hoặc 'momo', cần redirect tới URL cổng thanh toán
 //       từ response.metadata.paymentUrl sau khi gọi OrderByUserAPI thành công
@@ -30,24 +31,19 @@ import { WaterDropBackground } from '~/common/components/common/style/WaterDropB
 function OrderPage() {
   const navigate = useNavigate()
   const user = useSelector(selectCurrentUser)
+
   const { selectedItems, cartId } = useCart()
-
-  const {
-    appliedshopDiscounts,
-    appliedProductVoucher,
-    appliedFreeshipVoucher
-  } = useApplyDiscounts()
-
-  const { control, handleSubmit } = useForm({
-    mode: 'onChange',
-    defaultValues: { paymentMethod: 'cod' }
-  })
-
-  // Địa chỉ giao hàng: default từ user, có thể thay qua AddressModal
-  // TODO: Fetch địa chỉ mặc định từ getUserAddressAPI(user._id) khi backend expose endpoint
-  const [selectedAddress, setSelectedAddress] = useState(user?.default_address ?? null)
-
   const canCheckout = selectedItems.length > 0
+  const { appliedshopDiscounts, appliedProductVoucher, appliedFreeshipVoucher } = useApplyDiscounts()
+  const { control, handleSubmit } = useForm({ mode: 'onChange', defaultValues: { paymentMethod: 'cod' } })
+
+  const { addressUser, allAddressUser } = useAddress(user)
+  const [selectedAddress, setSelectedAddress] = useState(addressUser)
+  useEffect(() => {
+    if (addressUser) {
+      setSelectedAddress(addressUser)
+    }
+  }, [addressUser])
 
   // Build payload cho useCheckout
   const checkoutPayload = useMemo(() => {
@@ -55,11 +51,11 @@ function OrderPage() {
     return {
       cartId,
       shopOrderIds: buildShopOrderIds(selectedItems, appliedshopDiscounts),
-      userAddressId: user?.default_address_id,
+      userAddressId: selectedAddress?._id,
       productDiscountCode: appliedProductVoucher?.code ?? '',
       shippingDiscountCode: appliedFreeshipVoucher?.code ?? ''
     }
-  }, [cartId, selectedItems, appliedshopDiscounts, appliedProductVoucher, appliedFreeshipVoucher, canCheckout, user])
+  }, [cartId, selectedItems, appliedshopDiscounts, appliedProductVoucher, appliedFreeshipVoucher, canCheckout, selectedAddress?._id])
 
   const checkoutData = useCheckout(checkoutPayload)
 
@@ -103,15 +99,12 @@ function OrderPage() {
       return
     }
 
-    // TODO: userAddressId — cần là ObjectId từ DB; nếu user nhập địa chỉ mới cần save trước
-    //       rồi lấy ID. Tạm thời dùng user.default_address_id hoặc selectedAddress.id
     const payload = {
       cartId,
       shopOrderIds: buildShopOrderIds(selectedItems, appliedshopDiscounts),
       userAddressId: selectedAddress?.id || user?.default_address_id,
       productDiscountCode: appliedProductVoucher?.code ?? '',
       shippingDiscountCode: appliedFreeshipVoucher?.code ?? '',
-      // TODO: Kiểm tra field name với backend: 'payment_method' hay 'paymentMethod'
       payment_method: formData.paymentMethod
     }
 
@@ -132,12 +125,14 @@ function OrderPage() {
 
               {/* Địa chỉ giao hàng */}
               <OrderAddressSection
-                address={selectedAddress}
+                selectedAddress={selectedAddress}
+                allAddressUser={allAddressUser}
                 onAddressChange={setSelectedAddress}
               />
 
               {/* Thông tin vận chuyển */}
               <OrderShippingInfo
+                amountFreeShip={checkoutData?.amoutGlobalDiscountShipping}
                 feeShip={checkoutData.totalFeeShip}
                 hasFreeShip={checkoutData.hasFreeShip}
               />

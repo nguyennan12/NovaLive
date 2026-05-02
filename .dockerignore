@@ -1,32 +1,55 @@
-# Dependencies
+# Node/Yarn
+node_modules
 **/node_modules
-**/.yarn/cache
-**/.pnp.*
+.pnp.*
+.yarn
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.yarnrc.yml
+.yarn-cache/
+.yarnrc
+.yarnclean
 
-# Build outputs
+# Build
+dist
+build
 **/dist
 **/build
 **/.vite
 
-# Git
+# Runtime
+.pnpm-store
+
+# Git/IDE
 .git
 .gitignore
+.vscode
+.idea
 
-# Environment files
+# Temporary/Editor/OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Env
 .env
-**/.env
 .env.*
+**/.env
 **/.env.*
-
-# Docker data (nếu có folder local)
-docker-data
 
 # Logs
 *.log
 **/*.log
 
-# Editor/OS
-.vscode
-.idea
-**/.DS_Store
-**/Thumbs.db
+# Docs/tests (nếu production không cần)
+docs
+test
+tests
+__tests__
+coverage
+
+# Docker data
+docker-data

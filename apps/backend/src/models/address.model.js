@@ -4,9 +4,11 @@ import { DOCUMENT_NAME, COLLECTION_NAME } from '#utils/constant.js'
 const addressSchema = new Schema({
   owner_id: { type: Schema.Types.ObjectId, required: true, index: true },
   owner_type: { type: String, enum: ['user', 'shop'], required: true },
+  owner_phone: { type: String, default: '' },
+  owner_name: { type: String, default: '' },
   street: { type: String, required: true },
   ward: { type: String, required: true },
-  fullAdress: { type: String },
+  fullAddress: { type: String },
   district: { type: String, required: true },
   province: { type: String, required: true },
   province_id: { type: Number, required: true },

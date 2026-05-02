@@ -40,6 +40,7 @@ const getAllAddresses = async ({ ownId, owner_type }) => {
   return await addressModel.find({ owner_id: ownId, owner_type: owner_type, })
     .sort({ is_default: -1, createdAt: -1 })
     .lean()
+
 }
 
 const getAddressDetail = async ({ addressId, ownId }) => {
