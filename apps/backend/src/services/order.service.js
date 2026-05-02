@@ -80,12 +80,12 @@ const checkoutReview = async ({ userId, reqBody }) => {
 
         //tính toán lại giá product và shipping
         if (amountDiscountProduct > 0) {
-          itemCheckout.priceApplyDiscount -= amountDiscountProduct
+          itemCheckout.priceApplyDiscount = Math.max(0, itemCheckout.priceApplyDiscount - amountDiscountProduct)
           itemCheckout.discountAmountProduct = amountDiscountProduct
           itemCheckout.appliedCodes.push(discountMap['product'].code)
         }
         if (amountDiscountShipping > 0) {
-          itemCheckout.feeShipApplyDiscount -= amountDiscountShipping
+          itemCheckout.feeShipApplyDiscount = Math.max(0, itemCheckout.feeShipApplyDiscount - amountDiscountShipping)
           itemCheckout.discountAmountFeeShip = amountDiscountShipping
           itemCheckout.appliedCodes.push(discountMap['freeship'].code)
         }
@@ -103,18 +103,28 @@ const checkoutReview = async ({ userId, reqBody }) => {
     return acc
   }, { totalRawPrice: 0, feeShip: 0, totalShopDiscount: 0, finalCheckout: 0 })
   //tính lại giá cuối cùng của order
-  checkoutOrder.finalCheckout = checkoutOrder.totalRawPrice - checkoutOrder.totalShopDiscount + checkoutOrder.feeShip
+  checkoutOrder.finalCheckout = checkoutOrder.totalRawPrice - checkoutOrder.totalShopDiscount
   //tính amout của discount global
   const { amountDiscountProduct, amountDiscountShipping } = await discountService.applyDiscounts({
     userId, productDiscountCode, shippingDiscountCode,
     productOrderTotal: checkoutOrder.finalCheckout,
-    shippingOrderTotal: checkoutOrder.finalCheckout,
+    shippingOrderTotal: checkoutOrder.feeShip,
   })
 
   const globalAppliedCodes = []
-  if (amountDiscountProduct > 0 && productDiscountCode) globalAppliedCodes.push(productDiscountCode)
-  if (amountDiscountShipping > 0 && shippingDiscountCode) globalAppliedCodes.push(shippingDiscountCode)
 
+  if (amountDiscountProduct > 0 && productDiscountCode) {
+    const discount = Math.max(0, amountDiscountProduct)
+    checkoutOrder.finalCheckout = Math.max(0, checkoutOrder.finalCheckout - discount)
+    globalAppliedCodes.push(productDiscountCode)
+  }
+  let feeShipApplyDiscount = checkoutOrder.feeShip
+  if (amountDiscountShipping > 0 && shippingDiscountCode) {
+    const discount = Math.max(0, amountDiscountShipping)
+    feeShipApplyDiscount = Math.max(0, checkoutOrder.feeShip - discount)
+    globalAppliedCodes.push(shippingDiscountCode)
+  }
+  checkoutOrder.finalCheckout += feeShipApplyDiscount
   const shopAppliedCodes = shopOrderIdsNew.flatMap(shop => shop.appliedCodes)
   const appliedDiscountCodes = [...new Set([...shopAppliedCodes, ...globalAppliedCodes])]
 
@@ -132,8 +142,9 @@ const orderByUser = async ({ userId, reqBody }) => {
   const { cartId, shopOrderIds, userAddressId, userPayment = 'cod', client_totalCheckout } = reqBody
   const { checkoutOrder, appliedDiscountCodes } = await checkoutReview({ userId, reqBody })
   const userAddress = await addressModel.findOne({ _id: converter.toObjectId(userAddressId), owner_type: 'user' })
-  //mếu số tiền client gửi về khác với số tiền checkout thì throw lỗi
-  if (checkoutOrder.finalCheckout !== client_totalCheckout) throw new ApiError(StatusCodes.BAD_REQUEST, 'Price product is change, please check again!')
+  if (!userAddress) throw new ApiError(StatusCodes.BAD_REQUEST, 'Delivery address not found')
+  //nếu số tiền client gửi về khác với số tiền checkout thì throw lỗi (dùng ngưỡng 1 VND để tránh lỗi float)
+  if (Math.abs(checkoutOrder.finalCheckout - client_totalCheckout) > 1) throw new ApiError(StatusCodes.BAD_REQUEST, 'Price product is change, please check again!')
 
   const orderCode = generateOrderCode()
   //biến object lồng nhau thành dạng phẳng (flatMap)
@@ -160,9 +171,9 @@ const orderByUser = async ({ userId, reqBody }) => {
     //còn những product thành công thì nhả kho ra
     const successItems = reserveResults.filter(result => result.isSuccess === 'SUCCESS')
     if (successItems.length > 0) {
-      await inventoryService.releaseStock({ orderId: orderCode, items: successItems })
+      await inventoryService.releaseStock(orderCode, successItems)
     }
-    throw new ApiError(StatusCodes.BAD_REQUEST, '“Sorry, some items in your cart are no longer available')
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Sorry, some items in your cart are no longer available')
   }
   //tạo 1 order mới
   const newOrder = await orderModel.create({
@@ -185,7 +196,9 @@ const orderByUser = async ({ userId, reqBody }) => {
     try {
       await RabbitMQClient.sendOrderToDelayQueue(orderCode)
     } catch (error) {
-      console.error('Error add queue:', error)
+      // Order đã tạo nhưng timer 15p không chạy được — stock sẽ bị giữ vĩnh viễn nếu user không thanh toán.
+      // Cần manual cleanup hoặc scheduled job để handle các order pending quá hạn.
+      console.error(`[ORDER] CRITICAL: Failed to enqueue delay timer for order ${orderCode}. Manual cleanup required.`, error)
     }
   } else {
     try {

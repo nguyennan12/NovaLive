@@ -75,7 +75,7 @@ function OrderShippingInfo({ feeShip = 0, hasFreeShip = false, amountFreeShip = 
               </>
             ) : (
               <>
-                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: 'secondary.main' }}>
+                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: '#d97706' }}>
                   {formatVND(feeShip)}
                 </Typography>
                 <Typography sx={{ fontSize: '0.72rem', color: 'rgba(45,45,45,0.45)' }}>

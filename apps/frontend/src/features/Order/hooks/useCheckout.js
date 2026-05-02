@@ -13,7 +13,6 @@ export const useCheckout = (payload) => {
   const { amoutGlobalDiscountProduct = 0, amoutGlobalDiscountShipping = 0, checkoutOrder = {} } = checkout
   const { totalRawPrice = 0, feeShip = 0, totalShopDiscount = 0, finalCheckout = 0 } = checkoutOrder
 
-  const totalPrice = Math.max(0, finalCheckout - amoutGlobalDiscountProduct - amoutGlobalDiscountShipping)
   const totalFeeShip = Math.max(0, feeShip - amoutGlobalDiscountShipping)
   const totalDiscount = amoutGlobalDiscountProduct + amoutGlobalDiscountShipping + totalShopDiscount
 
@@ -22,7 +21,7 @@ export const useCheckout = (payload) => {
     ...checkout,
     totalRawPrice,
     totalShopDiscount,
-    totalPrice,
+    finalCheckout,
     totalFeeShip,
     totalDiscount,
     hasFreeShip

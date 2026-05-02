@@ -17,7 +17,7 @@ const listenToCancelOrderQueue = async (channel) => {
         //tìm cái order đó thong qua orderId
         const order = await orderModel.findOne({ order_trackingNumber: orderId })
         if (!order || order.order_status !== 'pending') {
-          console.log(`[DLX] Order ${data.orderId} is processed before, skip cancel`)
+          console.log(`[DLX] Order ${orderId} is processed before, skip cancel`)
           await session.abortTransaction()
           return channel.ack(msg) //nếu kh có ordeer đó thì xóa message
         }
@@ -46,6 +46,8 @@ const listenToCancelOrderQueue = async (channel) => {
       catch (error) {
         await session.abortTransaction()
         console.error('[DLX] Error when cancel order:', error)
+        // nack, không requeue — tránh infinite retry loop với lỗi persistent
+        channel.nack(msg, false, false)
       }
       finally {
         session.endSession()

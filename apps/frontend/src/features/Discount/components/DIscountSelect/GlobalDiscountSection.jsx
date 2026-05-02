@@ -92,10 +92,10 @@ function GlobalDiscountSection({
       border: '1px solid', borderColor: 'divider'
     }}>
       {/* Header toggle */}
-      <Box sx={{ display: 'flex', flexDirection: 'column' }} >
+      <Box sx={{ display: 'flex', px: 2.5, py: 1.75, flexDirection: 'column' }} >
         <Box onClick={() => setOpen(v => !v)}
           sx={{
-            display: 'flex', alignItems: 'center', px: 2.5, py: 1.75, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', py: 1, cursor: 'pointer',
             justifyContent: 'space-between',
             '&:hover': { bgcolor: 'rgba(83,155,255,0.04)' },
             transition: 'background 0.18s'

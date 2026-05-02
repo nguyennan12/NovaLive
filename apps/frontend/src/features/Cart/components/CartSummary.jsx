@@ -47,7 +47,7 @@ function CartSummary() {
       shippingDiscountCode: appliedFreeshipVoucher?.code ?? ''
     }
   }
-  const { totalRawPrice, totalShopDiscount, totalPrice, totalFeeShip, amoutGlobalDiscountProduct, totalDiscount, hasFreeShip } = useCheckout(payload)
+  const { totalRawPrice, totalShopDiscount, finalCheckout, totalFeeShip, amoutGlobalDiscountProduct, totalDiscount, hasFreeShip } = useCheckout(payload)
   // const canCheckout = selectedItems.length > 0
   // const totalDiscount = (shopDiscountTotal || 0) + (productVoucherDiscount || 0)
 
@@ -115,7 +115,7 @@ function CartSummary() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mb: 2.5 }}>
           <Typography sx={{ fontSize: '0.88rem', fontWeight: 600, color: 'primary.contrastText' }}>Tổng thanh toán</Typography>
           <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: 'secondary.main', lineHeight: 1 }}>
-            {formatVND(totalPrice)}
+            {formatVND(finalCheckout)}
           </Typography>
         </Box>
 

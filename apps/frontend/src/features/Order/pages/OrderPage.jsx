@@ -1,18 +1,18 @@
 import ShoppingCartCheckoutRoundedIcon from '@mui/icons-material/ShoppingCartCheckoutRounded'
 import { Box, Button, Container, Grid, Typography } from '@mui/material'
-import { useMutation } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { OrderByUserAPI } from '~/common/apis/services/orderService'
 import { selectCurrentUser } from '~/common/redux/user/userSlice'
 import { buildShopOrderIds } from '~/common/utils/builder'
 import { formatVND } from '~/common/utils/formatters'
+import { useAddress } from '~/features/Address/hooks/useAddresss'
 import { useCart } from '~/features/Cart/hooks/useCart'
 import { useApplyDiscounts } from '~/features/Discount/hook/useApplyDiscounts'
+import CodOtpDialog from '../components/CodOtpDialog'
 import OrderAddressSection from '../components/OrderAddressSection'
 import OrderPaymentMethod from '../components/OrderPaymentMethod'
 import OrderProductList from '../components/OrderProductList'
@@ -20,30 +20,27 @@ import OrderShippingInfo from '../components/OrderShippingInfo'
 import OrderSummary from '../components/OrderSummary'
 import OrderVoucherSection from '../components/OrderVoucherSection'
 import { useCheckout } from '../hooks/useCheckout'
-import { useEffect } from 'react'
-import { useAddress } from '~/features/Address/hooks/useAddresss'
+import { useOrderMutation } from '../hooks/useOrderMutation'
 
-// TODO: Khi payment_method là 'vnpay' hoặc 'momo', cần redirect tới URL cổng thanh toán
-//       từ response.metadata.paymentUrl sau khi gọi OrderByUserAPI thành công
-// TODO: Sau khi đặt hàng thành công, navigate tới trang /orders/:orderId (chưa có) hoặc /orders
-// TODO: Khi có trang xác nhận đơn hàng (OrderSuccess), navigate tới đó thay vì '/'
 
 function OrderPage() {
   const navigate = useNavigate()
   const user = useSelector(selectCurrentUser)
 
+  //state item và checkout
   const { selectedItems, cartId } = useCart()
   const canCheckout = selectedItems.length > 0
   const { appliedshopDiscounts, appliedProductVoucher, appliedFreeshipVoucher } = useApplyDiscounts()
   const { control, handleSubmit } = useForm({ mode: 'onChange', defaultValues: { paymentMethod: 'cod' } })
 
+  //state địa chỉ của user
   const { addressUser, allAddressUser } = useAddress(user)
-  const [selectedAddress, setSelectedAddress] = useState(addressUser)
-  useEffect(() => {
-    if (addressUser) {
-      setSelectedAddress(addressUser)
-    }
-  }, [addressUser])
+  const [selectedAddressOverride, setSelectedAddressOverride] = useState(null)
+  const selectedAddress = selectedAddressOverride ?? addressUser
+
+  // State cho COD OTP dialog
+  const [createdOrder, setCreatedOrder] = useState(null)
+  const [showCodOtp, setShowCodOtp] = useState(false)
 
   // Build payload cho useCheckout
   const checkoutPayload = useMemo(() => {
@@ -56,7 +53,6 @@ function OrderPage() {
       shippingDiscountCode: appliedFreeshipVoucher?.code ?? ''
     }
   }, [cartId, selectedItems, appliedshopDiscounts, appliedProductVoucher, appliedFreeshipVoucher, canCheckout, selectedAddress?._id])
-
   const checkoutData = useCheckout(checkoutPayload)
 
   // Group selected items theo shop để hiển thị trong OrderProductList
@@ -71,20 +67,7 @@ function OrderPage() {
   }, [selectedItems])
 
   // Mutation đặt hàng
-  const orderMutation = useMutation({
-    mutationFn: OrderByUserAPI,
-    onSuccess: () => {
-      toast.success('Đặt hàng thành công!')
-      // TODO: If vnpay/momo: window.location.href = data.paymentUrl
-      // TODO: Navigate to /orders/:orderId khi có trang order detail
-      navigate('/')
-    },
-    onError: (err) => {
-      toast.error(
-        err?.response?.data?.message || 'Đặt hàng thất bại. Vui lòng thử lại.'
-      )
-    }
-  })
+  const { orderMutation } = useOrderMutation({ setCreatedOrder, setShowCodOtp })
 
   const hasAddress = !!(selectedAddress || user?.default_address_id)
   const canSubmit = canCheckout && hasAddress && !orderMutation.isPending
@@ -99,16 +82,26 @@ function OrderPage() {
       return
     }
 
-    const payload = {
+    orderMutation.mutate({
       cartId,
+      client_totalCheckout: checkoutData.finalCheckout,
       shopOrderIds: buildShopOrderIds(selectedItems, appliedshopDiscounts),
-      userAddressId: selectedAddress?.id || user?.default_address_id,
+      userAddressId: selectedAddress?._id || user?.default_address_id,
       productDiscountCode: appliedProductVoucher?.code ?? '',
       shippingDiscountCode: appliedFreeshipVoucher?.code ?? '',
-      payment_method: formData.paymentMethod
-    }
+      userPayment: formData.paymentMethod
+    })
+  }
 
-    orderMutation.mutate(payload)
+  const handleCodOtpClose = () => {
+    setShowCodOtp(false)
+    toast.info('Đơn hàng đã tạo. Kiểm tra email để xác nhận OTP hoàn tất.')
+    navigate('/')
+  }
+
+  const handleCodOtpSuccess = () => {
+    setShowCodOtp(false)
+    navigate('/')
   }
 
   return (
@@ -127,7 +120,7 @@ function OrderPage() {
               <OrderAddressSection
                 selectedAddress={selectedAddress}
                 allAddressUser={allAddressUser}
-                onAddressChange={setSelectedAddress}
+                onAddressChange={setSelectedAddressOverride}
               />
 
               {/* Thông tin vận chuyển */}
@@ -159,7 +152,7 @@ function OrderPage() {
                 amoutGlobalDiscountProduct={checkoutData.amoutGlobalDiscountProduct}
                 totalFeeShip={checkoutData.totalFeeShip}
                 totalDiscount={checkoutData.totalDiscount}
-                totalPrice={checkoutData.totalPrice}
+                finalCheckout={checkoutData.finalCheckout}
                 hasFreeShip={checkoutData.hasFreeShip}
                 itemCount={selectedItems.length}
               />
@@ -233,6 +226,15 @@ function OrderPage() {
         </Box>,
         document.body
       )}
+
+      {/* Dialog xác nhận OTP cho COD */}
+      <CodOtpDialog
+        open={showCodOtp}
+        onClose={handleCodOtpClose}
+        orderId={createdOrder?._id}
+        email={user?.user_email}
+        onSuccess={handleCodOtpSuccess}
+      />
     </>
   )
 }

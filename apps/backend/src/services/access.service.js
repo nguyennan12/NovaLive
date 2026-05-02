@@ -21,7 +21,7 @@ const SignUp = async ({ email, password }) => {
   if (!newUser) throw new ApiError(StatusCodes.BAD_REQUEST, 'Register user error')
 
   //send email
-  emailService.sendVerificationEmail({ email: newUser.user_email }).catch(console.error)
+  emailService.sendVerificationEmail({ email: newUser.user_email, title: 'Xác thực tài khoản' }).catch(console.error)
 
   const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
     modulusLength: 4096,

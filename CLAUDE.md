@@ -1,7 +1,7 @@
 # 📦 E-commerce Project Overview
 
 **Repo:** https://github.com/nguyennan12/E-commerce  
-**Cập nhật:** 01/05/2026 (Order Page UI hoàn thành — review SP, địa chỉ, PTTT, voucher, summary)  
+**Cập nhật:** 02/05/2026 (Order flow hoàn chỉnh — phí ship GHN realtime, quản lý địa chỉ user, đặt hàng thành công; chưa link VNPay/MoMo, chưa confirm COD)  
 **Mục tiêu:** Tăng tốc phát triển frontend các tính năng chính, tối ưu cho teamwork với AI code assistant.
 
 ---
@@ -13,7 +13,7 @@
   - Đã có UI quản lý sản phẩm, kho với các component/module chính (hiển thị, filter, tạo & sửa sản phẩm, nhập/xuất kho, thống kê tồn kho).
   - **Trang Home** (consumer) đã hoàn thành: banner slider, danh mục, 3 layout list sản phẩm, filter bar.
   - **Trang Cart** (consumer) đã hoàn thành: layout 7/3, list theo shop, checkbox chọn/xóa, tăng/giảm số lượng, CartSummary tính tiền realtime, chọn discount shop + global với API check availability, tính tổng có tích hợp discount.
-  - **Trang Order** (consumer) đã hoàn thành: review sản phẩm theo shop, chọn địa chỉ giao hàng (modal RHF), thông tin vận chuyển GHN, voucher (reuse từ Cart), tóm tắt đơn hàng, chọn PTTT (COD/VNPay/MoMo), nút đặt hàng sticky mobile qua React Portal. Navigate vào từ "Mua ngay" (ProductDetail) và "Thanh toán" (Cart).
+  - **Trang Order** (consumer) đã hoàn thành: review sản phẩm theo shop, quản lý địa chỉ giao hàng (modal xem danh sách địa chỉ đã lưu + form tạo mới với GHN cascading dropdown tỉnh/quận/phường), phí ship tính realtime qua GHN API, voucher (reuse từ Cart), tóm tắt đơn hàng, chọn PTTT (COD/VNPay/MoMo), nút đặt hàng sticky mobile qua React Portal, flow đặt hàng hoàn chỉnh. **Còn lại:** chưa redirect VNPay/MoMo, chưa confirm COD, chưa trang `/orders/:orderId`.
   - Các phần còn lại (order list/detail, customer, phân quyền, analytics) CHƯA LÀM.
 
 ---
@@ -89,7 +89,7 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
 
 ---
 
-## 6. Tiến độ (tính tới 01/05/2026)
+## 6. Tiến độ (tính tới 02/05/2026)
 
 - Backend: 85% (order flow hoàn chỉnh — checkout, COD, VNPay, discount marking, stock)
 - Frontend:
@@ -100,7 +100,8 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
   - ✅ **Trang Home (consumer)** — banner, danh mục, 3 layout list sản phẩm
   - ✅ **Trang Product Detail (consumer)** — ảnh, SKU cards, giá, attributes, shop card, description
   - ✅ **Trang Cart (consumer)** — layout 7/3, danh sách theo shop, checkbox, stepper, summary, discount shop + global, checkout summary realtime
-  - ✅ **Trang Order (consumer)** — layout 7/3, danh sách SP theo shop, địa chỉ giao hàng, vận chuyển GHN, voucher (reuse GlobalDiscountSection + ShopDiscountPopup), tóm tắt đơn, PTTT (COD/VNPay/MoMo), mobile sticky bar qua Portal
+  - ✅ **Trang Order (consumer)** — layout 7/3, danh sách SP theo shop, địa chỉ giao hàng (modal danh sách + tạo mới GHN dropdown), phí ship GHN API realtime, voucher, tóm tắt đơn, PTTT, mobile sticky bar qua Portal, đặt hàng thành công
+  - 🔶 **Order flow còn thiếu:** redirect VNPay/MoMo sau đặt hàng, confirm COD, trang order detail
   - ⬜ **Order List / Order Detail / Customer / Auth / Dashboard**
 
 ---

@@ -14,6 +14,7 @@ import ProductDetailPage from '~/features/Product/pages/ProductDetailPage'
 import ProductsListPage from '~/features/Product/pages/ProductsListPage'
 import CartPage from '~/features/Cart/pages/CartPage'
 import OrderPage from '~/features/Order/pages/OrderPage'
+import VNPayReturnPage from '~/features/Order/pages/VNPayReturnPage'
 import ConsumerLayout from '~/common/components/layout/ConsumerLayout/ConsumerLayout'
 
 const AppRoutes = () => {
@@ -37,7 +38,8 @@ const AppRoutes = () => {
       <Route path='/live' element={<LiveFeedPage />} />
       <Route path='/shop/live/:liveId' element={<ShopLive />} />
 
-      {/* ORDER */}
+      {/* ORDER / PAYMENT */}
+      <Route path="/vnpay-return" element={<VNPayReturnPage />} />
 
 
       {/* PRODUCT forms */}

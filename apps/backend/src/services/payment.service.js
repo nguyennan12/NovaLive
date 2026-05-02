@@ -103,6 +103,9 @@ const vnpayIpn = async (vnp_Params) => {
   }
 }
 
+// Return URL: verify chữ ký + fallback xử lý nếu IPN chưa kịp chạy (local dev / IPN chậm).
+// Dùng findOneAndUpdate với điều kiện paymentStatus:'pending' để atomic — tránh race condition với IPN.
+// Trên production khi IPN đã xử lý trước, hàm này là no-op.
 const vnpayReturn = async (vnp_Params) => {
   const secureHash = vnp_Params['vnp_SecureHash']
   delete vnp_Params['vnp_SecureHash']
@@ -113,22 +116,49 @@ const vnpayReturn = async (vnp_Params) => {
   const signData = qs.stringify(vnp_Params, { encode: false })
   const hmac = crypto.createHmac('sha512', secretKey)
   const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
-  if (signed === secureHash) {
-    const code = vnp_Params['vnp_ResponseCode']
+
+  if (signed !== secureHash) return { code: '97', message: 'Chữ ký không hợp lệ' }
+
+  const code = vnp_Params['vnp_ResponseCode']
+  const orderId = vnp_Params['vnp_TxnRef']
+  const vnpAmount = vnp_Params['vnp_Amount'] / 100
+
+  // Atomic claim: chỉ 1 trong IPN hoặc Return xử lý được
+  const claimed = await orderModel.findOneAndUpdate(
+    { order_trackingNumber: orderId, 'order_payment.paymentStatus': 'pending' },
+    {
+      $set: {
+        order_status: code === '00' ? 'processing' : 'cancelled',
+        'order_payment.paymentStatus': code === '00' ? 'paid' : 'failed'
+      }
+    },
+    { new: true }
+  )
+
+  if (claimed) {
+    const items = claimed.order_products.map(item => ({ skuId: item.skuId, quantity: item.quantity }))
     if (code === '00') {
-      return { code: '00', message: 'Giao dịch thành công' }
+      await Promise.all([
+        inventoryService.confirmDeductStock(orderId, items),
+        ...claimed.order_products.map(p => spuRepo.incrementProductSold(p.productId, p.quantity))
+      ])
+      MyLogger.info(`[VNPAY_RETURN] Đơn ${orderId} xử lý thành công (IPN chưa tới).`, '[PAYMENT_VNPAY]')
     } else {
-      return { code: code, message: 'Giao dịch thất bại' }
+      await inventoryService.releaseStock(orderId, items)
+      MyLogger.info(`[VNPAY_RETURN] Đơn ${orderId} thất bại, đã nhả kho.`, '[PAYMENT_VNPAY]')
     }
-  } else {
-    return { code: '97', message: 'Chữ ký không hợp lệ' }
   }
+
+  if (code === '00') {
+    return { code: '00', message: 'Giao dịch thành công', orderId, amount: vnpAmount }
+  }
+  return { code, message: 'Giao dịch thất bại', orderId }
 }
 
 const hanldeCodPayment = async (userId) => {
   const foundUser = await userRepo.findUserById(userId)
   if (!foundUser) throw new ApiError(StatusCodes.BAD_REQUEST, 'User does not exists')
-  await emailService.sendVerificationEmail({ email: foundUser.user_email })
+  await emailService.sendVerificationEmail({ email: foundUser.user_email, title: 'Xác thực đơn hàng' })
     .catch(() => MyLogger.error(`Lỗi gửi email xác nhận thanh toán cho user ${foundUser.user_email}`, 'EMAIL'))
 }
 
@@ -139,7 +169,13 @@ const confirmCodPayment = async ({ orderId, email, otpToken }) => {
   const lastOtpToken = await OtpModel.findOne({ otp_email: email }).sort({ createdAt: -1 })
   if (!lastOtpToken || lastOtpToken.otp_token != otpToken) throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid OTP code!')
 
-  return await orderRepo.changeStatusOrder({ orderId, statusOrder: 'confirmed', statusPayment: 'pending' })
+  const items = foundOrder.order_products.map(item => ({ skuId: item.skuId, quantity: item.quantity }))
+  await Promise.all([
+    orderRepo.changeStatusOrder({ orderId: foundOrder.order_trackingNumber, statusOrder: 'processing', statusPayment: 'pending' }),
+    inventoryService.confirmDeductStock(foundOrder.order_trackingNumber, items),
+    ...foundOrder.order_products.map(p => spuRepo.incrementProductSold(p.productId, p.quantity))
+  ])
+  return { success: true, orderId: foundOrder.order_trackingNumber }
 }
 
 export default {

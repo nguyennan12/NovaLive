@@ -52,7 +52,7 @@ function OrderSummary({
   amoutGlobalDiscountProduct = 0,
   totalFeeShip = 0,
   totalDiscount = 0,
-  totalPrice = 0,
+  finalCheckout = 0,
   hasFreeShip = false,
   itemCount = 0
 }) {
@@ -109,7 +109,7 @@ function OrderSummary({
           Tổng thanh toán
         </Typography>
         <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: 'secondary.main', lineHeight: 1 }}>
-          {formatVND(totalPrice)}
+          {formatVND(finalCheckout)}
         </Typography>
       </Box>
     </Box>

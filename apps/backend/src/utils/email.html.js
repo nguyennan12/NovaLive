@@ -1,4 +1,4 @@
-export const htmlEmailToken = (verifyUrl, otpToken) => {
+export const htmlEmailToken = (verifyUrl, otpToken, title) => {
   return `
     <!DOCTYPE html>
 <html lang="en">
@@ -56,7 +56,7 @@ export const htmlEmailToken = (verifyUrl, otpToken) => {
           <tr>
             <td class="padding" style="padding:30px;text-align:center;color:#333;">
 
-              <h2 style="margin:0 0 10px 0;">Xác thực tài khoản</h2>
+              <h2 style="margin:0 0 10px 0;">${title}</h2>
 
               <p style="margin:0 0 20px 0;font-size:14px;">
                 Mã OTP của bạn là:
