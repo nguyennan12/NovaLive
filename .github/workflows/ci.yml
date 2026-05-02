@@ -1,0 +1,149 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# Cancel in-progress run của cùng branch khi có push mới
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Job 1 & 2: Lint chạy song song
+  # ─────────────────────────────────────────────
+  lint-backend:
+    name: Lint / Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: ESLint
+        run: yarn workspace livestream-ecommerce lint
+
+  lint-frontend:
+    name: Lint / Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: ESLint
+        run: yarn workspace livestream-ecommerce-frontend lint
+
+  # ─────────────────────────────────────────────
+  # Job 3: Integration tests (dùng mongodb-memory-server, không cần DB thật)
+  # ─────────────────────────────────────────────
+  test-backend:
+    name: Test / Backend
+    runs-on: ubuntu-latest
+    env:
+      # Cố định thư mục download binary của mongodb-memory-server để cache được
+      MONGOMS_DOWNLOAD_DIR: ~/.cache/mongodb-binaries
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Cache MongoDB binary (mongodb-memory-server)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          # Bump key suffix (v1→v2) nếu cần force re-download binary
+          key: mongodb-binaries-${{ runner.os }}-v1
+
+      - name: Run integration tests with coverage
+        run: yarn workspace livestream-ecommerce test:cov
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-coverage
+          path: apps/backend/coverage/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────
+  # Job 4: Verify Vite build frontend không lỗi
+  # ─────────────────────────────────────────────
+  build-frontend:
+    name: Build / Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Vite build
+        run: yarn workspace livestream-ecommerce-frontend build
+        env:
+          # Dummy URL để Vite không lỗi nếu có VITE_ env vars được đọc lúc build
+          VITE_API_URL: http://localhost:3031
+
+  # ─────────────────────────────────────────────
+  # Job 5: Verify production Docker images build được
+  # Chỉ chạy khi push lên master (không chạy trên PR để tiết kiệm runner)
+  # ─────────────────────────────────────────────
+  docker-build:
+    name: Docker Build / Production
+    runs-on: ubuntu-latest
+    needs: [lint-backend, lint-frontend, test-backend, build-frontend]
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # BuildKit hỗ trợ layer cache và multi-platform
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build backend production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/backend/Dockerfile
+          target: production
+          push: false
+          # Dùng GitHub Actions cache để tái dùng layer giữa các run
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+      - name: Build frontend production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/frontend/Dockerfile
+          target: production
+          push: false
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend

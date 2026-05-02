@@ -11,6 +11,7 @@
     "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --runInBand",
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --watch --runInBand",
     "test:cov": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --coverage --runInBand",
+    "lint": "eslint .",
     "dev": "cross-env NODE_ENV=dev nodemon -e js,json,lua server.js",
     "pro": "cross-env NODE_ENV=pro node server.js",
     "swagger": "node src/config/swagger.config.js"
