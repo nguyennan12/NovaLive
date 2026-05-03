@@ -11,7 +11,7 @@ import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 import { checkAvailableAPI } from '~/common/apis/services/discountService'
-import { selectAppliedShopDiscounts, clearShopDiscount, setShopDiscount } from '~/common/redux/discount/discountSlice'
+import { selectAppliedShopDiscounts, clearShopDiscount, setShopDiscount } from '~/redux/discount/discountSlice'
 import { useDiscounts } from '../../hook/useDiscounts'
 import { DiscountCardMini } from './DiscountCardMini'
 

@@ -2,7 +2,7 @@ import { Box, CircularProgress, Typography } from '@mui/material'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useInfiniteScroll } from '~/common/hooks/useScroll'
-import { selectCurrentUser } from '~/common/redux/user/userSlice'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 import { useHomeProducts } from '~/features/Home/hooks/useHomeProducts'
 import ProductCard from './ProductCard'
 

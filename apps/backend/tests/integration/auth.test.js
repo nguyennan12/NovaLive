@@ -11,10 +11,9 @@ beforeAll(async () => {
 })
 
 describe('Authentication (Integration)', () => {
-
+  // TEST SIGN UP (SUCCESS & EAMIL ALREADY)
   describe('POST /v1/api/access/signup', () => {
     const email = 'newuser@test.com'
-
     test('Should signup successfully', async () => {
       const res = await http(app)
         .post('/v1/api/access/signup')
@@ -24,7 +23,6 @@ describe('Authentication (Integration)', () => {
       expect(res.body.metadata).toHaveProperty('user')
       expect(res.body.metadata).toHaveProperty('tokens')
     })
-
     test('Should fail if email already exists', async () => {
       const res = await http(app)
         .post('/v1/api/access/signup')
@@ -34,7 +32,7 @@ describe('Authentication (Integration)', () => {
       expect(res.body.message).toContain('exists')
     })
   })
-
+  //TEST VERIFY OTP
   describe('POST /v1/api/access/verify', () => {
     const email = 'verify@test.com'
 

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useDispatch } from 'react-redux'
 import { getCartAPI } from '~/common/apis/services/cartService'
-import { deselectAll, toggleSelect } from '~/common/redux/cart/cartSlice'
+import { deselectAll, toggleSelect } from '~/redux/cart/cartSlice'
 import { useCartCalc } from './useCartCalc'
 import { useCartMutations } from './useCartMutations'
 

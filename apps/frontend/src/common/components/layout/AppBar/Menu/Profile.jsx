@@ -12,7 +12,7 @@ import Tooltip from '@mui/material/Tooltip'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectCurrentUser, logoutUserAPI } from '~/common/redux/user/userSlice'
+import { selectCurrentUser, logoutUserAPI } from '~/redux/user/userSlice'
 import { useConfirm } from 'material-ui-confirm'
 
 function Profiles() {
