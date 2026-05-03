@@ -26,7 +26,7 @@ const grantAccess = (actions, resource) => {
             return true
           }
         } catch {
-          // Role not registered in grants — treat as no permission
+          // Role not registered in grants treat as no permission
         }
         return false
       })
