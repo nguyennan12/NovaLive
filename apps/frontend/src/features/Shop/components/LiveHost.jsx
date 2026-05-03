@@ -1,15 +1,13 @@
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
-import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '~/redux/user/userSlice'
+import { useLiveHost } from '~/features/Shop/hooks/useLiveHost'
+import { selectCurrentUser } from '~/store/user/userSlice'
 import EndCofirmDialog from './LiveHost/EndCofirmDialog'
 import LiveControls from './LiveHost/LiveControls'
 import LiveEndScreen from './LiveHost/LiveEndScreen'
 import LiveHeader from './LiveHost/LiveHeader'
 import LiveStartScreen from './LiveHost/LiveStartScreen'
-import { useLiveHost } from '~/features/Shop/hooks/useLiveHost'
 
 const LiveHost = ({ liveId }) => {
   const currentUser = useSelector(selectCurrentUser)

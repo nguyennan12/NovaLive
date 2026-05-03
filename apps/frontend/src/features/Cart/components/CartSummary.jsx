@@ -3,7 +3,7 @@ import ShoppingCartCheckoutRoundedIcon from '@mui/icons-material/ShoppingCartChe
 import { Box, Button, Chip, Divider, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '~/redux/user/userSlice'
+import { selectCurrentUser } from '~/store/user/userSlice'
 import { buildShopOrderIds } from '~/common/utils/builder'
 import { formatVND } from '~/common/utils/formatters'
 import GlobalDiscountSection from '~/features/Discount/components/DIscountSelect/GlobalDiscountSection'

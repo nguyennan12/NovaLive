@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import FieldErrorAlert from '~/common/components/common/form/FieldErrorAlert'
-import { loginUserAPI } from '~/redux/user/userSlice'
+import { loginUserAPI } from '~/store/user/userSlice'
 import {
   EMAIL_RULE,
   EMAIL_RULE_MESSAGE,

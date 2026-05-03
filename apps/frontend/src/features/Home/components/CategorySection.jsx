@@ -25,7 +25,7 @@ import WatchRoundedIcon from '@mui/icons-material/WatchRounded'
 import { Box, Typography } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { selectCategories } from '~/redux/product/categorySlice'
+import { selectCategories } from '~/store/product/categorySlice'
 
 const GRADIENTS = [
   'linear-gradient(135deg, #6DD5FA 0%, #E0F7FA 100%)',

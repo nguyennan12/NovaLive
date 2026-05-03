@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import LoginForm from '../components/LoginForm'
 import RegisterForm from '../components/RegisterForm'
 import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '~/redux/user/userSlice'
+import { selectCurrentUser } from '~/store/user/userSlice'
 import VerifyEmailForm from '../components/VerifyEmailForm'
 
 function Auth() {

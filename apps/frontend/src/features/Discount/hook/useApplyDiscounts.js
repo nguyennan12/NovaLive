@@ -5,7 +5,7 @@ import {
   selectAppliedProductVoucher,
   selectAppliedShopDiscounts,
   setFreeshipVoucher, setProductVoucher, setShopDiscount
-} from '~/redux/discount/discountSlice'
+} from '~/store/discount/discountSlice'
 
 export const useApplyDiscounts = () => {
   const dispatch = useDispatch()

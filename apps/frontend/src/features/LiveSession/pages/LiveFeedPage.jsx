@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '~/redux/user/userSlice'
+import { selectCurrentUser } from '~/store/user/userSlice'
 import { LiveFeed } from '../components/LiveFeedPage/LiveFeed'
 
 const LiveFeedPage = () => {

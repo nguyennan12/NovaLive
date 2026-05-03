@@ -3,7 +3,7 @@ import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded'
 import { Box, Button, Chip, Divider, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '~/redux/user/userSlice'
+import { selectCurrentUser } from '~/store/user/userSlice'
 import { glassSx, gradientText } from '~/theme'
 import AddressModal from './AddressModal'
 

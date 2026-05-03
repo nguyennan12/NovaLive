@@ -2,7 +2,7 @@ import { Box, TextField, Select, MenuItem, InputAdornment, Typography } from '@m
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import { useSelector } from 'react-redux'
-import { selectCategories } from '~/redux/product/categorySlice'
+import { selectCategories } from '~/store/product/categorySlice'
 import { useFormContext, Controller } from 'react-hook-form'
 
 const selectSx = {

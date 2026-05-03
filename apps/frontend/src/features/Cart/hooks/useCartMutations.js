@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { addToCartAPI, removeFromCartAPI, updateCartItemAPI } from '~/common/apis/services/cartService'
-import { selectSelectedIds, setSelectedIds } from '~/redux/cart/cartSlice'
+import { selectSelectedIds, setSelectedIds } from '~/store/cart/cartSlice'
 
 export const CART_QUERY_KEY = ['cart']
 

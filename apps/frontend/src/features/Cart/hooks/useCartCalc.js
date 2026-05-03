@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { selectSelectedIds } from '~/redux/cart/cartSlice'
+import { selectSelectedIds } from '~/store/cart/cartSlice'
 
 export const useCartCalc = (shopGroups) => {
   const selectedIds = useSelector(selectSelectedIds)
