@@ -1,8 +1,8 @@
 import { createRealApp } from '../helpers/appFactory.js'
 import { http } from '../helpers/http.js'
 import { signup, login, authHeaders, activateUser } from '../helpers/auth.js'
-import { skuModel } from '#models/sku.model.js'
-import livestreamModel from '#models/livestream.model.js'
+import { skuModel } from '#modules/product/models/sku.model.js'
+import livestreamModel from '#modules/live/models/livestream.model.js'
 
 let app
 let token, userId, shopId, productId, sku, liveId

@@ -1,8 +1,8 @@
 import { createRealApp } from '../helpers/appFactory.js'
 import { http } from '../helpers/http.js'
 import { signup, login, authHeaders, activateUser } from '../helpers/auth.js'
-import rbacService from '#services/rbac.service.js'
-import { initAccessControl } from '#config/rbac.config.js'
+import rbacService from '#modules/rbac/services/rbac.service.js'
+import { initAccessControl } from '#infrastructure/config/rbac.config.js'
 
 let app
 
@@ -14,8 +14,8 @@ beforeAll(async () => {
   const rbacRes = await rbacService.createResource({ name: 'RBAC', description: 'RBAC' })
 
   // Create a Category and Attribute for product creation test
-  const categoryModel = (await import('#models/category.model.js')).default
-  const attributeModel = (await import('#models/attribute.model.js')).default
+  const categoryModel = (await import('#modules/category/models/category.model.js')).default
+  const attributeModel = (await import('#modules/category/models/attribute.model.js')).default
 
   const attr = await attributeModel.create({
     attr_name: 'Manufacturer',
@@ -58,7 +58,7 @@ beforeAll(async () => {
   // Seed Admin User
   const bcrypt = await import('bcrypt')
   const password = await bcrypt.default.hash('Admin12345', 10)
-  const { UserModel } = await import('#models/user.model.js')
+  const { UserModel } = await import('#modules/auth/models/user.model.js')
   await UserModel.create({
     user_email: 'admin@test.com',
     user_password: password,
@@ -148,13 +148,13 @@ describe('RBAC (smoke integration)', () => {
       await activateUser(email)
 
       // Promote to shop role
-      const { UserModel } = await import('#models/user.model.js')
+      const { UserModel } = await import('#modules/auth/models/user.model.js')
       await UserModel.findOneAndUpdate({ user_email: email }, { user_role: 'shop' })
 
       const { token, userId } = await login(app, { email, password: TEST_PASSWORD })
 
       // Create a Shop document for the shop user
-      const shopModel = (await import('#models/shop.model.js')).default
+      const shopModel = (await import('#modules/shop/models/shop.model.js')).default
       const shopDoc = await shopModel.create({
         shop_name: 'Test Shop',
         shop_owner: userId,

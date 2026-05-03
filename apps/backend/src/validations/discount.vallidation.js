@@ -1,5 +1,5 @@
-import ApiError from '#core/error.response.js'
-import converter from '#utils/converter.js'
+import ApiError from '#shared/core/error.response.js'
+import converter from '#shared/utils/converter.js'
 import { StatusCodes } from 'http-status-codes'
 
 export class DiscountValidate {

@@ -1,5 +1,5 @@
-import resourceModel from '#models/resource.model.js'
-import roleModel from '#models/role.model.js'
+import resourceModel from '#modules/rbac/models/resource.model.js'
+import roleModel from '#modules/rbac/models/role.model.js'
 import slugify from 'slugify'
 
 export async function seedRBAC() {
@@ -84,8 +84,7 @@ export async function seedRBAC() {
     )
   }
 
-  // Seed default admin user for tests
-  const { UserModel } = await import('#models/user.model.js')
+  const { UserModel } = await import('#modules/auth/models/user.model.js')
   const bcrypt = await import('bcrypt')
   const adminPass = await bcrypt.default.hash('Admin12345', 10)
   await UserModel.findOneAndUpdate(

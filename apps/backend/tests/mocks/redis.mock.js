@@ -3,6 +3,7 @@ import { jest } from '@jest/globals'
 export const redisClient = {
   get: jest.fn(async () => null),
   set: jest.fn(async () => 'OK'),
+  setEx: jest.fn(async () => 'OK'),
   del: jest.fn(async () => 1),
   exists: jest.fn(async () => 0),
   eval: jest.fn(async () => 1),
@@ -21,12 +22,12 @@ export const redisClient = {
     exec: jest.fn(async () => []),
   })),
   duplicate: jest.fn(() => ({
-    connect: jest.fn(async () => {}),
-    subscribe: jest.fn(async () => {}),
-    on: jest.fn(() => {}),
+    connect: jest.fn(async () => { }),
+    subscribe: jest.fn(async () => { }),
+    on: jest.fn(() => { }),
   })),
   publish: jest.fn(async () => 1),
-  connect: jest.fn(async () => {}),
-  quit: jest.fn(async () => {}),
-  on: jest.fn(() => {}),
+  connect: jest.fn(async () => { }),
+  quit: jest.fn(async () => { }),
+  on: jest.fn(() => { }),
 }

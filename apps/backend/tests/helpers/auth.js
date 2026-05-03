@@ -1,12 +1,7 @@
 import { http } from './http.js'
-import userRepo from '../../src/models/repository/user.repo.js'
+import userRepo from '../../src/modules/auth/repos/user.repo.js'
 
 
-
-/**
- * Because we don't know exact response shape in your controller,
- * this helper extracts token in a tolerant way.
- */
 function pick(obj, paths) {
   for (const p of paths) {
     const parts = p.split('.')
@@ -67,4 +62,4 @@ export function authHeaders({ token, userId }) {
 export async function activateUser(email) {
   await userRepo.changeStatus({ email, status: 'active' })
 }
-
+

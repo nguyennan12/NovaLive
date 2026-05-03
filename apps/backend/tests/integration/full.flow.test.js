@@ -1,5 +1,5 @@
-import inventoryModel from '#models/inventory.model.js'
-import { skuModel } from '#models/sku.model.js'
+import inventoryModel from '#modules/inventory/models/inventory.model.js'
+import { skuModel } from '#modules/product/models/sku.model.js'
 import { createRealApp } from '../helpers/appFactory.js'
 import { activateUser, authHeaders, login, signup } from '../helpers/auth.js'
 import { http } from '../helpers/http.js'
@@ -12,7 +12,7 @@ beforeAll(async () => {
   app = await createRealApp()
 
   // Seed RBAC
-  const rbacService = (await import('#services/rbac.service.js')).default
+  const rbacService = (await import('#modules/rbac/services/rbac.service.js')).default
   const productRes = await rbacService.createResource({ name: 'PRODUCT', description: 'Product' })
   const orderRes = await rbacService.createResource({ name: 'ORDER', description: 'Order' })
   const categoryRes = await rbacService.createResource({ name: 'CATEGORY', description: 'Category' })
@@ -53,7 +53,7 @@ beforeAll(async () => {
     ]
   })
 
-  const { initAccessControl } = await import('#config/rbac.config.js')
+  const { initAccessControl } = await import('#infrastructure/config/rbac.config.js')
   await initAccessControl()
 })
 
@@ -74,7 +74,7 @@ describe('Full E-commerce Flow (Split steps)', () => {
   test('Step 1: Seller Setup & Shop Registration', async () => {
     await signup(app, { email: SELLER_EMAIL, password: TEST_PASSWORD, name: 'Seller' })
     await activateUser(SELLER_EMAIL)
-    const { UserModel } = await import('#models/user.model.js')
+    const { UserModel } = await import('#modules/auth/models/user.model.js')
     await UserModel.findOneAndUpdate({ user_email: SELLER_EMAIL }, { user_role: 'shop' })
     const loginRes = await login(app, { email: SELLER_EMAIL, password: TEST_PASSWORD })
     sellerToken = loginRes.token
@@ -112,7 +112,7 @@ describe('Full E-commerce Flow (Split steps)', () => {
     const categorySlug = catRes.body.metadata.cat_slug
 
     // Create Attribute
-    const attributeModel = (await import('#models/attribute.model.js')).default
+    const attributeModel = (await import('#modules/category/models/attribute.model.js')).default
     const attrDoc = await attributeModel.create({
       attr_name: 'Color',
       attr_id: 'color_attr',
@@ -151,7 +151,7 @@ describe('Full E-commerce Flow (Split steps)', () => {
     // Buyer setup
     await signup(app, { email: BUYER_EMAIL, password: TEST_PASSWORD, name: 'Buyer' })
     await activateUser(BUYER_EMAIL)
-    const { UserModel } = await import('#models/user.model.js')
+    const { UserModel } = await import('#modules/auth/models/user.model.js')
     await UserModel.findOneAndUpdate({ user_email: BUYER_EMAIL }, { user_role: 'user' })
     const buyerLogin = await login(app, { email: BUYER_EMAIL, password: TEST_PASSWORD })
     buyerToken = buyerLogin.token
@@ -204,7 +204,7 @@ describe('Full E-commerce Flow (Split steps)', () => {
 
   test('Step 4: Payment Confirmation & Inventory Deduction', async () => {
     // Get OTP for Buyer
-    const otpModel = (await import('#models/otp.model.js')).default
+    const otpModel = (await import('#modules/auth/models/otp.model.js')).default
     const otpDoc = await otpModel.findOne({ otp_email: BUYER_EMAIL }).sort({ createdAt: -1 })
 
     // Confirm COD Payment

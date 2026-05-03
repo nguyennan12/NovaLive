@@ -5,14 +5,14 @@ export async function createRealApp() {
 
 
   // Mongo config vẫn mock bằng alias được, nhưng để chắc ăn ta cũng dùng relative:
-  jest.unstable_mockModule('../../src/config/mongodb.config.js', () => ({
+  jest.unstable_mockModule('../../src/infrastructure/config/mongodb.config.js', () => ({
     default: { db: { url: globalThis.__MONGO_URI__, maxPoolSize: 10 } },
   }))
 
   // Redis: handled via moduleNameMapper in jest.config.cjs → tests/mocks/redis.mock.js
 
   // RabbitMQ service: ../../src/database/init.rabbitMQ.js
-  jest.unstable_mockModule('../../src/database/init.rabbitMQ.js', () => ({
+  jest.unstable_mockModule('../../src/infrastructure/database/init.rabbitMQ.js', () => ({
     RabbitMQClient: {
       connectRabbitMQ: jest.fn(async () => { }),
       publishMessage: jest.fn(async () => { }),
@@ -21,8 +21,8 @@ export async function createRealApp() {
     },
   }))
 
-  // Nodemailer: ../../src/config/nodemailer.config.js
-  jest.unstable_mockModule('../../src/config/nodemailer.config.js', () => ({
+  // Nodemailer: ../../src/infrastructure/config/nodemailer.config.js
+  jest.unstable_mockModule('../../src/infrastructure/config/nodemailer.config.js', () => ({
     default: {
       sendMail: jest.fn(async () => ({ messageId: 'mock' })),
       verify: jest.fn((cb) => cb?.(null, true)),
@@ -30,7 +30,7 @@ export async function createRealApp() {
   }))
 
   // Elastic: ../../src/database/init.elasticsearch.js
-  jest.unstable_mockModule('../../src/database/init.elasticsearch.js', () => ({
+  jest.unstable_mockModule('../../src/infrastructure/database/init.elasticsearch.js', () => ({
     ElasticClient: {
       info: jest.fn(async () => ({})),
       search: jest.fn(async () => ({ hits: { hits: [] } })),
@@ -43,7 +43,7 @@ export async function createRealApp() {
 
   // Seed RBAC for testing environment
   const { seedRBAC } = await import('./rbacSeed.js')
-  const { initAccessControl } = await import('../../src/config/rbac.config.js')
+  const { initAccessControl } = await import('../../src/infrastructure/config/rbac.config.js')
   await seedRBAC()
   await initAccessControl()
 

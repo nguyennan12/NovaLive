@@ -193,27 +193,56 @@ MongoDB     Redis      RabbitMQ   Elasticsearch   Agora.io
 livestream-ecommerce/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml              # GitHub Actions CI pipeline
+│       └── ci.yml                  # GitHub Actions CI pipeline
 ├── apps/
 │   ├── backend/
 │   │   ├── src/
-│   │   │   ├── configs/        # DB, Redis, Elasticsearch, RabbitMQ connections
-│   │   │   ├── controllers/    # Route handlers
-│   │   │   ├── middlewares/    # Auth, RBAC, error handling
-│   │   │   ├── models/         # Mongoose schemas
-│   │   │   ├── routes/v1/      # API route definitions
-│   │   │   ├── services/       # Business logic layer
-│   │   │   └── utils/          # Helpers (JWT, hash, response)
-│   │   ├── tests/              # Integration tests (Jest + Supertest)
+│   │   │   ├── modules/            # Domain modules (module-based architecture)
+│   │   │   │   ├── address/        # controllers · models · repos · routes · services
+│   │   │   │   ├── auth/           # access, token, otp services + user repo
+│   │   │   │   ├── cart/
+│   │   │   │   ├── category/       # category + attribute (models, services, routes)
+│   │   │   │   ├── common/         # email · socket · upload (shared services)
+│   │   │   │   ├── discount/
+│   │   │   │   ├── flashSale/
+│   │   │   │   ├── inventory/      # inventory + history
+│   │   │   │   ├── live/           # livestream session lifecycle
+│   │   │   │   ├── order/
+│   │   │   │   ├── payment/        # VNPay + COD OTP flow
+│   │   │   │   ├── product/        # SPU + SKU
+│   │   │   │   ├── rbac/           # roles, resources, grants
+│   │   │   │   ├── shipping/       # GHN fee calculation
+│   │   │   │   └── shop/
+│   │   │   ├── shared/             # Cross-module utilities (alias: #shared/*)
+│   │   │   │   ├── core/           # ApiError, ApiSuccess response wrappers
+│   │   │   │   ├── helpers/        # auth, agora, file, object, order helpers
+│   │   │   │   ├── middlewares/    # authentication, RBAC, validation, error
+│   │   │   │   └── utils/          # constants, converter, generator, data utils
+│   │   │   ├── infrastructure/     # External system integrations (alias: #infrastructure/*)
+│   │   │   │   ├── config/         # mongodb, redis, nodemailer, RBAC, environment, swagger
+│   │   │   │   ├── database/       # init.mongodb, init.redis, init.rabbitMQ, init.elasticsearch
+│   │   │   │   ├── loggers/        # Winston logger
+│   │   │   │   ├── lua/            # Lua scripts for Redis atomic operations
+│   │   │   │   ├── scripts/        # One-time setup scripts (Elasticsearch index)
+│   │   │   │   └── workers/        # RabbitMQ consumer workers (order, inventory)
+│   │   │   └── app.js              # Express app entry point
+│   │   ├── tests/
+│   │   │   ├── helpers/            # appFactory, auth helpers, RBAC seed
+│   │   │   ├── integration/        # auth · full-flow · livestream · vnpay · rbac
+│   │   │   ├── mocks/              # redis.mock.js
+│   │   │   └── jest.setup.js       # MongoMemoryServer + env setup
+│   │   ├── jest.config.cjs
 │   │   ├── Dockerfile
 │   │   └── package.json
 │   └── frontend/
 │       ├── src/
 │       │   ├── common/
-│       │   │   ├── apis/services/  # All API call functions
-│       │   │   ├── components/     # Shared UI components
-│       │   │   └── utils/          # Query builders, formatters
-│       │   ├── features/           # Feature modules (see below)
+│       │   │   ├── apis/services/  # Axios API service functions per domain
+│       │   │   ├── components/     # Shared UI (layout, AppBar, Sidebar, Footer)
+│       │   │   ├── hooks/          # Shared custom hooks
+│       │   │   └── utils/          # Query string builders, formatters
+│       │   ├── features/           # Feature modules (one folder per domain)
+│       │   │   ├── Address/
 │       │   │   ├── Auth/
 │       │   │   ├── Cart/
 │       │   │   ├── Discount/
@@ -224,15 +253,24 @@ livestream-ecommerce/
 │       │   │   ├── Product/
 │       │   │   ├── Review/
 │       │   │   └── Shop/
-│       │   ├── store/              # Redux store + slices
-│       │   └── main.jsx            # App entry point
+│       │   ├── store/              # Redux Toolkit slices (cart, user, discount, product)
+│       │   ├── routers/            # React Router route definitions
+│       │   └── main.jsx            # App entry: Redux + QueryClient + ThemeProvider
 │       ├── Dockerfile
 │       ├── nginx.conf
 │       └── package.json
 ├── docker-compose.yml
-├── package.json                # Yarn workspace root
-└── .env                        # Root environment variables
+├── package.json                    # Yarn workspace root
+└── .env                            # Root environment variables
 ```
+
+### Backend path aliases (`package.json` imports)
+
+| Alias | Resolves to |
+|---|---|
+| `#modules/*` | `src/modules/*` |
+| `#shared/*` | `src/shared/*` |
+| `#infrastructure/*` | `src/infrastructure/*` |
 
 ---
 

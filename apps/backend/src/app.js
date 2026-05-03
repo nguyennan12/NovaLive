@@ -1,13 +1,13 @@
-import ApiError from '#core/error.response.js'
-import errorMiddleware from '#middlewares/error.middleware.js'
-import requestLogger from '#middlewares/log.middleware.js'
-import Router from '#routes/v1/index.js'
+import ApiError from '#shared/core/error.response.js'
+import errorMiddleware from '#shared/middlewares/error.middleware.js'
+import requestLogger from '#shared/middlewares/log.middleware.js'
+import Router from '#modules/index.js'
 import cookieParser from 'cookie-parser'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import connectDB from './database/init.mongodb.js'
+import connectDB from './infrastructure/database/init.mongodb.js'
 import swaggerUi from 'swagger-ui-express'
-import swaggerDocument from './config/swagger-output.json' with { type: 'json' }
+import swaggerDocument from './infrastructure/config/swagger-output.json' with { type: 'json' }
 
 const app = express()
 

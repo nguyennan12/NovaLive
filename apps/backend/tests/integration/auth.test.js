@@ -1,7 +1,7 @@
 import { createRealApp } from '../helpers/appFactory.js'
 import { http } from '../helpers/http.js'
 import { signup, login, authHeaders, activateUser } from '../helpers/auth.js'
-import OtpModel from '#models/otp.model.js'
+import OtpModel from '#modules/auth/models/otp.model.js'
 
 let app
 const TEST_PASSWORD = 'abc12345'

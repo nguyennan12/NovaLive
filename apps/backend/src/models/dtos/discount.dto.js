@@ -2,7 +2,7 @@ import Joi from 'joi'
 import {
   OBJECT_ID_RULE,
   OBJECT_ID_RULE_MESSAGE
-} from '#utils/validator.js'
+} from '#shared/utils/validator.js'
 
 
 const discountBase = {

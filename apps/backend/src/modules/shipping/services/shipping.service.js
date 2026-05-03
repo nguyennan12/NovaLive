@@ -1,0 +1,63 @@
+import converter from '#shared/utils/converter.js'
+import ApiError from '#shared/core/error.response.js'
+import { StatusCodes } from 'http-status-codes'
+import axios from 'axios'
+import { env } from '#infrastructure/config/environment.config.js'
+import { PREFIX } from '#shared/utils/constant.js'
+import { redisClient } from '#infrastructure/database/init.redis.js'
+import { addressModel } from '#modules/address/models/address.model.js'
+import orderRepo from '#modules/order/repos/order.repo.js'
+
+const calculateFee = async ({ shopId, toAddress, weight }) => {
+  if (env.NODE_ENV === 'test') {
+    return { feeShip: 15000 }
+  }
+  try {
+    const [shopAdrress, userAddress] = await Promise.all([
+      addressModel.findOne({ owner_id: converter.toObjectId(shopId), owner_type: 'shop' }),
+      addressModel.findOne({ _id: converter.toObjectId(toAddress), owner_type: 'user' })
+    ])
+
+    if (!userAddress) throw new ApiError(StatusCodes.BAD_REQUEST, 'please register address before order')
+
+    const prefix = `${PREFIX.SHIPPING_FEE}:${shopAdrress.district_id}_${userAddress.district_id}_${userAddress.ward_code}_${weight}`
+    const cacheFee = await redisClient.get(prefix)
+    if (cacheFee) return { feeShip: parseInt(cacheFee, 10) }
+
+    const payload = {
+      'from_district_id': shopAdrress.district_id,
+      'to_district_id': userAddress.district_id,
+      'to_ward_code': String(userAddress.ward_code),
+      'service_type_id': 2,
+      'weight': weight || 500,
+      'insurance_value': 0 // bảo hiệm 0 fasle
+    }
+
+    const response = await axios.post(`${env.GHN_API_URL}/shipping-order/fee`, payload, {
+      headers: {
+        'Token': env.GHN_API_TOKEN,
+        'ShopId': env.GHN_SHOP_ID, //shop Id yêu cầu mỗi shop phải tạo
+        'Content-Type': 'application/json'
+      }
+    })
+    const feeShip = response.data.data.total
+    await redisClient.set(prefix, feeShip, 'EX', 86400) //1day
+    return { userAddress, feeShip }
+  } catch (error) {
+    console.error('Error calcutate fee GHN:', error.response?.data || error.message)
+    return { feeShip: 15000 }
+  }
+}
+
+const shippingSuccess = async (orderId) => {
+  const order = await orderRepo.changeStatusOrder({
+    orderId, statusOrder: 'shipped',
+    statusPayment: 'paid',
+  })
+  return order
+  //cập nhật doanh thu...
+}
+
+export default {
+  calculateFee, shippingSuccess
+}

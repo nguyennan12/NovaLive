@@ -1,12 +1,12 @@
 import { createRealApp } from '../helpers/appFactory.js'
 import { http } from '../helpers/http.js'
 import { signup, login, authHeaders, activateUser } from '../helpers/auth.js'
-import { skuModel } from '#models/sku.model.js'
-import orderModel from '#models/order.model.js'
-import inventoryModel from '#models/inventory.model.js'
+import { skuModel } from '#modules/product/models/sku.model.js'
+import orderModel from '#modules/order/models/order.model.js'
+import inventoryModel from '#modules/inventory/models/inventory.model.js'
 import crypto from 'crypto'
 import qs from 'qs'
-import { sortObject } from '#helpers/object.helper.js'
+import { sortObject } from '#shared/helpers/object.helper.js'
 
 let app
 let sellerToken, sellerId, buyerToken, buyerId

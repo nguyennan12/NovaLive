@@ -1,5 +1,5 @@
 import Joi from 'joi'
-import { EMAIL_RULE, EMAIL_RULE_MESSAGE, PASSWORD_RULE, PASSWORD_RULE_MESSAGE, OTP_TOKEN_RULE, OTP_TOKEN_RULE_MESSAGE } from '#utils/validator.js'
+import { EMAIL_RULE, EMAIL_RULE_MESSAGE, PASSWORD_RULE, PASSWORD_RULE_MESSAGE, OTP_TOKEN_RULE, OTP_TOKEN_RULE_MESSAGE } from '#shared/utils/validator.js'
 
 const signUp = {
   body: Joi.object().keys({
