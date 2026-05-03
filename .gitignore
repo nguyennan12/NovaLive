@@ -30,7 +30,3 @@ lerna-debug.log*
 
 # Project specific
 src/logs/
-seed/
-scripts/
-total-knowledge.md
-note.md
