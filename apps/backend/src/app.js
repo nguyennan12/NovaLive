@@ -6,12 +6,14 @@ import cookieParser from 'cookie-parser'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import connectDB from './infrastructure/database/init.mongodb.js'
+import { initAccessControl } from '#infrastructure/config/rbac.config.js'
 import swaggerUi from 'swagger-ui-express'
 import swaggerDocument from './infrastructure/config/swagger-output.json' with { type: 'json' }
 
 const app = express()
 
 await connectDB()
+await initAccessControl()
 
 app.use(cookieParser())
 app.use(express.json())

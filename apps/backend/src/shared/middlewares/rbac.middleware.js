@@ -11,21 +11,22 @@ const grantAccess = (actions, resource) => {
     if (!userId) throw new ApiError(StatusCodes.UNAUTHORIZED, 'User not authenticated')
     try {
       const roleName = (await redisClient.get(`${PREFIX.USER_RULE}:${userId}`)) || req.user?.role
-      //action có thể thêm nhiều nếu có nhiều role có quyền truy cập -> tạo list array
       const actionList = Array.isArray(actions) ? actions : [actions]
       let permission = null
       const hasPermission = actionList.some(action => {
-        // Convert create:any -> createAny or use directly
+        // Convert create:any -> createAny
         const methodName = action.includes(':')
           ? action.split(':').map((s, i) => i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1)).join('')
           : action
 
-        if (ac.can(roleName) && typeof ac.can(roleName)[methodName] === 'function') {
+        try {
           const p = ac.can(roleName)[methodName](resource)
           if (p.granted) {
             permission = p
             return true
           }
+        } catch {
+          // Role not registered in grants — treat as no permission
         }
         return false
       })
