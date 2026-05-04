@@ -32,7 +32,7 @@ export const createSpuSchema = {
 
 export const updateSpuSchema = {
   params: Joi.object({
-    id: Joi.string().pattern(OBJECT_ID_RULE).required()
+    productId: Joi.string().pattern(OBJECT_ID_RULE).required()
   }),
   body: Joi.object({
     ...spuBase

@@ -131,7 +131,7 @@ describe('Full E-commerce Flow (Split steps)', () => {
       .set(authHeaders({ token: sellerToken, userId: sellerId }))
       .send({
         spu_name: 'iPhone 15',
-        spu_thumb: 'thumb_url',
+        spu_thumb: 'https://example.com/iphone15.jpg',
         spu_description: 'New iPhone',
         spu_price: 1000,
         spu_quantity: 50,

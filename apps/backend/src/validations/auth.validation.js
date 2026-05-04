@@ -14,6 +14,7 @@ const verify = {
     otpToken: Joi.string().required().pattern(OTP_TOKEN_RULE).messages(OTP_TOKEN_RULE_MESSAGE)
   })
 }
+
 const login = {
   body: Joi.object().keys({
     email: Joi.string().required().pattern(EMAIL_RULE).messages(EMAIL_RULE_MESSAGE),
@@ -21,8 +22,15 @@ const login = {
   })
 }
 
+const sendMail = {
+  body: Joi.object().keys({
+    email: Joi.string().required().pattern(EMAIL_RULE).messages(EMAIL_RULE_MESSAGE)
+  })
+}
+
 export default {
   signUp,
   verify,
-  login
+  login,
+  sendMail
 }

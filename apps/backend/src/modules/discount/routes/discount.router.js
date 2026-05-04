@@ -3,7 +3,7 @@ import asyncHandler from '#shared/helpers/asyncHandler.js'
 import express from 'express'
 import authentication from '#shared/middlewares/authentication.middleware.js'
 import validate from '#shared/middlewares/validate.middleware.js'
-import { createDiscountSchema, updateDiscountSchema } from '#validations/discount.validation'
+import { createDiscountSchema, updateDiscountSchema } from '#validations/discount.validation.js'
 
 import grantAccess from '#shared/middlewares/rbac.middleware.js'
 

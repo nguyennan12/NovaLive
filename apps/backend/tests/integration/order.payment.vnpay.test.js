@@ -83,7 +83,7 @@ describe('Order Payment VNPAY Flow (integration)', () => {
       .set(authHeaders({ token: sellerToken, userId: sellerId }))
       .send({
         spu_name: 'VNP Product',
-        spu_thumb: 'thumb_url',
+        spu_thumb: 'https://example.com/vnp-product.jpg',
         spu_description: 'Test product for vnp',
         spu_price: 1000,
         spu_quantity: 10,

@@ -69,7 +69,7 @@ describe('Livestream Flow (Split steps)', () => {
       .set(authHeaders({ token, userId }))
       .send({
         spu_name: 'Stream Product',
-        spu_thumb: 'thumb_url',
+        spu_thumb: 'https://example.com/stream-product.jpg',
         spu_description: 'Test product for stream',
         spu_price: 50000,
         spu_quantity: 10,

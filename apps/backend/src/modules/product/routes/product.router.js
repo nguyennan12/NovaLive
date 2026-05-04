@@ -2,28 +2,31 @@ import productController from '#modules/product/controllers/product.controller.j
 import asyncHandler from '#shared/helpers/asyncHandler.js'
 import authentication from '#shared/middlewares/authentication.middleware.js'
 import express from 'express'
-// import { productValidation } from '#validations/product.validation.js'
+import validate from '#shared/middlewares/validate.middleware.js'
+import { createSpuSchema, updateSpuSchema } from '#validations/product.validation.js'
 import grantAccess from '#shared/middlewares/rbac.middleware.js'
 
 const Router = express.Router()
-// === User ===
+
+// === Public (không validate query để tránh strip extra filter params) ===
 Router.get('/search', asyncHandler(productController.searchProduct))
 Router.get('/variation', asyncHandler(productController.getOneSku))
 Router.get('/variations/:spuId', asyncHandler(productController.getAllSkuBySpuId))
 Router.get('/skus', asyncHandler(productController.querySkusList))
 Router.get('/', asyncHandler(productController.getAllProducts))
 Router.get('/:productId', asyncHandler(productController.getProductDetail))
-//  === Authentication ===
+
+// === Authentication ===
 Router.use(authentication)
+
 // === Shop ===
 Router.get('/stats', grantAccess('read:own', 'PRODUCT'), asyncHandler(productController.getProductStats))
 Router.get('/me/public', grantAccess('read:own', 'PRODUCT'), asyncHandler(productController.getPublishedProduct))
 Router.get('/me/draft', grantAccess('read:own', 'PRODUCT'), asyncHandler(productController.getDraftProduct))
 
+Router.post('/', grantAccess('create:own', 'PRODUCT'), validate(createSpuSchema), asyncHandler(productController.createProduct))
 
-Router.post('/', grantAccess('create:own', 'PRODUCT'), asyncHandler(productController.createProduct))
-
-Router.patch('/:productId', grantAccess('update:own', 'PRODUCT'), asyncHandler(productController.updateProduct))
+Router.patch('/:productId', grantAccess('update:own', 'PRODUCT'), validate(updateSpuSchema), asyncHandler(productController.updateProduct))
 Router.patch('/:productId/sku/:skuId', grantAccess('update:own', 'PRODUCT'), asyncHandler(productController.updateSingleSku))
 Router.patch('/:productId/publish', grantAccess('update:own', 'PRODUCT'), asyncHandler(productController.publishProduct))
 Router.patch('/:productId/unpublish', grantAccess('update:own', 'PRODUCT'), asyncHandler(productController.unPublishProduct))

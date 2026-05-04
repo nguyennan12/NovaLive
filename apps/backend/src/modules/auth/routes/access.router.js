@@ -9,7 +9,7 @@ const Router = express.Router()
 
 Router.post('/signup', validate(authValidation.signUp), asyncHandler(accessController.signUp))
 Router.post('/verify', validate(authValidation.verify), asyncHandler(accessController.verify))
-Router.post('/sendmail', asyncHandler(accessController.sendMail))
+Router.post('/sendmail', validate(authValidation.sendMail), asyncHandler(accessController.sendMail))
 Router.post('/login', validate(authValidation.login), asyncHandler(accessController.login))
 
 Router.use(authentication)
