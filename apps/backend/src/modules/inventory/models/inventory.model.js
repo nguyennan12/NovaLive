@@ -13,7 +13,7 @@ const inventorySchema = new Schema(
     inven_reserved: { type: Number, default: 0 },
     inven_reservations: [
       {
-        orderId: { type: String },
+        orderId: { type: Schema.Types.ObjectId, ref: 'Order' },
         quantity: Number,
         createdAt: Date
       }

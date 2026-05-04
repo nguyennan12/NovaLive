@@ -26,13 +26,19 @@ const listenToCancelOrderQueue = async (channel) => {
           console.log(`[DLX] Order ${orderId} expired. Cancelling order and releasing stock...`)
           await orderModel.updateOne(
             { _id: order._id },
-            { order_status: 'cancelled', 'order_payment.paymentStatus': 'failed' },
+            {
+              $set: {
+                order_status: 'cancelled',
+                'order_payment.paymentStatus': 'failed',
+                cancelledAt: new Date()
+              }
+            },
             { session }
           )
           //danh sách các sản phẩm bị cancel để nhả kho
           const itemsToRelease = order.order_products.map(item => ({ skuId: item.skuId, quantity: item.quantity }))
           //bắt đầu nhả kho
-          await inventoryService.releaseStock(order.order_trackingNumber, itemsToRelease, session)
+          await inventoryService.releaseStock(order._id, itemsToRelease, session)
           //cancel discount đã sử dụng
           await discountService.cancelDiscountCode(order.order_appliedDiscountCodes, order.order_userId, session)
           console.log(`[DLX] Cancel ordere ${orderId} successfully! sku comback inventory.`)

@@ -89,14 +89,14 @@ const vnpayIpn = async (vnp_Params) => {
     if (rspCode === '00') {
       await Promise.all([
         orderRepo.changeStatusOrder({ orderId: orderId, statusOrder: 'processing', statusPayment: 'paid' }),
-        inventoryService.confirmDeductStock(orderId, items),
+        inventoryService.confirmDeductStock(order._id, items, order.order_userId),
         ...order.order_products.map(p => spuRepo.incrementProductSold(p.productId, p.quantity))
       ])
       console.log(`[VNPAY] Đơn ${orderId} thanh toán THÀNH CÔNG. Đã trừ kho!`)
     } else {
       await Promise.all([
         orderRepo.changeStatusOrder({ orderId: orderId, statusOrder: 'cancelled', statusPayment: 'failed' }),
-        inventoryService.releaseStock(orderId, items)
+        inventoryService.releaseStock(order._id, items)
       ])
       console.log(`[VNPAY] Đơn ${orderId} thanh toán THẤT BẠI. Đã nhả kho!`)
     }
@@ -142,12 +142,12 @@ const vnpayReturn = async (vnp_Params) => {
     const items = claimed.order_products.map(item => ({ skuId: item.skuId, quantity: item.quantity }))
     if (code === '00') {
       await Promise.all([
-        inventoryService.confirmDeductStock(orderId, items),
+        inventoryService.confirmDeductStock(claimed._id, items, claimed.order_userId),
         ...claimed.order_products.map(p => spuRepo.incrementProductSold(p.productId, p.quantity))
       ])
       MyLogger.info(`[VNPAY_RETURN] Đơn ${orderId} xử lý thành công (IPN chưa tới).`, '[PAYMENT_VNPAY]')
     } else {
-      await inventoryService.releaseStock(orderId, items)
+      await inventoryService.releaseStock(claimed._id, items)
       MyLogger.info(`[VNPAY_RETURN] Đơn ${orderId} thất bại, đã nhả kho.`, '[PAYMENT_VNPAY]')
     }
   }
@@ -175,7 +175,7 @@ const confirmCodPayment = async ({ orderId, email, otpToken }) => {
   const items = foundOrder.order_products.map(item => ({ skuId: item.skuId, quantity: item.quantity, shopId: item.shopId }))
   await Promise.all([
     orderRepo.changeStatusOrder({ orderId: foundOrder.order_trackingNumber, statusOrder: 'processing', statusPayment: 'pending' }),
-    inventoryService.confirmDeductStock(foundOrder.order_trackingNumber, items, foundOrder.order_userId),
+    inventoryService.confirmDeductStock(foundOrder._id, items, foundOrder.order_userId),
     ...foundOrder.order_products.map(p => spuRepo.incrementProductSold(p.productId, p.quantity))
   ])
   return { success: true, orderId: foundOrder.order_trackingNumber }

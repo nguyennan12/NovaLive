@@ -29,7 +29,7 @@ const ListenToReserveInventory = async (channel) => {
               filter: { inven_skuId: converter.toObjectId(item.skuId) },
               update: {
                 $inc: { inven_reserved: item.quantity },
-                $push: { inven_reservations: { orderId: data.orderId, quantity: item.quantity } }
+                $push: { inven_reservations: { orderId: converter.toObjectId(data.orderId), quantity: item.quantity } }
               }
             }
           }))

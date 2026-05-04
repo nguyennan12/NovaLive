@@ -35,9 +35,17 @@ const getChartDataByShop = async (req, res, next) => {
     metadata: await inventoryHistoryService.getChartDataByShop({ shopId: req.user.shopId, ...req.query })
   }).send(res)
 }
+const getReservedStockByShop = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get reserved stock successfully!',
+    metadata: await inventoryService.getReservedStockByShop({ shopId: req.user.shopId })
+  }).send(res)
+}
 
 export default {
   addStockToInventory,
   getHistoryInventoryByShop,
-  getChartDataByShop
+  getChartDataByShop,
+  getReservedStockByShop
 }

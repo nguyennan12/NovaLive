@@ -13,5 +13,6 @@ Router.use(authentication)
 Router.post('/', grantAccess('create:own', 'INVENTORY'), validate(addStockSchema), asyncHandler(inventoryController.addStockToInventory))
 Router.get('/history', grantAccess('read:own', 'INVENTORY'), asyncHandler(inventoryController.getHistoryInventoryByShop))
 Router.get('/chart', grantAccess('read:own', 'INVENTORY'), asyncHandler(inventoryController.getChartDataByShop))
+Router.get('/reserved', grantAccess('read:own', 'INVENTORY'), asyncHandler(inventoryController.getReservedStockByShop))
 
 export const inventoryRouter = Router

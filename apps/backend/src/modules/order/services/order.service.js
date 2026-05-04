@@ -1,4 +1,5 @@
 import ApiError from '#shared/core/error.response.js'
+import mongoose from 'mongoose'
 import { RabbitMQClient } from '#infrastructure/database/init.rabbitMQ.js'
 import { validateBuyNowItems } from '#shared/helpers/order.helper.js'
 import { addressModel } from '#modules/address/models/address.model.js'
@@ -147,6 +148,7 @@ const orderByUser = async ({ userId, reqBody }) => {
   if (Math.abs(checkoutOrder.finalCheckout - client_totalCheckout) > 1) throw new ApiError(StatusCodes.BAD_REQUEST, 'Price product is change, please check again!')
 
   const orderCode = generateOrderCode()
+  const orderId = new mongoose.Types.ObjectId()
   //biến object lồng nhau thành dạng phẳng (flatMap)
   const allProducts = shopOrderIds.flatMap(shop =>
     shop.item_products.map(item => ({
@@ -159,7 +161,7 @@ const orderByUser = async ({ userId, reqBody }) => {
     allProducts.map(async (item) => {
       const isReserved = await inventoryService.reserveStock({
         userId: userId,
-        orderId: orderCode,
+        orderId: orderId,
         items: [{ skuId: item.skuId, quantity: item.quantity }]
       })
       return { skuId: item.skuId, isSuccess: isReserved.status, quantity: item.quantity }
@@ -171,12 +173,13 @@ const orderByUser = async ({ userId, reqBody }) => {
     //còn những product thành công thì nhả kho ra
     const successItems = reserveResults.filter(result => result.isSuccess === 'SUCCESS')
     if (successItems.length > 0) {
-      await inventoryService.releaseStock(orderCode, successItems)
+      await inventoryService.releaseStock(orderId, successItems)
     }
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Sorry, some items in your cart are no longer available')
   }
   //tạo 1 order mới
   const newOrder = await orderModel.create({
+    _id: orderId,
     order_userId: userId,
     order_checkout: checkoutOrder,
     order_shipping: userAddress,

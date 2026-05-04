@@ -12,3 +12,7 @@ export const getChartArtInventoryAPI = async (period) => {
   const res = await authorizedAxiosInstance.get(`inventory/chart?period=${period}`)
   return res.metadata
 }
+export const getReservedStocAPI = async () => {
+  const res = await authorizedAxiosInstance.get('inventory/reserved')
+  return res.metadata
+}

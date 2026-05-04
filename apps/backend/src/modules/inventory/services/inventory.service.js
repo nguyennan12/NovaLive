@@ -11,6 +11,7 @@ import { getTotalStockFromSkus } from '#shared/utils/data.js'
 import inventoryHistoryService from './inventoryHistory.service.js'
 import { StatusCodes } from 'http-status-codes'
 import MyLogger from '#infrastructure/loggers/MyLogger.js'
+import orderModel from '#modules/order/models/order.model.js'
 
 //lua script
 const reserveStockScript = fileHelper.loadLuaScript('infrastructure/lua/reserveStock.lua')
@@ -139,11 +140,11 @@ const releaseStock = async (orderId, items, session) => {
       updateOne: {
         filter: {
           inven_skuId: converter.toObjectId(item.skuId),
-          'inven_reservations.orderId': orderId
+          'inven_reservations.orderId': converter.toObjectId(orderId)
         },
         update: {
           $inc: { inven_reserved: -item.quantity },
-          $pull: { inven_reservations: { orderId: orderId } }
+          $pull: { inven_reservations: { orderId: converter.toObjectId(orderId) } }
         }
       }
     }
@@ -187,14 +188,14 @@ const confirmDeductStock = async (orderId, items, userId) => {
       updateOne: {
         filter: {
           inven_skuId: item.skuId,
-          'inven_reservations.orderId': orderId
+          'inven_reservations.orderId': converter.toObjectId(orderId)
         },
         update: {
           $inc: {
             inven_stock: -item.quantity,
             inven_reserved: -item.quantity
           },
-          $pull: { inven_reservations: { orderId: orderId } }
+          $pull: { inven_reservations: { orderId: converter.toObjectId(orderId) } }
         }
       }
     }
@@ -215,17 +216,81 @@ const confirmDeductStock = async (orderId, items, userId) => {
   } catch {
     MyLogger.error(`Failed to publish history for Order ${orderId}:`, '[RabbitMQ Error] ')
   }
-  //có thể gửi message cho các service khác
   return {
     status: 'SUCCESS',
     message: 'Deduct stock successfully',
     details: result
   }
 }
+
+const getReservedStockByShop = async ({ shopId }) => {
+  const inventories = await inventoryModel.find({
+    inven_shopId: converter.toObjectId(shopId),
+    'inven_reservations.0': { $exists: true }
+  })
+    .populate({ path: 'inven_productId', select: 'spu_name' })
+    .populate({ path: 'inven_skuId', select: 'sku_name' })
+    .lean()
+
+  if (!inventories || inventories.length === 0) return []
+
+  const orderIds = [...new Set(
+    inventories.flatMap(inven => inven.inven_reservations.map(res => res.orderId.toString()))
+  )]
+
+  const orders = await orderModel.find({ _id: { $in: orderIds } })
+    .select('order_products order_trackingNumber order_status createdAt')
+    .lean()
+
+  const orderMap = orders.reduce((acc, order) => {
+    acc[order._id.toString()] = order
+    return acc
+  }, {})
+  const result = inventories.map(inven => {
+
+    const currentSkuIdString = inven.inven_skuId._id.toString()
+
+    const reservedOrders = inven.inven_reservations.map(res => {
+      const orderInfo = orderMap[res.orderId.toString()] || {}
+
+      let actualQuantity = 0
+      if (orderInfo.order_products && orderInfo.order_products.length > 0) {
+        const matchedProduct = orderInfo.order_products.find(
+          item => item.skuId.toString() === currentSkuIdString
+        )
+        if (matchedProduct) {
+          actualQuantity = matchedProduct.quantity
+        }
+      }
+
+      return {
+        orderId: res.orderId,
+        quantity: actualQuantity,
+        order_trackingNumber: orderInfo.order_trackingNumber,
+        order_status: orderInfo.order_status,
+        order_createdAt: orderInfo.createdAt || res.createdAt
+      }
+    })
+      .filter(order => order.quantity > 0)
+
+    const totalReservedQuantity = reservedOrders.reduce((sum, item) => sum + item.quantity, 0)
+
+    return {
+      inventoryId: inven._id,
+      product: inven.inven_productId,
+      sku: inven.inven_skuId,
+      total_reserved: totalReservedQuantity,
+      orders: reservedOrders
+    }
+  })
+
+  return result.filter(item => item.total_reserved > 0).sort((a, b) => new Date(b.order_createdAt) - new Date(a.order_createdAt))
+}
 export default {
   addStockToInventory,
   checkAvailableStock,
   reserveStock,
   releaseStock,
-  confirmDeductStock
+  confirmDeductStock,
+  getReservedStockByShop
 }
