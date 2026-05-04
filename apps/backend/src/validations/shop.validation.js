@@ -3,7 +3,6 @@ import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '#shared/utils/validator.
 
 const objectId = Joi.string().pattern(OBJECT_ID_RULE).messages(OBJECT_ID_RULE_MESSAGE)
 
-// shop.service.js registerShop nhận { name, address, contact }
 const shopAddressSchema = Joi.object({
   street: Joi.string().required(),
   ward: Joi.string().required(),

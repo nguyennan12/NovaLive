@@ -1,10 +1,7 @@
 import Joi from 'joi'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '#shared/utils/validator.js'
-
-// Business logic class sống ở discount.helper.js — re-export để tập trung
 export { DiscountValidate } from '#shared/helpers/discount.helper.js'
 
-// ─── Joi Schemas ──────────────────────────────────────────────────────────────
 
 const discountBase = {
   discount_name: Joi.string(),

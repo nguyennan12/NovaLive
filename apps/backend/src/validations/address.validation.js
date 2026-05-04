@@ -1,7 +1,4 @@
 import Joi from 'joi'
-import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '#shared/utils/validator.js'
-
-const objectId = Joi.string().pattern(OBJECT_ID_RULE).messages(OBJECT_ID_RULE_MESSAGE)
 
 export const createAddressSchema = {
   body: Joi.object({
@@ -20,14 +17,4 @@ export const createAddressSchema = {
   })
 }
 
-export const getAddressesSchema = {
-  query: Joi.object({
-    owner_type: Joi.string().valid('user', 'shop')
-  })
-}
 
-export const addressParamSchema = {
-  params: Joi.object({
-    addressId: objectId.required()
-  })
-}

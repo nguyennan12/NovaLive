@@ -10,6 +10,7 @@ import converter from '#shared/utils/converter.js'
 import { getTotalStockFromSkus } from '#shared/utils/data.js'
 import inventoryHistoryService from './inventoryHistory.service.js'
 import { StatusCodes } from 'http-status-codes'
+import MyLogger from '#infrastructure/loggers/MyLogger.js'
 
 //lua script
 const reserveStockScript = fileHelper.loadLuaScript('infrastructure/lua/reserveStock.lua')
@@ -162,7 +163,25 @@ const releaseStock = async (orderId, items, session) => {
 }
 
 //khi thanh toán xong thì trừ đi luôn stock
-const confirmDeductStock = async (orderId, items) => {
+const confirmDeductStock = async (orderId, items, userId) => {
+  const skuIds = items.map(item => item.skuId)
+  const inventories = await inventoryModel.find({ inven_skuId: { $in: skuIds } }).lean()
+  //payload lưu history
+  const historiesPayload = items.map(item => {
+    const inven = inventories.find(i => i.inven_skuId.toString() === item.skuId.toString())
+    if (!inven) throw new Error(`Inventory not found for SKU: ${item.skuId}`)
+    return {
+      shopId: inven.inven_shopId,
+      productId: inven.inven_productId,
+      skuId: item.skuId,
+      userId: userId,
+      quantity: item.quantity,
+      oldStock: inven.inven_stock,
+      newStock: inven.inven_stock - item.quantity,
+      orderId: orderId
+    }
+  })
+
   const bulkOperations = items.map(item => {
     return {
       updateOne: {
@@ -181,6 +200,21 @@ const confirmDeductStock = async (orderId, items) => {
     }
   })
   const result = await inventoryModel.bulkWrite(bulkOperations)
+  if (result.modifiedCount !== items.length) {
+    throw new Error('Deduct stock failed: Reservation not found or already deducted')
+  }
+  //tạo message gửi queue
+  const messagePayload = {
+    action: 'LOG_SALE_DEDUCT_HISTORY',
+    orderId: orderId,
+    timestamp: new Date().toISOString(),
+    data: historiesPayload
+  }
+  try {
+    await RabbitMQClient.publishMessage('inventory_history_queue', messagePayload)
+  } catch {
+    MyLogger.error(`Failed to publish history for Order ${orderId}:`, '[RabbitMQ Error] ')
+  }
   //có thể gửi message cho các service khác
   return {
     status: 'SUCCESS',

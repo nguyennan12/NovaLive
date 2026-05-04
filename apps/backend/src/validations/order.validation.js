@@ -23,9 +23,9 @@ const shopOrderSchema = Joi.object({
 })
 
 const checkoutBodyBase = {
+  userAddressId: objectId,
   cartId: objectId.allow(null, ''),
   shopOrderIds: Joi.array().items(shopOrderSchema).min(1).required(),
-  userAddressId: objectId.required(),
   productDiscountCode: Joi.string().allow(null, ''),
   shippingDiscountCode: Joi.string().allow(null, '')
 }
@@ -37,6 +37,7 @@ export const checkoutSchema = {
 export const orderByUserSchema = {
   body: Joi.object({
     ...checkoutBodyBase,
+    userAddressId: objectId.required(),
     userPayment: Joi.string().valid('cod', 'vnpay', 'stripe', 'momo').default('cod'),
     client_totalCheckout: Joi.number().min(0).required()
   })

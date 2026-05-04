@@ -172,10 +172,10 @@ const confirmCodPayment = async ({ orderId, email, otpToken }) => {
   const lastOtpToken = await OtpModel.findOne({ otp_email: email }).sort({ createdAt: -1 })
   if (!lastOtpToken || lastOtpToken.otp_token != otpToken) throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid OTP code!')
 
-  const items = foundOrder.order_products.map(item => ({ skuId: item.skuId, quantity: item.quantity }))
+  const items = foundOrder.order_products.map(item => ({ skuId: item.skuId, quantity: item.quantity, shopId: item.shopId }))
   await Promise.all([
     orderRepo.changeStatusOrder({ orderId: foundOrder.order_trackingNumber, statusOrder: 'processing', statusPayment: 'pending' }),
-    inventoryService.confirmDeductStock(foundOrder.order_trackingNumber, items),
+    inventoryService.confirmDeductStock(foundOrder.order_trackingNumber, items, foundOrder.order_userId),
     ...foundOrder.order_products.map(p => spuRepo.incrementProductSold(p.productId, p.quantity))
   ])
   return { success: true, orderId: foundOrder.order_trackingNumber }

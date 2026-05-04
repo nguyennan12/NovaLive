@@ -24,11 +24,6 @@ export const updateLiveSessionSchema = {
   }).min(1)
 }
 
-export const liveIdParamSchema = {
-  params: Joi.object({
-    liveId: objectId.required()
-  })
-}
 
 export const pinProductSchema = {
   params: Joi.object({
@@ -39,7 +34,6 @@ export const pinProductSchema = {
   })
 }
 
-// addProductToLiveSession: service dùng spu_id + skus[].sku_id
 const liveSkuSchema = Joi.object({
   sku_id: Joi.string().required(),
   live_price: Joi.number().min(0).required()

@@ -6,7 +6,7 @@ const objectId = Joi.string().pattern(OBJECT_ID_RULE).messages(OBJECT_ID_RULE_ME
 export const addToCartSchema = {
   body: Joi.object({
     skuId: objectId.required(),
-    productId: objectId,            // optional — service stores but không bắt buộc
+    productId: objectId,
     shopId: objectId.required(),
     quantity: Joi.number().integer().min(1).required(),
     price: Joi.number().min(0),

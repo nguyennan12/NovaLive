@@ -10,7 +10,6 @@ export const createPaymentUrlSchema = {
   })
 }
 
-// payment.service.js confirmCodPayment({ orderId, email, otpToken })
 export const confirmCodSchema = {
   body: Joi.object({
     orderId: Joi.string().required(),

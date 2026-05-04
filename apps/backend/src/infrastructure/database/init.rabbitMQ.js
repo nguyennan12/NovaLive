@@ -22,6 +22,7 @@ const connectRabbitMQ = async () => {
     console.log('Inventory worker run success')
     await orderWorker.listenToCancelOrderQueue(channel)
     console.log('order worker run success')
+    await inventoryWorker.ListenToInventoryHistoryQueue(channel)
 
     console.log('RabbitMQ Connected!')
   } catch (error) {

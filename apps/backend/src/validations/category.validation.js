@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-// categoryId trong route dùng cat_id (string), không phải MongoDB ObjectId
+
 const catIdParam = Joi.string().required()
 
 export const createCategorySchema = {
@@ -25,7 +25,7 @@ export const categoryParamSchema = {
   })
 }
 
-// addAttributeToCategory: service dùng { attributeId, isRequired, displayOrder }
+
 export const addAttributeSchema = {
   params: Joi.object({
     categoryId: catIdParam

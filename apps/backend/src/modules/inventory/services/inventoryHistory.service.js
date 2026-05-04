@@ -2,7 +2,7 @@
 import { inventoryHistoryModel } from '#modules/inventory/models/inventoryHistory.model.js'
 import converter from '#shared/utils/converter.js'
 
-const createHistory = async ({ shopId, productId, skuId, userId, userEmail, type, quantity, oldStock, newStock, reason, note, location }) => {
+const createHistory = async ({ shopId, productId, skuId, userId, userEmail, type, quantity, oldStock, newStock, reason, note = '', location = '' }) => {
   return await inventoryHistoryModel.create({
     inven_shopId: converter.toObjectId(shopId),
     inven_productId: converter.toObjectId(productId),
@@ -17,6 +17,24 @@ const createHistory = async ({ shopId, productId, skuId, userId, userEmail, type
     inven_note: note,
     inven_location: location
   })
+}
+
+const createHistorySaleBulk = async (historiesData) => {
+  const bulkOperations = historiesData.map(item => ({
+    inven_shopId: converter.toObjectId(item.shopId),
+    inven_productId: converter.toObjectId(item.productId),
+    inven_skuId: converter.toObjectId(item.skuId),
+    inven_userId: converter.toObjectId(item.userId),
+    inven_userEmail: item.userEmail,
+    inven_type: 'OUT',
+    inven_quantity: item.quantity,
+    inven_oldStock: item.oldStock,
+    inven_newStock: item.newStock,
+    inven_reason: 'SALE_DEDUCT',
+    inven_note: `Xuất kho cho đơn hàng #${item.orderId}`
+  }))
+
+  return await inventoryHistoryModel.insertMany(bulkOperations)
 }
 
 const getHistoryByShop = async ({ shopId, limit = 50, page = 1, type = 'all' }) => {
@@ -119,5 +137,6 @@ const getChartDataByShop = async ({ shopId, period = 'today' }) => {
 export default {
   createHistory,
   getHistoryByShop,
-  getChartDataByShop
+  getChartDataByShop,
+  createHistorySaleBulk
 }

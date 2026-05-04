@@ -6,7 +6,7 @@ const inventoryHistorySchema = new Schema({
   inven_productId: { type: Types.ObjectId, ref: DOCUMENT_NAME.SPU, required: true },
   inven_skuId: { type: Types.ObjectId, ref: DOCUMENT_NAME.SKU, required: true },
   inven_userId: { type: Types.ObjectId, ref: DOCUMENT_NAME.USER, required: true },
-  inven_userEmail: { type: String, required: true },
+  inven_userEmail: { type: String },
   inven_type: { type: String, enum: ['IN', 'OUT'], required: true },
   inven_quantity: { type: Number, required: true },
   inven_oldStock: { type: Number, required: true },
