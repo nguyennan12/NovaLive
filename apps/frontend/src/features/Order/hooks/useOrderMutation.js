@@ -7,7 +7,7 @@ export const useOrderMutation = ({ setCreatedOrder, setShowCodOtp, onSuccessConf
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
-  const invalidateOrders = () => queryClient.invalidateQueries({ queryKey: ['my-orders'] })
+  const invalidateOrders = () => queryClient.invalidateQueries({ queryKey: ['my_orders'] })
 
   //  Mutation Đặt hàng chính
   const orderMutation = useMutation({

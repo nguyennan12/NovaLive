@@ -6,8 +6,12 @@ import { useNavigate } from 'react-router-dom'
 import OrderDetailDrawer from '../components/OrderHistoryPage/OrderDetailDrawer'
 import OrderHistoryCard, { OrderHistoryCardSkeleton } from '../components/OrderHistoryPage/OrderHistoryCard'
 import { ORDER_TABS } from '../constants/orderStatus'
-import { useMyOrders } from '../hooks/useMyOrders'
+import { useInfiniteOrders } from '../hooks/useMyOrders'
 import { useOrderMutation } from '../hooks/useOrderMutation'
+import { useInfiniteScroll } from '~/common/hooks/useScroll'
+import { CircularProgress } from '@mui/material'
+import { LIMIT } from '~/common/utils/constant'
+
 
 function EmptyOrders({ onShop }) {
   return (
@@ -42,17 +46,18 @@ function OrderHistoryPage() {
   const navigate = useNavigate()
   const [tabIdx, setTabIdx] = useState(0)
   const [detailOrder, setDetailOrder] = useState(null)
+  const [status, setStatus] = useState('all')
 
-  const { orders, isLoading } = useMyOrders()
+  const { orders, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteOrders(status)
+  const lastOrderRef = useInfiniteScroll({ isFetchingNextPage, fetchNextPage, hasNextPage })
   const { cancelMutation, retryVNPayMutation, invalidateOrders } = useOrderMutation()
 
-  // Lọc theo tab phía client
-  const filteredOrders = useMemo(() => {
-    const tab = ORDER_TABS[tabIdx]
-    if (!tab.statuses) return orders
-    return orders.filter(o => tab.statuses.includes(o.order_status))
-  }, [orders, tabIdx])
-
+  const handleTabChange = (_, newValue) => {
+    setTabIdx(newValue)
+    const tab = ORDER_TABS[newValue]
+    const currentStatus = tab.status ?? 'all'
+    setStatus(currentStatus)
+  }
 
   return (
     <Container maxWidth="md" sx={{ pt: { xs: 2, sm: 3 }, pb: 6 }}>
@@ -84,7 +89,7 @@ function OrderHistoryPage() {
       }}>
         <Tabs
           value={tabIdx}
-          onChange={(_, v) => setTabIdx(v)}
+          onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
           allowScrollButtonsMobile
@@ -114,7 +119,7 @@ function OrderHistoryPage() {
       <Box>
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => <OrderHistoryCardSkeleton key={i} />)
-        ) : filteredOrders.length === 0 ? (
+        ) : orders.length === 0 ? (
           <Box sx={{
             bgcolor: 'primary.main', borderRadius: 3,
             border: '1px solid', borderColor: 'divider'
@@ -122,16 +127,25 @@ function OrderHistoryPage() {
             <EmptyOrders onShop={() => navigate('/')} />
           </Box>
         ) : (
-          filteredOrders.map(order => (
-            <OrderHistoryCard
-              key={order._id}
-              order={order}
-              onViewDetail={setDetailOrder}
-              cancelMutation={cancelMutation}
-              retryVNPayMutation={retryVNPayMutation}
-              onOrderUpdated={invalidateOrders}
-            />
-          ))
+          orders.map((order, idx) => {
+            const isLast = idx === orders.length - 1
+            return (
+              <OrderHistoryCard
+                key={order._id}
+                order={order}
+                onViewDetail={setDetailOrder}
+                cancelMutation={cancelMutation}
+                retryVNPayMutation={retryVNPayMutation}
+                onOrderUpdated={invalidateOrders}
+                ref={isLast ? lastOrderRef : null}
+              />
+            )
+          })
+        )}
+        {isFetchingNextPage && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+            <CircularProgress size={30} />
+          </Box>
         )}
       </Box>
 

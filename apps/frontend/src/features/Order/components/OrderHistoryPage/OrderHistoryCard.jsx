@@ -2,7 +2,7 @@ import PaymentRoundedIcon from '@mui/icons-material/PaymentRounded'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import StorefrontRoundedIcon from '@mui/icons-material/StorefrontRounded'
 import { Box, Button, Chip, CircularProgress, Divider, Skeleton, Typography } from '@mui/material'
-import { useState } from 'react'
+import { forwardRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { formatDate, formatVND } from '~/common/utils/formatters'
 import { selectCurrentUser } from '~/store/user/userSlice'
@@ -29,7 +29,7 @@ function StatusChip({ status }) {
   )
 }
 
-function OrderHistoryCard({ order, onViewDetail, cancelMutation, retryVNPayMutation, onOrderUpdated }) {
+const OrderHistoryCard = forwardRef(function OrderHistoryCard({ order, onViewDetail, cancelMutation, retryVNPayMutation, onOrderUpdated }, ref) {
   const [showCancel, setShowCancel] = useState(false)
   const [showCodRetry, setShowCodRetry] = useState(false)
   const user = useSelector(selectCurrentUser)
@@ -67,7 +67,7 @@ function OrderHistoryCard({ order, onViewDetail, cancelMutation, retryVNPayMutat
 
   return (
     <>
-      <Box sx={{
+      <Box ref={ref} sx={{
         borderRadius: 3, mb: 2,
         border: '1px solid', borderColor: 'divider',
         ...glassSx,
@@ -287,7 +287,7 @@ function OrderHistoryCard({ order, onViewDetail, cancelMutation, retryVNPayMutat
       />
     </>
   )
-}
+})
 
 export function OrderHistoryCardSkeleton() {
   return (

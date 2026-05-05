@@ -21,7 +21,7 @@ const getAllOrderByUser = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Get orders successfully!',
-    metadata: await orderService.getAllOrderByUser({ userId: req.user.userId, status: req.query.status })
+    metadata: await orderService.getAllOrderByUser({ userId: req.user.userId, ...req.query })
   }).send(res)
 }
 

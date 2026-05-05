@@ -61,13 +61,22 @@ export const STATUS_CONFIG = {
 
 // Tabs cho OrderHistoryPage
 export const ORDER_TABS = [
-  { label: 'Tất cả', statuses: null },
-  { label: 'Chờ xác nhận', statuses: ['pending'] },
-  { label: 'Đang xử lý', statuses: ['processing', 'confirmed'] },
-  { label: 'Đang giao', statuses: ['shipped'] },
-  { label: 'Đã giao', statuses: ['delivered'] },
-  { label: 'Đã hủy', statuses: ['cancelled'] }
+  { label: 'Tất cả', statuses: 'all' },
+  { label: 'Chờ xác nhận', status: 'pending' },
+  { label: 'Đang xử lý', status: 'processing' },
+  { label: 'Đang giao', status: 'shipped' },
+  { label: 'Đã giao', status: 'delivered' },
+  { label: 'Đã hủy', status: 'cancelled' }
 ]
+
+export const ORDER_STATUS_MAP = {
+  0: null,
+  1: 'pending',
+  2: 'processing',
+  3: 'shipped',
+  4: 'delivered',
+  5: 'cancelled'
+}
 
 // Timeline các bước theo thứ tự logic của đơn hàng
 export const STATUS_TIMELINE_STEPS = [

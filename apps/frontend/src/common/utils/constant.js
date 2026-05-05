@@ -5,7 +5,8 @@ export const LIMIT_PRODUCTS = 30
 export const LIMIT = {
   PRODUCTS: 30,
   INVENTORY: 10,
-  DISCOUNT: 20
+  DISCOUNT: 20,
+  ORDER: 20
 }
 
 export const PRICE_SLIDER_MIN = 0

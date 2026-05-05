@@ -218,7 +218,7 @@ const orderByUser = async ({ userId, reqBody }) => {
 
 const getAllOrderByUser = async ({ userId, status, limit = 100, page = 1 }) => {
   const query = { order_userId: userId }
-  if (status) query.order_status = status
+  if (status !== 'all') query.order_status = status
   const skip = (page - 1) * limit
   return await orderModel.find(query)
     .populate({

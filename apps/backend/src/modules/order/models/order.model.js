@@ -27,7 +27,7 @@ const orderSchema = new Schema(
     order_appliedDiscountCodes: { type: [String], default: [] },
     order_trackingNumber: { type: String },
     order_status: {
-      type: String, enum: ['pending', 'processing', 'confirmed', 'shipped', 'cancelled', 'delivered'], default: 'pending'
+      type: String, enum: ['pending', 'processing', 'shipped', 'cancelled', 'delivered'], default: 'pending'
     },
     deliveredAt: { type: Date },
     cancelledAt: { type: Date },
