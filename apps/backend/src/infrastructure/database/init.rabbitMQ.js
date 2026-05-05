@@ -3,6 +3,7 @@ import amqp from 'amqplib'
 import { env } from '#infrastructure/config/environment.config.js'
 import orderWorker from '#infrastructure/workers/order.worker.js'
 import inventoryWorker from '#infrastructure/workers/inventory.worker.js'
+import flashsaleWorker from '#infrastructure/workers/flashsale.worker'
 
 
 let channel = null
@@ -15,14 +16,23 @@ const connectRabbitMQ = async () => {
 
     await channel.assertQueue('inventory_queue', { durable: true })
 
-    await setupDelayQueue(channel)
-    console.log('RabbitMQ Delay Queue Setup Success!')
+    await setupDelayOrderQueue(channel)
+    console.log('RabbitMQ Delay Order Queue Setup Success!')
+
+    await setupTimeStartFlashsale(channel)
+    console.log('RabbitMQ Time Start Flashsale Queue Setup Success!')
 
     await inventoryWorker.ListenToReserveInventory(channel)
     console.log('Inventory worker run success')
+
     await orderWorker.listenToCancelOrderQueue(channel)
     console.log('order worker run success')
+
     await inventoryWorker.ListenToInventoryHistoryQueue(channel)
+    console.log('Inventory history worker run success')
+
+    await flashsaleWorker.listenStartFlashSaleQueue(channel)
+    console.log('Flashsale campaign worker run success')
 
     console.log('RabbitMQ Connected!')
   } catch (error) {
@@ -36,8 +46,8 @@ const publishMessage = async (queueName, data) => {
   channel.sendToQueue(queueName, messageBuffer, { persistent: true })
 }
 
-//set up những exchange bind và queue (tạo)
-const setupDelayQueue = async (channel) => {
+//set up những exchange bind và queue (tạo) cho order
+const setupDelayOrderQueue = async (channel) => {
   const DELAY_EX = 'order_delay_exchange'
   const DELAY_QUEUE = 'order_delay_queue'
   const CANCEL_QUEUE = 'order_cancel_queue'
@@ -53,6 +63,24 @@ const setupDelayQueue = async (channel) => {
     }
   })
 }
+
+//set up time start flashsale
+const setupTimeStartFlashsale = async (channel) => {
+  const EXCHANGE = 'flashsale_exchange'
+  const DELAY_QUEUE = 'flashsale_delay_queue'
+  const START_QUEUE = 'flashsale_start_queue'
+
+  await channel.assertExchange(EXCHANGE, 'direct', { durable: true })
+  await channel.assertQueue(START_QUEUE, { durable: true })
+  await channel.bindQueue(START_QUEUE, EXCHANGE, 'start_flashsale')
+  await channel.assertQueue(DELAY_QUEUE, {
+    durable: true,
+    arguments: {
+      'x-dead-letter-exchange': EXCHANGE,
+      'x-dead-letter-routing-key': 'start_flashsale'
+    }
+  })
+}
 //hàm gửi mã order lên queue và xử lý ở worker
 const sendOrderToDelayQueue = async (orderId) => {
   if (!channel) throw new Error('RabbitMQ channel is not ready')
@@ -61,10 +89,21 @@ const sendOrderToDelayQueue = async (orderId) => {
   })
 }
 
+const sendFlashsaleStart = async ({ campaignId, startTime }) => {
+  if (!channel) throw new Error('RabbitMQ channel is not ready')
+  const delay = new Date(startTime).getTime() - Date.now()
+  if (delay < 0) return
+  await channel.sendToQueue('flashsale_delay_queue', Buffer.from(JSON.stringify({ campaignId })), {
+    expiration: delay.toString(),
+    persistent: true
+
+  })
+}
+
 await connectRabbitMQ()
 export const RabbitMQClient = {
   connectRabbitMQ,
   publishMessage,
-  setupDelayQueue,
-  sendOrderToDelayQueue
+  sendOrderToDelayQueue,
+  sendFlashsaleStart
 }

@@ -15,7 +15,7 @@ const flashSaleCampaignSchema = new Schema({
     default: 'draft',
     index: true
   },
-
+  isPublish: { type: Boolean, default: false },
   isDeleted: { type: Boolean, default: false }
 }, {
   collection: COLLECTION_NAME.FLASHSALE_CAMPAIGN,
