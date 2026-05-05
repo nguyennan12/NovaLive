@@ -55,6 +55,7 @@ const setupDelayQueue = async (channel) => {
 }
 //hàm gửi mã order lên queue và xử lý ở worker
 const sendOrderToDelayQueue = async (orderId) => {
+  if (!channel) throw new Error('RabbitMQ channel is not ready')
   await channel.sendToQueue('order_delay_queue', Buffer.from(JSON.stringify({ orderId })), {
     persistent: true
   })

@@ -100,6 +100,7 @@ const markDiscountsAsUsed = async (discountCodes, userId) => {
 }
 
 const cancelDiscountCode = async (discountCodes, userId, session) => {
+  if (!discountCodes || discountCodes.length === 0) return
   const rollbackOps = discountCodes.map(code => ({
     updateOne: {
       filter: { discount_code: code, discount_users_used: converter.toObjectId(userId) },

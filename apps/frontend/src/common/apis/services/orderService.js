@@ -24,3 +24,15 @@ export const verifyVNPayReturnAPI = async (params) => {
   const response = await authorizedAxiosInstance.get('payment/vnpay_return', { params })
   return response.metadata
 }
+export const getMyOrdersAPI = async (params = {}) => {
+  const response = await authorizedAxiosInstance.get('order/my-orders', { params })
+  return response.metadata
+}
+export const getOrderDetailAPI = async (orderId) => {
+  const response = await authorizedAxiosInstance.get(`order/my-orders/${orderId}`)
+  return response.metadata
+}
+export const cancelOrderAPI = async (orderId) => {
+  const response = await authorizedAxiosInstance.patch(`order/${orderId}/cancel`)
+  return response.metadata
+}

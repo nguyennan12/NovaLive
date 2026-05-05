@@ -4,6 +4,7 @@ import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '#shared/utils/validator.
 const objectId = Joi.string().pattern(OBJECT_ID_RULE).messages(OBJECT_ID_RULE_MESSAGE)
 
 const itemProductSchema = Joi.object({
+  productId: objectId.required(),
   skuId: objectId.required(),
   quantity: Joi.number().integer().min(1).required(),
   price: Joi.number().min(0),
@@ -60,8 +61,3 @@ export const getMyOrdersSchema = {
   })
 }
 
-export const orderParamSchema = {
-  params: Joi.object({
-    orderId: objectId.required()
-  })
-}

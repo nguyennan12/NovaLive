@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import ApiError from '#shared/core/error.response.js'
 import mongoose from 'mongoose'
 import { RabbitMQClient } from '#infrastructure/database/init.rabbitMQ.js'
@@ -15,6 +16,7 @@ import inventoryService from '#modules/inventory/services/inventory.service.js'
 import shippingService from '../../shipping/services/shipping.service.js'
 import socketService from '../../common/services/socket.service.js'
 import paymentService from '../../payment/services/payment.service.js'
+import MyLogger from '#infrastructure/loggers/MyLogger.js'
 
 const checkoutReview = async ({ userId, reqBody }) => {
   const { cartId, shopOrderIds, userAddressId, productDiscountCode, shippingDiscountCode } = reqBody
@@ -182,7 +184,7 @@ const orderByUser = async ({ userId, reqBody }) => {
     _id: orderId,
     order_userId: userId,
     order_checkout: checkoutOrder,
-    order_shipping: userAddress,
+    order_shipping: userAddress.fullAddress,
     order_payment: { method: userPayment },
     order_products: allProducts,
     order_trackingNumber: orderCode,
@@ -195,33 +197,35 @@ const orderByUser = async ({ userId, reqBody }) => {
   }
   await discountService.markDiscountsAsUsed(appliedDiscountCodes, userId)
 
-  if (newOrder.order_payment.method !== 'cod') {
-    try {
-      await RabbitMQClient.sendOrderToDelayQueue(orderCode)
-    } catch (error) {
-      // Order đã tạo nhưng timer 15p không chạy được — stock sẽ bị giữ vĩnh viễn nếu user không thanh toán.
-      // Cần manual cleanup hoặc scheduled job để handle các order pending quá hạn.
-      console.error(`[ORDER] CRITICAL: Failed to enqueue delay timer for order ${orderCode}. Manual cleanup required.`, error)
-    }
-  } else {
+
+  try {
+    await RabbitMQClient.sendOrderToDelayQueue(orderCode)
+  } catch (error) {
+    MyLogger.error(`Failed to enqueue delay timer for order ${orderCode}. Manual cleanup required.`, '[ORDER_WORKER]')
+  }
+
+  if (newOrder.order_payment.method === 'cod') {
     try {
       await paymentService.hanldeCodPayment(newOrder.order_userId)
     } catch (error) {
-      console.error('Error sending COD email:', error)
+      MyLogger.error(`Failed to hanlde payment cod for order ${orderCode}`, '[COD]')
     }
   }
+
   return newOrder
 }
 
 
-const getAllOrderByUser = async ({ userId, status, limit = 20, page = 1 }) => {
+const getAllOrderByUser = async ({ userId, status, limit = 100, page = 1 }) => {
   const query = { order_userId: userId }
-  if (status) {
-    query.order_status = status
-  }
-
+  if (status) query.order_status = status
   const skip = (page - 1) * limit
   return await orderModel.find(query)
+    .populate({
+      path: 'order_products.productId',
+      select: 'spu_name spu_thumb spu_price spu_shopId spu_code',
+      populate: { path: 'spu_shopId', select: 'shop_name' }
+    })
     .sort({ createdAt: -1 })
     .limit(limit)
     .skip(skip)
@@ -232,6 +236,19 @@ const getOrderDetail = async ({ orderId, userId }) => {
   const order = await orderRepo.getOrderDetail({ orderId, userId })
   if (!order) throw new ApiError(StatusCodes.BAD_REQUEST, 'Order not found')
   return order
+}
+
+const cancelOrder = async ({ userId, orderId }) => {
+  const order = await orderModel.findOne({ _id: orderId, order_userId: userId })
+  if (!order) throw new ApiError(StatusCodes.BAD_REQUEST, 'Order not found')
+  if (order.order_status !== 'pending') throw new ApiError(StatusCodes.BAD_REQUEST, 'Chỉ có thể hủy đơn hàng đang chờ xác nhận')
+  const items = order.order_products.map(p => ({ skuId: p.skuId.toString(), quantity: p.quantity }))
+  if (items.length > 0) await inventoryService.releaseStock(orderId, items)
+  return await orderModel.findByIdAndUpdate(
+    orderId,
+    { order_status: 'cancelled', cancelledAt: new Date() },
+    { returnDocument: 'after', new: true }
+  ).lean()
 }
 
 const updateOrderStatusAdmin = async ({ orderId, newStatus }) => {
@@ -266,5 +283,6 @@ export default {
   orderByUser,
   getAllOrderByUser,
   getOrderDetail,
+  cancelOrder,
   updateOrderStatusAdmin
 }

@@ -7,7 +7,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import { useOtpTimer } from '~/common/hooks/useOtpTimer'
 import { glassSx } from '~/theme'
-import { useOrderMutation } from '../hooks/useOrderMutation'
+import { useOrderMutation } from '../../hooks/useOrderMutation'
 
 const OTP_LENGTH = 6
 const RESEND_COOLDOWN = 60
@@ -17,7 +17,6 @@ function CodOtpDialog({ open, onClose, orderId, email, onSuccess }) {
   const [prevOpen, setPrevOpen] = useState(open)
   const inputRefs = useRef([])
 
-  // Reset OTP khi dialog đóng — set state during render tránh cascade
   if (prevOpen !== open) {
     setPrevOpen(open)
     if (!open) setOtp(Array(OTP_LENGTH).fill(''))
@@ -28,7 +27,7 @@ function CodOtpDialog({ open, onClose, orderId, email, onSuccess }) {
     onSuccessConfirm: onSuccess
   })
 
-  // Chỉ giữ DOM side effect (focus) trong useEffect
+
   useEffect(() => {
     if (open) setTimeout(() => inputRefs.current[0]?.focus(), 100)
   }, [open])

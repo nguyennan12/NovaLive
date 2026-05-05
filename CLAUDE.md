@@ -102,7 +102,7 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
   - ✅ **Trang Product Detail (consumer)** — ảnh, SKU cards, giá, attributes, shop card, description
   - ✅ **Trang Cart (consumer)** — layout 7/3, danh sách theo shop, checkbox, stepper, summary, discount shop + global, checkout summary realtime
   - ✅ **Trang Order (consumer)** — layout 7/3, địa chỉ GHN dropdown, phí ship realtime, voucher, PTTT, mobile sticky Portal, COD xác nhận OTP, VNPay redirect, đặt hàng hoàn chỉnh
-  - ⬜ **Order List / Order Detail** — list đơn hàng, chi tiết, trạng thái, VNPay return page
+  - ✅ **Order List / Order Detail** — tabs 6 trạng thái, card đơn hàng với ảnh/tên/giá, hủy đơn pending, detail dialog: timeline, breakdown giá, địa chỉ, thanh toán; route `/orders`
   - ⬜ **Customer / Profile** — thông tin cá nhân, địa chỉ, lịch sử
   - ⬜ **Auth UI** — đăng nhập / đăng ký (API backend đã có)
   - ⬜ **Admin Dashboard & Analytics**

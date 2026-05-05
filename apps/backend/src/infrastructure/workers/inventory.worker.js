@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable indent */
 // file nay chay ngam
 import MyLogger from '#infrastructure/loggers/MyLogger.js'
@@ -18,7 +19,7 @@ const ListenToReserveInventory = async (channel) => {
     if (msg !== null) {
       //chuyển data về json
       const data = JSON.parse(msg.content.toString())
-      console.log(`[Worker] Writing DB for order: ${data.orderId}`)
+      MyLogger.info(`Writing DB for order: ${data.orderId}`, 'INVENTORY_RESERVED')
 
       try {
         //kiểm tra nếu message có action là Reserve_DB
@@ -33,15 +34,15 @@ const ListenToReserveInventory = async (channel) => {
               }
             }
           }))
-          console.log(`[Worker] Executing bulkWrite for ${operations.length} items...`)
+          MyLogger.info(`Executing Reserved bulk for ${operations.length} items...`, 'INVENTORY_RESERVED')
           const result = await inventoryModel.bulkWrite(operations)
-          console.log(`[Worker] BulkWrite Success! Matched: ${result.matchedCount}, Modified: ${result.modifiedCount}`)
+          MyLogger.info(`Reserved bulk Success! Matched: ${result.matchedCount}, Modified: ${result.modifiedCount}`)
         }
 
         channel.ack(msg)
 
       } catch (error) {
-        console.error(`[Worker Error DB] Order ${data.orderId}:`, error)
+        MyLogger.error(`Reserved stock for Order ${data.orderId}`, 'INVENTORY_RESERVED')
       }
     }
   }, { noAck: false })
@@ -51,7 +52,7 @@ const ListenToInventoryHistoryQueue = async (channel) => {
   const queueName = 'inventory_history_queue'
 
   await channel.assertQueue(queueName, { durable: true })
-  MyLogger.info(`Waiting for messages in ${queueName}`, '[INVENTORY_QUEUE]')
+  MyLogger.info(`Waiting for messages in ${queueName}`, 'INVENTORY_QUEUE')
 
   channel.consume(queueName, async (msg) => {
     if (msg !== null) {
@@ -61,7 +62,7 @@ const ListenToInventoryHistoryQueue = async (channel) => {
           case 'LOG_SALE_DEDUCT_HISTORY':
             const items = payload.data
             await inventoryHistoryService.createHistorySaleBulk(payload.data)
-            MyLogger.info(`Success update history for stock when sale: ${payload.orderId}`, '[INVENTORY_QUEUE]')
+            MyLogger.info(`Success update history for stock when sale: ${payload.orderId}`, 'INVENTORY_QUEUE')
 
             const bulkOps = items.map(item => ({
               updateOne: {
@@ -71,7 +72,7 @@ const ListenToInventoryHistoryQueue = async (channel) => {
             }))
             if (bulkOps.length > 0) {
               await skuModel.bulkWrite(bulkOps)
-              MyLogger.info(`Success update SKU stock display for order: ${payload.orderId}`, '[INVENTORY_QUEUE]')
+              MyLogger.info(`Success update SKU stock display for order: ${payload.orderId}`, 'INVENTORY_QUEUE')
             }
             break
           default:
@@ -79,7 +80,7 @@ const ListenToInventoryHistoryQueue = async (channel) => {
         }
         channel.ack(msg)
       } catch {
-        MyLogger.error(`error update history stock when sale: ${payload.orderId}`, '[INVENTORY_QUEUE]')
+        MyLogger.error(`error update history stock when sale: ${payload.orderId}`, 'INVENTORY_QUEUE')
         channel.nack(msg, false, false)
       }
     }

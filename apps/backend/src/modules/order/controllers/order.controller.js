@@ -40,11 +40,19 @@ const updateOrderStatusAdmin = async (req, res, next) => {
   }).send(res)
 }
 
+const cancelOrder = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Order cancelled successfully!',
+    metadata: await orderService.cancelOrder({ userId: req.user.userId, orderId: req.params.orderId })
+  }).send(res)
+}
 
 export default {
   checkoutReview,
   orderByUser,
   getAllOrderByUser,
   getOrderDetail,
+  cancelOrder,
   updateOrderStatusAdmin
 }

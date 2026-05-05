@@ -14,6 +14,7 @@ import ProductDetailPage from '~/features/Product/pages/ProductDetailPage'
 import ProductsListPage from '~/features/Product/pages/ProductsListPage'
 import CartPage from '~/features/Cart/pages/CartPage'
 import OrderPage from '~/features/Order/pages/OrderPage'
+import OrderHistoryPage from '~/features/Order/pages/OrderHistoryPage'
 import VNPayReturnPage from '~/features/Order/pages/VNPayReturnPage'
 import ConsumerLayout from '~/common/components/layout/ConsumerLayout/ConsumerLayout'
 
@@ -27,6 +28,7 @@ const AppRoutes = () => {
         <Route path="/products" element={<ProductsListPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/order" element={<OrderPage />} />
+        <Route path="/orders" element={<OrderHistoryPage />} />
       </Route>
 
       {/* AUTH */}
