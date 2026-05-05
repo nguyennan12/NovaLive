@@ -18,13 +18,15 @@ export const useLiveSocket = ({
   initialViewers = 0,
   initialLikes = 0
 }) => {
+  //state thao tác trên live
   const [viewers, setViewers] = useState(initialViewers)
   const [likes, setLikes] = useState(initialLikes)
   const [comments, setComments] = useState([])
-  const [pinnedProduct, setPinnedProduct] = useState(() =>
-    normalizePinned(liveProducts.find(p => p.is_featured) ?? null)
-  )
+  const [pinnedProduct, setPinnedProduct] = useState(() => normalizePinned(liveProducts.find(p => p.is_featured) ?? null))
   const [commentError, setCommentError] = useState(null)
+  //state phiên live trc đó để check xem có lướt k
+  const [prevLiveCode, setPrevLiveCode] = useState(liveCode)
+
 
   const liveCodeRef = useRef(liveCode)
   const userRef = useRef({ userId, userName, avatar })
@@ -35,18 +37,21 @@ export const useLiveSocket = ({
   useEffect(() => { liveProductsRef.current = liveProducts }, [liveProducts])
 
   // Reset khi đổi sang live khác
-  useEffect(() => {
+  if (liveCode !== prevLiveCode) {
+    setPrevLiveCode(liveCode)
     setViewers(initialViewers)
     setLikes(initialLikes)
-    setPinnedProduct(normalizePinned(liveProductsRef.current.find(p => p.is_featured) ?? null))
     setComments([])
     setCommentError(null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liveCode])
 
+    const initialPinned = normalizePinned(liveProducts.find(p => p.is_featured) ?? null)
+    setPinnedProduct(initialPinned)
+  }
+
+  //logic socket
   useEffect(() => {
     if (!liveCode || !userId) return
-
+    //user join live
     connectSocket(userId)
     const socket = getSocket()
     socket.emit('join-live', liveCode)
@@ -59,7 +64,6 @@ export const useLiveSocket = ({
         return next.length > 100 ? next.slice(-100) : next
       })
     const onPinned = (socketProduct) => {
-      // Enrich với full skus data từ live_products
       const full = liveProductsRef.current.find(
         p => String(p.productId) === String(socketProduct.productId)
       )
@@ -75,7 +79,7 @@ export const useLiveSocket = ({
     socket.on('NEW_COMMENT', onComment)
     socket.on('PRODUCT_PINNED', onPinned)
     socket.on('COMMENT_ERROR', onCommentError)
-
+    //khi lướt sang live khác sẽ vô return(đầu tiên là leave và set lại stat)
     return () => {
       socket.emit('leave-live', liveCode)
       socket.off('UPDATE_VIEWERS', onViewers)

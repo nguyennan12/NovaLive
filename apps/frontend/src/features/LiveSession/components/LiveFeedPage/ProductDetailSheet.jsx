@@ -13,6 +13,7 @@ import { setSelectedIds } from '~/store/cart/cartSlice'
 import { formatVND } from '~/common/utils/formatters'
 
 const ProductDetailSheet = ({ open, onClose, product }) => {
+  console.log("🚀 ~ ProductDetailSheet ~ product:", product)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { addToCartAsync, isPending } = useCartMutations()

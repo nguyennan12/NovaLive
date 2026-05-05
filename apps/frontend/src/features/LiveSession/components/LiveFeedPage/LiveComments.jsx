@@ -10,7 +10,7 @@ const CommentItem = ({ comment }) => (
     <Box sx={{
       bgcolor: 'rgba(0,0,0,0.48)', backdropFilter: 'blur(4px)',
       borderRadius: '10px', px: 1, py: 0.35,
-      maxWidth: '90%', wordBreak: 'break-word'
+      maxWidth: '100%', wordBreak: 'break-word'
     }}>
       <Box component="span" sx={{ color: '#ffd166', fontWeight: 700, fontSize: '0.68rem' }}>
         {comment.userName}
@@ -42,7 +42,7 @@ const LiveComments = ({ comments, onSend, commentError }) => {
 
   return (
     <Box sx={{
-      position: 'absolute', bottom: 0, left: 0, right: 54,
+      position: 'absolute', bottom: 0, left: 0, right: 0,
       background: 'linear-gradient(to top, rgba(0,0,0,0.6) 50%, transparent 100%)',
       px: 1, pb: 1, pt: 3,
       pointerEvents: 'none'
