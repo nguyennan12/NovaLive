@@ -185,7 +185,7 @@ const OrderHistoryCard = forwardRef(function OrderHistoryCard({ order, onViewDet
                 onClick={handleRetryVNPay}
                 sx={{
                   fontSize: '0.76rem', fontWeight: 700, py: 0.5, px: 1.5,
-                  bgcolor: '#f59e0b', color: '#fff',
+                  bgcolor: '#ffba43ff', color: '#fff',
                   '&:hover': { bgcolor: '#d97706' },
                   '&:disabled': { bgcolor: 'rgba(245,158,11,0.5)', color: '#fff' }
                 }}

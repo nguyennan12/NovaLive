@@ -21,7 +21,7 @@ export const useLivePlayer = ({ liveId, userId }) => {
         if (!isMounted) return
 
         const client = AgoraRTC.createClient({ mode: 'live', codec: 'vp8' })
-        client.setClientRole('audience')
+        await client.setClientRole('audience')
         clientRef.current = client
 
         client.on('user-published', async (remoteUser, mediaType) => {
@@ -37,7 +37,8 @@ export const useLivePlayer = ({ liveId, userId }) => {
         })
         await client.join(env.AGORA_APP_ID, channelName, token, userId)
 
-      } catch {
+      } catch (err) {
+        console.error('joinLive error:', err)
         if (isMounted) setStatus('error')
       }
     }

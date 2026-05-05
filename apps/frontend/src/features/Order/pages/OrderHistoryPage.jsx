@@ -1,19 +1,17 @@
 import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
-import { Box, Button, Container, Tab, Tabs, Typography } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { Box, Button, CircularProgress, Container, Tab, Tabs, Typography } from '@mui/material'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useInfiniteScroll } from '~/common/hooks/useScroll'
 import OrderDetailDrawer from '../components/OrderHistoryPage/OrderDetailDrawer'
 import OrderHistoryCard, { OrderHistoryCardSkeleton } from '../components/OrderHistoryPage/OrderHistoryCard'
 import { ORDER_TABS } from '../constants/orderStatus'
 import { useInfiniteOrders } from '../hooks/useMyOrders'
 import { useOrderMutation } from '../hooks/useOrderMutation'
-import { useInfiniteScroll } from '~/common/hooks/useScroll'
-import { CircularProgress } from '@mui/material'
-import { LIMIT } from '~/common/utils/constant'
 
 
-function EmptyOrders({ onShop }) {
+function EmptyOrders() {
   return (
     <Box sx={{
       display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -26,18 +24,6 @@ function EmptyOrders({ onShop }) {
       <Typography sx={{ fontSize: '0.82rem', color: 'rgba(45,45,45,0.35)', textAlign: 'center', maxWidth: 260 }}>
         Hãy mua sắm và đặt hàng để theo dõi đơn ở đây
       </Typography>
-      <Button
-        variant="contained"
-        onClick={onShop}
-        sx={{
-          mt: 1, fontWeight: 700, borderRadius: 2, px: 3, py: 1,
-          background: 'linear-gradient(90deg, #568dfb, #69aedc)',
-          color: '#fff', fontSize: '0.875rem',
-          '&:hover': { boxShadow: '0 4px 16px rgba(52,133,247,0.35)' }
-        }}
-      >
-        Mua sắm ngay
-      </Button>
     </Box>
   )
 }
@@ -46,7 +32,7 @@ function OrderHistoryPage() {
   const navigate = useNavigate()
   const [tabIdx, setTabIdx] = useState(0)
   const [detailOrder, setDetailOrder] = useState(null)
-  const [status, setStatus] = useState('all')
+  const [status, setStatus] = useState('pending')
 
   const { orders, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteOrders(status)
   const lastOrderRef = useInfiniteScroll({ isFetchingNextPage, fetchNextPage, hasNextPage })
@@ -61,24 +47,6 @@ function OrderHistoryPage() {
 
   return (
     <Container maxWidth="md" sx={{ pt: { xs: 2, sm: 3 }, pb: 6 }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
-        <Box sx={{
-          width: 40, height: 40, borderRadius: 2,
-          bgcolor: 'rgba(52,133,247,0.1)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }}>
-          <ReceiptLongRoundedIcon sx={{ fontSize: 22, color: 'secondary.main' }} />
-        </Box>
-        <Box>
-          <Typography sx={{ fontSize: '1.15rem', fontWeight: 800, color: 'primary.contrastText' }}>
-            Đơn hàng của tôi
-          </Typography>
-          <Typography sx={{ fontSize: '0.78rem', color: 'rgba(45,45,45,0.45)' }}>
-            Theo dõi và quản lý tất cả đơn hàng
-          </Typography>
-        </Box>
-      </Box>
 
       {/* Tabs */}
       <Box sx={{

@@ -52,13 +52,6 @@ export const addProductsToLiveSchema = {
   body: Joi.array().items(liveProductSchema).min(1)
 }
 
-export const liveHistoryQuerySchema = {
-  query: Joi.object({
-    page: Joi.number().integer().min(1).default(1),
-    limit: Joi.number().integer().min(1).max(100).default(20)
-  })
-}
-
 export const liveChartQuerySchema = {
   query: Joi.object({
     startDate: Joi.date().iso(),

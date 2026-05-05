@@ -19,6 +19,12 @@ export default defineConfig({
         target: 'http://backend:3031',
         changeOrigin: true,
         secure: false
+      },
+      '/socket.io': {
+        target: 'http://backend:3031',
+        changeOrigin: true,
+        secure: false,
+        ws: true
       }
     }
   }

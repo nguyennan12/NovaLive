@@ -1,6 +1,5 @@
 /* eslint-disable indent */
 import { formatStringToSlug } from './formatters'
-import { ORDER_STATUS_MAP } from '~/features/Order/constants/orderStatus'
 
 export const buildQueryParamsProducts = (filters) => {
     const params = {}

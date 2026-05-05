@@ -1,14 +1,19 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Box from '@mui/material/Box'
-import { Typography } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
+import { Typography } from '@mui/material'
 import LivePlayer from '../shared/LivePlayer'
+import LiveOverlay from './LiveOverlay'
 import { useLiveFeed } from '../../hooks/useLiveFeed'
 
 export const LiveFeed = ({ userId }) => {
-  const { lives, loading, currentIndex, goNext, goPrev, loadingMore, handleTouchEnd, handleTouchStart, handleWheel } = useLiveFeed()
+  const {
+    lives, loading, currentIndex,
+    goNext, goPrev, loadingMore,
+    handleTouchEnd, handleTouchStart, handleWheel
+  } = useLiveFeed()
 
   if (loading) return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'black' }}>
@@ -17,8 +22,9 @@ export const LiveFeed = ({ userId }) => {
   )
 
   if (lives.length === 0) return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'black' }}>
-      <Typography color="white">Không có live nào đang phát</Typography>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'black', gap: 1 }}>
+      <Typography color="white" variant="h6">Chưa có live nào đang phát</Typography>
+      <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>Quay lại sau nhé!</Typography>
     </Box>
   )
 
@@ -44,17 +50,25 @@ export const LiveFeed = ({ userId }) => {
         borderRadius: '18px'
       }}
     >
-
+      {/* Video player — key để unmount/remount khi đổi live */}
       <LivePlayer
         key={currentLive._id}
         liveId={currentLive._id}
         userId={userId}
       />
 
+      {/* Overlay UI — key sync với player để reset socket state cùng lúc */}
+      <LiveOverlay
+        key={`overlay-${currentLive._id}`}
+        live={currentLive}
+      />
+
+      {/* Nav arrows — z:20 để ở trên overlay */}
       <Box sx={{
         position: 'absolute', right: 12, top: '50%',
         transform: 'translateY(-50%)',
-        display: 'flex', flexDirection: 'column', gap: 1
+        display: 'flex', flexDirection: 'column', gap: 1,
+        zIndex: 20
       }}>
         <IconButton
           onClick={goPrev}
@@ -72,22 +86,12 @@ export const LiveFeed = ({ userId }) => {
         </IconButton>
       </Box>
 
-      <Box sx={{
-        position: 'absolute', bottom: 16, left: '50%',
-        transform: 'translateX(-50%)',
-        display: 'flex', gap: 0.5
-      }}>
-        {lives.map((_, i) => (
-          <Box key={i} sx={{
-            width: i === currentIndex ? 20 : 6,
-            height: 6, borderRadius: 3,
-            bgcolor: i === currentIndex ? 'white' : 'rgba(255,255,255,0.4)',
-            transition: 'width 0.3s'
-          }} />
-        ))}
-        {loadingMore && <CircularProgress size={12} sx={{ color: 'white', ml: 0.5 }} />}
-      </Box>
+      {/* Loading indicator khi tải thêm live */}
+      {loadingMore && (
+        <Box sx={{ position: 'absolute', bottom: 10, right: 10, zIndex: 20 }}>
+          <CircularProgress size={14} sx={{ color: 'rgba(255,255,255,0.6)' }} />
+        </Box>
+      )}
     </Box>
   )
 }
-

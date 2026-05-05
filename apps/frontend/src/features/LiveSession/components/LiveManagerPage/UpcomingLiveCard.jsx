@@ -9,7 +9,7 @@ import { toast } from 'react-toastify'
 import ConfirmDialog from '~/common/components/common/form/ConfirmDialog'
 import SectionCard from '~/features/Inventory/components/shared/SectionCard'
 import LiveStatusBadge from '../shared/LiveStatusBadge'
-import { useCancelSession, useStartSession, useUpcomingSession } from '../../hooks/useLiveSessions'
+import { useCancelSession, useUpcomingSession } from '../../hooks/useLiveSessions'
 import { formatDate } from '~/common/utils/formatters'
 
 const UpcomingLiveCard = ({ onEdit }) => {
@@ -17,15 +17,10 @@ const UpcomingLiveCard = ({ onEdit }) => {
   const [sessionToCancel, setSessionToCancel] = useState(null)
 
   const { data: sessions = [], isLoading } = useUpcomingSession()
-  const startSession = useStartSession()
   const cancelSession = useCancelSession()
 
-  const handleStart = async (session) => {
+  const handleStart = (session) => {
     if (!session) return
-    await toast.promise(
-      startSession.mutateAsync(session._id),
-      { pending: 'Đang khởi động...', error: 'Không thể bắt đầu live' }
-    )
     navigate(`/shop/live/${session._id}`)
   }
 
@@ -119,7 +114,7 @@ const UpcomingLiveCard = ({ onEdit }) => {
               <Button
                 variant="contained" size="small" startIcon={<PlayArrowRoundedIcon />}
                 onClick={() => handleStart(session)}
-                disableElevation disabled={startSession.isPending}
+                disableElevation
                 sx={{ flex: 1, background: 'linear-gradient(90deg, #74a2ffff, #69aedc, #8acdde)', fontWeight: 600, borderRadius: '8px', fontSize: '0.81rem', color: '#fff' }}
               >
                 Bắt đầu
