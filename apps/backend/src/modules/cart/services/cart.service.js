@@ -28,7 +28,7 @@ const addToCart = async ({ userId, reqBody }) => {
   }
   if (foundCart.cart_count_product > 99) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cart is limit!')
   //nếu có cart rồi thì check xem có product đó chưa
-  const isProductExists = foundCart.cart_products.some(p => p.skuId == skuId)
+  const isProductExists = foundCart.cart_products.some(p => p.skuId.toString() === skuId.toString())
   //chưa có thì push vô mảng cart_product, tăng số lượng
   if (!isProductExists) {
     return await cartModel.findOneAndUpdate(cartQuery,
@@ -68,11 +68,16 @@ const updateCartItemQuantity = async ({ userId, reqBody }) => {
 
 const removeFromCart = async ({ userId, reqBody }) => {
   const { skuIds } = reqBody
+  const foundCart = await cartModel.findOne({ cart_userId: userId, cart_state: 'active' }).lean()
+  const actualRemovedCount = foundCart.cart_products.filter(product =>
+    skuIds.includes(product.skuId.toString())
+  ).length
+  if (actualRemovedCount === 0) return foundCart
   return await cartModel.findOneAndUpdate(
     { cart_userId: userId, cart_state: 'active' },
     {
       $pull: { cart_products: { skuId: { $in: skuIds } } },
-      $inc: { cart_count_product: -skuIds.length }
+      $inc: { cart_count_product: -actualRemovedCount }
     },
     { returnDocument: 'after' }
   )
