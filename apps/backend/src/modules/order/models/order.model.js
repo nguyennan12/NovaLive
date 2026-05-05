@@ -12,7 +12,7 @@ const orderSchema = new Schema(
       feeShip: { type: Number, default: 0 },
       finalCheckout: { type: Number, default: 0 }
     },
-    order_shipping: { type: String, required: true },
+    order_shipping: { type: String },
     order_payment: {
       method: { type: String, enum: ['cod', 'vnpay', 'stripe', 'momo'], default: 'cod' },
       paymentStatus: { type: String, enum: ['pending', 'paid', 'failed'], default: 'pending' }

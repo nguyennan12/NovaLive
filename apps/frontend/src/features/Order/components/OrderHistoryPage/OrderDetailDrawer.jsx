@@ -16,7 +16,7 @@ import { glassSx, gradientText } from '~/theme'
 import { selectCurrentUser } from '~/store/user/userSlice'
 import { STATUS_CONFIG, canCancelOrder, getPaymentMethodLabel, getPaymentStatusColor, getPaymentStatusLabel } from '../../constants/orderStatus'
 import { useOrderDetail } from '../../hooks/useOrderDetail'
-import { useOrderHistoryMutations } from '../../hooks/useOrderHistoryMutations'
+import { useOrderMutation } from '../../hooks/useOrderMutation'
 import CancelOrderDialog from '../shared/CancelOrderDialog'
 import CodOtpDialog from '../shared/CodOtpDialog'
 import OrderStatusTimeline from './OrderStatusTimeline'
@@ -87,7 +87,7 @@ function PriceLine({ label, value, highlight = false, discount = false }) {
 function OrderDetailContent({ orderId, onRequestClose, onOrderUpdated }) {
   const { data: order, isLoading } = useOrderDetail(orderId)
   const user = useSelector(selectCurrentUser)
-  const { cancelMutation, retryVNPayMutation } = useOrderHistoryMutations()
+  const { cancelMutation, retryVNPayMutation } = useOrderMutation()
   const [copied, setCopied] = useState(false)
   const [showCancel, setShowCancel] = useState(false)
   const [showCodRetry, setShowCodRetry] = useState(false)

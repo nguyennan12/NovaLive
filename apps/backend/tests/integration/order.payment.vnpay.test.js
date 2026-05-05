@@ -111,7 +111,7 @@ describe('Order Payment VNPAY Flow (integration)', () => {
       .set(authHeaders({ token: buyerToken, userId: buyerId }))
       .send({
         name: 'Home', phone: '0111222333', street: '456 St', ward: 'W2', district: 'D2', province: 'P2',
-        province_id: 2, district_id: 2, ward_code: '2', owner_type: 'user'
+        province_id: 2, district_id: 2, ward_code: '2', owner_type: 'user',
       })
     addressId = addrRes.body.metadata._id
 
@@ -126,6 +126,12 @@ describe('Order Payment VNPAY Flow (integration)', () => {
         cartId,
         userAddressId: addressId,
         shopOrderIds: [{ shopId, item_products: [{ price: 1000, quantity: 1, productId, skuId }] }],
+        order_shipping: {
+          street: '456 Nguyen Trai',
+          ward: 'Phuong 2',
+          district: 'Quan 5',
+          city: 'Ho Chi Minh'
+        },
         userPayment: 'vnpay',
         client_totalCheckout: 1000 + 15000
       })

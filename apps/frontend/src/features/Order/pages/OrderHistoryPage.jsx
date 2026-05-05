@@ -1,15 +1,13 @@
 import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
-import {
-  Badge, Box, Button, Container, Tab, Tabs, Typography
-} from '@mui/material'
+import { Box, Button, Container, Tab, Tabs, Typography } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ORDER_TABS } from '../constants/orderStatus'
-import { useMyOrders } from '../hooks/useMyOrders'
-import { useOrderHistoryMutations } from '../hooks/useOrderHistoryMutations'
 import OrderDetailDrawer from '../components/OrderHistoryPage/OrderDetailDrawer'
 import OrderHistoryCard, { OrderHistoryCardSkeleton } from '../components/OrderHistoryPage/OrderHistoryCard'
+import { ORDER_TABS } from '../constants/orderStatus'
+import { useMyOrders } from '../hooks/useMyOrders'
+import { useOrderMutation } from '../hooks/useOrderMutation'
 
 function EmptyOrders({ onShop }) {
   return (
@@ -46,7 +44,7 @@ function OrderHistoryPage() {
   const [detailOrder, setDetailOrder] = useState(null)
 
   const { orders, isLoading } = useMyOrders()
-  const { cancelMutation, retryVNPayMutation, invalidateOrders } = useOrderHistoryMutations()
+  const { cancelMutation, retryVNPayMutation, invalidateOrders } = useOrderMutation()
 
   // Lọc theo tab phía client
   const filteredOrders = useMemo(() => {
@@ -55,13 +53,6 @@ function OrderHistoryPage() {
     return orders.filter(o => tab.statuses.includes(o.order_status))
   }, [orders, tabIdx])
 
-  // Đếm số đơn theo từng tab để hiển thị badge
-  const tabCounts = useMemo(() => {
-    return ORDER_TABS.map(tab => {
-      if (!tab.statuses) return orders.length
-      return orders.filter(o => tab.statuses.includes(o.order_status)).length
-    })
-  }, [orders])
 
   return (
     <Container maxWidth="md" sx={{ pt: { xs: 2, sm: 3 }, pb: 6 }}>
@@ -103,7 +94,7 @@ function OrderHistoryPage() {
             '& .MuiTab-root': { minHeight: 44, py: 0 }
           }}
         >
-          {ORDER_TABS.map((tab, idx) => (
+          {ORDER_TABS.map((tab) => (
             <Tab
               key={tab.label}
               label={
@@ -111,20 +102,7 @@ function OrderHistoryPage() {
                   <Typography sx={{ fontSize: '0.8rem', fontWeight: 'inherit' }}>
                     {tab.label}
                   </Typography>
-                  {tabCounts[idx] > 0 && (
-                    <Badge
-                      badgeContent={tabCounts[idx]}
-                      sx={{
-                        '& .MuiBadge-badge': {
-                          position: 'static', transform: 'none',
-                          fontSize: '0.62rem', fontWeight: 700,
-                          height: 16, minWidth: 16, px: 0.5,
-                          bgcolor: idx === tabIdx ? 'secondary.main' : 'rgba(0,0,0,0.12)',
-                          color: idx === tabIdx ? '#fff' : 'rgba(45,45,45,0.6)'
-                        }
-                      }}
-                    />
-                  )}
+
                 </Box>
               }
             />

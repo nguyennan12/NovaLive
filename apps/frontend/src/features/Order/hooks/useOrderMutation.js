@@ -1,10 +1,13 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { OrderByUserAPI, createVNPayUrlAPI, confirmCodOTPAPI, resendCodOTPAPI } from '~/common/apis/services/orderService'
+import { OrderByUserAPI, cancelOrderAPI, confirmCodOTPAPI, createVNPayUrlAPI, resendCodOTPAPI } from '~/common/apis/services/orderService'
 
-export const useOrderMutation = ({ setCreatedOrder, setShowCodOtp, onSuccessConfirm }) => {
+export const useOrderMutation = ({ setCreatedOrder, setShowCodOtp, onSuccessConfirm } = {}) => {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  const invalidateOrders = () => queryClient.invalidateQueries({ queryKey: ['my-orders'] })
 
   //  Mutation Đặt hàng chính
   const orderMutation = useMutation({
@@ -57,5 +60,29 @@ export const useOrderMutation = ({ setCreatedOrder, setShowCodOtp, onSuccessConf
     }
   })
 
-  return { orderMutation, confirmMutation, resendMutation }
+  //Mutation thanh toán lại vnpay
+  const retryVNPayMutation = useMutation({
+    mutationFn: ({ trackingNumber, amount }) =>
+      createVNPayUrlAPI({ orderId: trackingNumber, amount }),
+    onSuccess: (data) => {
+      if (data?.paymentUrl) window.location.href = data.paymentUrl
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message || 'Không thể tạo link thanh toán. Vui lòng thử lại.')
+    }
+  })
+
+  //Mutation cancelOrder
+  const cancelMutation = useMutation({
+    mutationFn: cancelOrderAPI,
+    onSuccess: () => {
+      invalidateOrders()
+      toast.success('Đơn hàng đã được hủy thành công!')
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message || 'Hủy đơn hàng thất bại. Vui lòng thử lại.')
+    }
+  })
+
+  return { orderMutation, confirmMutation, resendMutation, cancelMutation, retryVNPayMutation, invalidateOrders }
 }
