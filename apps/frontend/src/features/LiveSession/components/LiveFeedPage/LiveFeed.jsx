@@ -30,7 +30,6 @@ export const LiveFeed = ({ userId }) => {
   )
 
   const currentLive = lives[currentIndex]
-  const currentShopId = currentLive.live_shopId
   return (
     <Box
       onTouchStart={handleTouchStart}

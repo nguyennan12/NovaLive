@@ -1,6 +1,5 @@
-import { toast } from 'react-toastify'
-import authorizedAxiosInstance from '../custom/authorizeAxios'
 import { toQueryString } from '~/common/utils/converter'
+import authorizedAxiosInstance from '../custom/authorizeAxios'
 
 export const getAllDiscountAPI = async (params = {}) => {
   const query = toQueryString(params)

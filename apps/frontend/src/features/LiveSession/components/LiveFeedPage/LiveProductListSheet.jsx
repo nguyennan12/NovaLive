@@ -1,10 +1,15 @@
 import ShoppingBagRoundedIcon from '@mui/icons-material/ShoppingBagRounded'
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import { Box, Typography } from '@mui/material'
+import Badge from '@mui/material/Badge'
 import { useNavigate } from 'react-router-dom'
+import { useCart } from '~/features/Cart/hooks/useCart'
 import { ProductLiveCard } from '../shared/ProductLiveCard'
+
 
 const LiveProductListSheet = ({ liveShop, open, onClose, products = [] }) => {
   const navigate = useNavigate()
+  const { cartCount } = useCart()
   const handleClick = (product) => {
     navigate(`/product/${product.code}`)
   }
@@ -54,15 +59,43 @@ const LiveProductListSheet = ({ liveShop, open, onClose, products = [] }) => {
 
         {/* Header */}
         <Box sx={{
-          px: 1.75, pb: 1, flexShrink: 0,
-          borderBottom: '1px solid rgba(52,133,247,0.12)'
+          px: 2.5, pb: 1, flexShrink: 0,
+          borderBottom: '1px solid rgba(52,133,247,0.12)',
+          display: 'flex', justifyContent: 'space-between'
         }}>
-          <Typography sx={{ color: '#2d2d2d', fontWeight: 700, fontSize: '0.92rem' }}>
-            Sản phẩm trong live
-          </Typography>
-          <Typography sx={{ color: '#3485f7', fontSize: '0.72rem', fontWeight: 500 }}>
-            {products.length} sản phẩm
-          </Typography>
+          <Box>
+            <Typography sx={{ color: '#2d2d2d', fontWeight: 700, fontSize: '0.92rem' }}>
+              Sản phẩm trong live
+            </Typography>
+            <Typography sx={{ color: '#3485f7', fontSize: '0.72rem', fontWeight: 500 }}>
+              {products.length} sản phẩm
+            </Typography>
+          </Box>
+          <Box>
+            <Badge
+              badgeContent={cartCount}
+              color="error"
+              invisible={!cartCount}
+              sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', minWidth: 16, height: 16, p: '0 3px' } }}
+            >
+              <Box
+                onClick={() => navigate('/cart')}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: 36,
+                  height: 36,
+                  bgcolor: 'rgba(83,155,255,0.10)',
+                  border: '1px solid rgba(83,155,255,0.25)',
+                  borderRadius: '50%',
+                  color: 'secondary.main',
+                  cursor: 'pointer'
+                }}>
+                <ShoppingCartOutlinedIcon sx={{ fontSize: '1.2rem' }} />
+              </Box>
+            </Badge>
+          </Box>
         </Box>
 
         {/* List — stop propagation để scroll list không trigger chuyển live */}

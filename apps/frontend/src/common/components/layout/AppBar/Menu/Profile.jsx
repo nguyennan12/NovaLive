@@ -9,11 +9,10 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import { selectCurrentUser, logoutUserAPI } from '~/store/user/userSlice'
 import { useConfirm } from 'material-ui-confirm'
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { logoutUserAPI, selectCurrentUser } from '~/store/user/userSlice'
 
 function Profiles() {
   const [anchorEl, setAnchorEl] = React.useState(null)

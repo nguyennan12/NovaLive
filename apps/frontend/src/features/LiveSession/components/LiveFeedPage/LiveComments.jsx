@@ -114,16 +114,16 @@ const LiveComments = ({ comments, onSend, commentError, likes, onLike }) => {
       px: 2, pb: 1.25, pt: 4,
       pointerEvents: 'none'
     }}>
-      {/* Comment list — no bubble, text shadow only */}
+      {/* Comment list */}
       <Box
         ref={listRef}
         sx={{
-          maxHeight: 180, // Tăng thêm chiều cao một chút để hiển thị được nhiều comment hơn
+          maxHeight: 180,
           overflowY: 'auto',
           display: 'flex',
-          flexDirection: 'column', // Ép các comment xếp dọc
-          alignItems: 'flex-start', // Căn các comment sang mép trái
-          gap: 1, // Khoảng cách giữa các comment với nhau (rất quan trọng)
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          gap: 1,
           mb: 1.5,
           '&::-webkit-scrollbar': { display: 'none' },
           scrollbarWidth: 'none'
@@ -218,11 +218,10 @@ const LiveComments = ({ comments, onSend, commentError, likes, onLike }) => {
             sx={{
               ...CIRCLE_BTN,
               '&:hover': { bgcolor: 'rgba(239,68,68,0.35)' },
-              transition: 'transform 0.1s active',
-              '&:active': { transform: 'scale(1.2)' }
+              '&:active': { transform: 'scale(1.2)', bgcolor: 'rgba(239,68,68,0.2)' }, transition: 'transform 0.1s'
             }}
           >
-            <FavoriteRoundedIcon sx={{ color: '#f87171', fontSize: 19 }} />
+            <FavoriteRoundedIcon sx={{ color: '#ffffff', fontSize: 19, '&:active': { color: '#ff4f4fff' } }} />
           </IconButton>
         </Box>
       </Box>

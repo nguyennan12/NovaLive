@@ -172,7 +172,7 @@ LiveFeedPage (grid: empty | 400px feed | detail panel)
   │           ├── ShoppingBag FAB — top right (below header), opens LiveProductListSheet
   │           ├── PinnedProductCard — bottom: 210, left: 10, 70% width
   │           └── LiveComments — bottom gradient: comment list (left) + like+share (right) + input bar
-  └── [Right] LiveProductDetailPanel (desktop, shown when product selected)
+
 ```
 
 ### Socket events trong `useLiveSocket`

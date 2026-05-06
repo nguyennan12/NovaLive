@@ -1,5 +1,5 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Box, Typography, Button } from '@mui/material'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
+import { Box, Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material'
 
 export const DeleteDialog = ({ open, discount, onConfirm, onCancel }) => (
   <Dialog

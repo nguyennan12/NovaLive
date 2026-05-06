@@ -1,7 +1,6 @@
-import { Box, Avatar, Typography } from '@mui/material'
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
-import SidebarNavItem from './SidebarNavItem'
+import { Box, Typography } from '@mui/material'
 import { PROFILE_ITEMS } from '~/common/configs/sidebar.config'
+import SidebarNavItem from './SidebarNavItem'
 
 const SidebarProfile = ({ activeKey, collapsed, onItemClick }) => (
   <Box sx={{ borderTop: '1px solid', borderColor: 'divider', pt: 1.5 }}>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getActiveSessionsAPI } from '~/common/apis/services/liveService'
 export const useLiveFeed = () => {

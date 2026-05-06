@@ -136,7 +136,7 @@ const StockHistory = ({ loading = false }) => {
             <Typography sx={{ fontSize: '0.72rem', color: '#6b7280' }} noWrap>{h.inven_userEmail}</Typography>
 
             <Typography sx={{ fontSize: '0.72rem', color: '#9ca3af' }} noWrap>{h.inven_note || '—'}</Typography>
-          </Box>;
+          </Box>
         })
       )}
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 2 }}>

@@ -33,7 +33,7 @@ const LiveOverlay = ({ live }) => {
         {/* Top header */}
         <LiveHeaderInfo live={live} viewers={viewers} />
 
-        {/* Products FAB — top right, below header */}
+        {/* Products FAB*/}
         {liveProducts.length > 0 && (
           <IconButton
             onClick={() => setListOpen(true)}
@@ -48,7 +48,7 @@ const LiveOverlay = ({ live }) => {
               '&:hover': { bgcolor: 'rgba(74,127,255,0.4)' }
             }}
           >
-            <ShoppingBagRoundedIcon sx={{ color: 'white', fontSize: 20 }} />
+            <ShoppingBagRoundedIcon sx={{ color: 'secondary.main', fontSize: 20 }} />
           </IconButton>
         )}
 

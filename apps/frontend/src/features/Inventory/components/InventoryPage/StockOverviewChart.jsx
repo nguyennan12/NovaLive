@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, Tooltip as RTooltip, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 import { getChartArtInventoryAPI } from '~/common/apis/services/inventoryService'
 import SectionCard from '../shared/SectionCard'
-import { CHART_DATA } from '../../../../../mockdata/stockdata'
 
 const PERIODS = ['today', 'week', 'month']
 

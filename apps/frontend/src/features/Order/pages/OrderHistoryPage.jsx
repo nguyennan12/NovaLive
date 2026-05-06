@@ -1,6 +1,5 @@
-import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
-import { Box, Button, CircularProgress, Container, Tab, Tabs, Typography } from '@mui/material'
+import { Box, CircularProgress, Container, Tab, Tabs, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useInfiniteScroll } from '~/common/hooks/useScroll'

@@ -37,8 +37,7 @@ export const useLivePlayer = ({ liveId, userId }) => {
         })
         await client.join(env.AGORA_APP_ID, channelName, token, userId)
 
-      } catch (err) {
-        console.error('joinLive error:', err)
+      } catch {
         if (isMounted) setStatus('error')
       }
     }
