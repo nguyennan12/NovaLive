@@ -14,9 +14,9 @@ const dev = {
 
 // 2. Cấu hình cho môi trường PRO
 const pro = {
-  app: { port: env.PRO_APP_PORT || 8080 },
+  app: { port: env.PRO_APP_PORT || 3031 },
   db: {
-    url: env.PRO_MONGODB_URI,
+    url: env.DEV_MONGODB_URI,
     maxPoolSize: parseInt(env.PRO_MONGODB_MAX_POOL_SIZE) || 50
   }
 }

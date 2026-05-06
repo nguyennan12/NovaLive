@@ -386,7 +386,7 @@ yarn workspace livestream-ecommerce-frontend dev
 
 | Service | URL |
 |---|---|
-| Frontend | http://localhost:5173 |
+| Frontend | http://localhost:80 |
 | Backend API | http://localhost:3031 |
 | Swagger Docs | http://localhost:3031/api-docs |
 
@@ -402,7 +402,7 @@ docker compose up --build
 
 | Service | URL |
 |---|---|
-| Frontend (Nginx) | http://localhost:5173 |
+| Frontend (Nginx) | http://localhost:80 |
 | Backend API | http://localhost:3031 |
 | MongoDB | localhost:27017 |
 | Redis | localhost:6379 |

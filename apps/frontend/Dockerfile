@@ -8,7 +8,7 @@ RUN yarn install --frozen-lockfile
 # Stage 2: Development (hot reload)
 FROM base AS development
 WORKDIR /app/apps/frontend
-CMD ["yarn", "dev", "--host", "0.0.0.0", "--port", "5173"]
+CMD ["yarn", "dev", "--host", "0.0.0.0", "--port", "80"]
 
 # Stage 3: Build
 FROM base AS build

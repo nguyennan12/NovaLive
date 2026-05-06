@@ -6,6 +6,8 @@ export const env = {
   PRO_MONGODB_URI: process.env.PRO_MONGODB_URI,
   PRO_MONGODB_MAX_POOL_SIZE: process.env.PRO_MONGODB_MAX_POOL_SIZE,
 
+  PRO_APP_PORT: process.env.PRO_APP_PORT,
+
   AUTHOR: process.env.AUTHOR,
   PORT: process.env.PORT,
   HOST: process.env.HOST,
