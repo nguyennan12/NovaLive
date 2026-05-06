@@ -8,12 +8,13 @@ import LivePlayer from '../shared/LivePlayer'
 import LiveOverlay from './LiveOverlay'
 import { useLiveFeed } from '../../hooks/useLiveFeed'
 
-export const LiveFeed = ({ userId, onSelectProduct }) => {
+export const LiveFeed = ({ userId }) => {
   const {
     lives, loading, currentIndex,
     goNext, goPrev, loadingMore,
     handleTouchEnd, handleTouchStart, handleWheel
   } = useLiveFeed()
+
 
   if (loading) return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', bgcolor: '#0a0a0a' }}>
@@ -29,7 +30,7 @@ export const LiveFeed = ({ userId, onSelectProduct }) => {
   )
 
   const currentLive = lives[currentIndex]
-
+  const currentShopId = currentLive.live_shopId
   return (
     <Box
       onTouchStart={handleTouchStart}
@@ -55,7 +56,6 @@ export const LiveFeed = ({ userId, onSelectProduct }) => {
       <LiveOverlay
         key={`overlay-${currentLive._id}`}
         live={currentLive}
-        onSelectProduct={onSelectProduct}
       />
 
       {/* Nav arrows — z:20 để ở trên overlay */}

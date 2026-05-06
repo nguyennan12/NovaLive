@@ -109,9 +109,9 @@ const LiveComments = ({ comments, onSend, commentError, likes, onLike }) => {
 
   return (
     <Box sx={{
-      position: 'absolute', bottom: 0, left: 0, right: 0,
+      position: 'absolute', bottom: 8, left: 0, right: 0,
       background: 'linear-gradient(to top, rgba(0,0,0,0.7) 35%, rgba(0,0,0,0.1) 75%, transparent 100%)',
-      px: 1.25, pb: 1.25, pt: 4,
+      px: 2, pb: 1.25, pt: 4,
       pointerEvents: 'none'
     }}>
       {/* Comment list — no bubble, text shadow only */}
@@ -146,7 +146,7 @@ const LiveComments = ({ comments, onSend, commentError, likes, onLike }) => {
         </Typography>
       )}
 
-      {/* Bottom action row: [input pill] [share] [heart] */}
+      {/* Bottom action row: */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
         {/* Input pill — send arrow inside */}
         <Box sx={{
@@ -193,8 +193,35 @@ const LiveComments = ({ comments, onSend, commentError, likes, onLike }) => {
         </IconButton>
 
         {/* Like */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.15 }}>
-          <IconButton onClick={onLike} sx={{ ...CIRCLE_BTN, '&:hover': { bgcolor: 'rgba(239,68,68,0.35)' } }}>
+        <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <Typography
+            sx={{
+              position: 'absolute',
+              bottom: '105%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              color: 'white',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+
+              pointerEvents: 'none',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {likes > 0 ? likes : ''}
+          </Typography>
+
+          {/* Nút Like */}
+          <IconButton
+            onClick={onLike}
+            sx={{
+              ...CIRCLE_BTN,
+              '&:hover': { bgcolor: 'rgba(239,68,68,0.35)' },
+              transition: 'transform 0.1s active',
+              '&:active': { transform: 'scale(1.2)' }
+            }}
+          >
             <FavoriteRoundedIcon sx={{ color: '#f87171', fontSize: 19 }} />
           </IconButton>
         </Box>

@@ -7,9 +7,8 @@ import { useLiveSocket } from '../../hooks/useLiveSocket'
 import LiveComments from './LiveComments'
 import LiveHeaderInfo from './LiveHeaderInfo'
 import LiveProductListSheet from './LiveProductListSheet'
-import PinnedProductCard from './PinnedProductCard'
 
-const LiveOverlay = ({ live, onSelectProduct }) => {
+const LiveOverlay = ({ live }) => {
   const currentUser = useSelector(selectCurrentUser)
   const [listOpen, setListOpen] = useState(false)
 
@@ -24,7 +23,7 @@ const LiveOverlay = ({ live, onSelectProduct }) => {
   })
 
   const liveProducts = live?.live_products ?? []
-
+  const liveShop = live?.live_shopId
   return (
     <>
       <Box sx={{
@@ -54,10 +53,10 @@ const LiveOverlay = ({ live, onSelectProduct }) => {
         )}
 
         {/* Pinned product — above comment area */}
-        <PinnedProductCard
+        {/* <PinnedProductCard
           product={pinnedProduct}
           onClick={() => pinnedProduct && (onSelectProduct ? onSelectProduct(pinnedProduct) : setListOpen(true))}
-        />
+        /> */}
 
         {/* Bottom: comments + like/share */}
         <LiveComments
@@ -74,7 +73,7 @@ const LiveOverlay = ({ live, onSelectProduct }) => {
         open={listOpen}
         onClose={() => setListOpen(false)}
         products={liveProducts}
-        onSelectProduct={onSelectProduct}
+        liveShop={liveShop}
       />
     </>
   )
