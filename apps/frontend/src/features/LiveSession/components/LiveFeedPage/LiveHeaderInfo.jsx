@@ -1,7 +1,5 @@
-import { Avatar, Box, Button, Chip, Typography } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import LiveStatusBadge from '../shared/LiveStatusBadge'
-
+import { Avatar, Box, Button, Chip, Typography } from '@mui/material'
 const LiveHeaderInfo = ({ live, viewers }) => {
   const shop = live?.live_shopId
 
@@ -67,7 +65,22 @@ const LiveHeaderInfo = ({ live, viewers }) => {
             '& .MuiChip-icon': { ml: 0.75 }
           }}
         />
-        <LiveStatusBadge status={live?.live_status ?? 'live'} />
+        <Chip
+          label='live'
+          size='small'
+          sx={{
+            p: 1,
+            bgcolor: '#ff2929ff',
+            color: '#fff',
+            fontWeight: 600,
+            fontSize: '0.7rem',
+            animation: 'livePulse 1.5s ease-in-out infinite',
+            '@keyframes livePulse': {
+              '0%, 100%': { opacity: 1 },
+              '50%': { opacity: 0.55 }
+            }
+          }}
+        />
       </Box>
     </Box>
   )

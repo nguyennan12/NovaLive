@@ -59,6 +59,20 @@ const addProductToLiveSession = async (req, res, next) => {
     metadata: await livestreamService.addProductToLiveSession({ shopId: req.user.shopId, liveId: req.params.liveId, products: req.body })
   }).send(res)
 }
+const getLiveById = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get live session successfully!',
+    metadata: await livestreamService.getLiveById({ liveId: req.params.liveId, shopId: req.user.shopId })
+  }).send(res)
+}
+const removeProductFromLiveSession = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Remove product from live successfully!',
+    metadata: await livestreamService.removeProductFromLiveSession({ liveId: req.params.liveId, productId: req.params.productId, shopId: req.user.shopId })
+  }).send(res)
+}
 const updateLiveSession = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
@@ -111,6 +125,8 @@ export default {
   pinProduct,
   unpinProduct,
   addProductToLiveSession,
+  getLiveById,
+  removeProductFromLiveSession,
   getHistoryLiveByShop,
   updateLiveSession,
   cancelLiveSession,

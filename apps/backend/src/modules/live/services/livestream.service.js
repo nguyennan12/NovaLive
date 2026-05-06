@@ -158,7 +158,7 @@ const addProductToLiveSession = async ({ products, liveId, shopId }) => {
 
       return {
         skuId: foundSku.sku_id,
-        sku_name: foundSku.sku_attributes,
+        sku_name: foundSku.sku_name,
         original_price: foundSku.sku_price,
         live_price: reqSku.live_price,
       }
@@ -168,12 +168,27 @@ const addProductToLiveSession = async ({ products, liveId, shopId }) => {
       productId: firstSku.product_id,
       name: firstSku.product_name,
       thumb: firstSku.sku_image,
+      code: firstSku.product_code,
       is_featured: reqProduct.is_featured || false,
       skus,
     }
   })
 
   return await livestreamRepo.addProductToLiveSession(foundLive._id, liveProducts)
+}
+
+const getLiveById = async ({ liveId, shopId }) => {
+  const foundLive = await livestreamRepo.findLiveByIdAndShopId(liveId, shopId)
+  if (!foundLive) throw new ApiError(StatusCodes.NOT_FOUND, 'Live session not found')
+  return foundLive
+}
+
+const removeProductFromLiveSession = async ({ liveId, productId, shopId }) => {
+  const foundLive = await livestreamRepo.findLiveByIdAndShopId(liveId, shopId)
+  if (!foundLive) throw new ApiError(StatusCodes.BAD_REQUEST, 'Live session not found')
+  const updated = await livestreamRepo.removeProductFromLiveSession(foundLive._id, productId)
+  if (!updated) throw new ApiError(StatusCodes.BAD_REQUEST, 'Cannot remove product (live may have ended)')
+  return updated
 }
 
 const updateLiveSession = async ({ liveId, reqBody }) => {
@@ -330,6 +345,8 @@ export default {
   unpinProduct,
   getActiveSessions,
   addProductToLiveSession,
+  getLiveById,
+  removeProductFromLiveSession,
   updateLiveSession,
   cancelLiveSession,
   getHistoryLiveByShop,

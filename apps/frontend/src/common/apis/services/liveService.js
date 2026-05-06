@@ -31,8 +31,18 @@ export const cancelLiveSessionAPI = async (liveId) => {
   return response.metadata
 }
 
-export const addProductToLiveSessionAPI = async (liveId) => {
-  const response = await authorizedAxiosInstance.post(`livestream/${liveId}/product`)
+export const addProductToLiveSessionAPI = async (liveId, products) => {
+  const response = await authorizedAxiosInstance.post(`livestream/${liveId}/product`, products)
+  return response.metadata
+}
+
+export const getLiveSessionByIdAPI = async (liveId) => {
+  const response = await authorizedAxiosInstance.get(`livestream/${liveId}`)
+  return response.metadata
+}
+
+export const removeProductFromLiveSessionAPI = async (liveId, productId) => {
+  const response = await authorizedAxiosInstance.delete(`livestream/${liveId}/product/${productId}`)
   return response.metadata
 }
 

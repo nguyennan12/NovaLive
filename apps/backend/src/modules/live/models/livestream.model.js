@@ -17,6 +17,7 @@ const livestreamSchema = new Schema({
     productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
     name: String,
     thumb: String,
+    code: String,
     is_featured: { type: Boolean, default: false },
     skus: [{
       skuId: { type: Schema.Types.ObjectId, ref: 'Sku', required: true },

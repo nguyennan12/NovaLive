@@ -102,10 +102,15 @@ const ProductDetailSheet = ({ open, onClose, product }) => {
             <Typography sx={{ fontSize: '0.9rem', fontWeight: 600, color: 'white', lineHeight: 1.4, mb: 0.75 }}>
               {product.name}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
               <Typography sx={{ color: '#ffd166', fontWeight: 700, fontSize: '1.15rem' }}>
                 {formatVND(displayPrice)}
               </Typography>
+              {selectedSku?.original_price && selectedSku.original_price !== displayPrice && (
+                <Typography sx={{ color: 'rgba(255,255,255,0.38)', textDecoration: 'line-through', fontSize: '0.82rem' }}>
+                  {formatVND(selectedSku.original_price)}
+                </Typography>
+              )}
               <Box sx={{ bgcolor: '#e53935', borderRadius: 0.75, px: 0.7, py: 0.15 }}>
                 <Typography sx={{ color: 'white', fontSize: '0.58rem', fontWeight: 700, letterSpacing: 0.5 }}>
                   GIÁ LIVE
@@ -129,7 +134,7 @@ const ProductDetailSheet = ({ open, onClose, product }) => {
                   onClick={() => setSelectedSkuIndex(idx)}
                   sx={{
                     border: `1.5px solid ${selectedSkuIndex === idx ? '#ffd166' : 'rgba(255,255,255,0.22)'}`,
-                    borderRadius: 1.5, px: 1.5, py: 0.6,
+                    borderRadius: 1.5, px: 1.25, py: 0.5,
                     cursor: 'pointer',
                     bgcolor: selectedSkuIndex === idx ? 'rgba(255,209,102,0.12)' : 'transparent',
                     transition: 'all 0.15s',
@@ -138,13 +143,20 @@ const ProductDetailSheet = ({ open, onClose, product }) => {
                 >
                   <Typography sx={{
                     color: selectedSkuIndex === idx ? '#ffd166' : 'rgba(255,255,255,0.68)',
-                    fontSize: '0.78rem'
+                    fontSize: '0.75rem', lineHeight: 1.3
                   }}>
-                    {`Phiên bản ${idx + 1}`}
+                    {sku.sku_name || `Loại ${idx + 1}`}
                   </Typography>
-                  <Typography sx={{ color: '#ffd166', fontSize: '0.72rem', fontWeight: 700 }}>
-                    {formatVND(sku.live_price)}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography sx={{ color: '#ffd166', fontSize: '0.72rem', fontWeight: 700 }}>
+                      {formatVND(sku.live_price)}
+                    </Typography>
+                    {sku.original_price && sku.original_price !== sku.live_price && (
+                      <Typography sx={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through', fontSize: '0.62rem' }}>
+                        {formatVND(sku.original_price)}
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
               ))}
             </Box>

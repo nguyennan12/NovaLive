@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/store/user/userSlice'
 import { LiveFeed } from '../components/LiveFeedPage/LiveFeed'
 import LiveProductDetailPanel from '../components/LiveFeedPage/LiveProductDetailPanel'
+import ProductDetailSheet from '../components/LiveFeedPage/ProductDetailSheet'
 
 const LiveFeedPage = () => {
   const currentUser = useSelector(selectCurrentUser)
@@ -26,7 +27,7 @@ const LiveFeedPage = () => {
       <Box sx={{ height: '100vh', position: 'relative' }}>
         <LiveFeed
           userId={currentUser._id}
-          onSelectProduct={isDesktop ? setDetailProduct : null}
+          onSelectProduct={setDetailProduct}
         />
       </Box>
 
@@ -45,6 +46,15 @@ const LiveFeedPage = () => {
           />
         )}
       </Box>
+
+      {/* Mobile - bottom sheet detail (chỉ hiện khi không phải desktop) */}
+      {!isDesktop && (
+        <ProductDetailSheet
+          open={!!detailProduct}
+          onClose={() => setDetailProduct(null)}
+          product={detailProduct}
+        />
+      )}
     </Box>
   )
 }

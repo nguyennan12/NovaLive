@@ -82,7 +82,6 @@ const ProductCard = ({ product, onClick }) => {
 }
 
 const LiveProductListSheet = ({ open, onClose, products = [], onSelectProduct }) => {
-  console.log("🚀 ~ LiveProductListSheet ~ products:", products)
   const navigate = useNavigate()
 
   const handleClick = (product) => {
@@ -90,7 +89,7 @@ const LiveProductListSheet = ({ open, onClose, products = [], onSelectProduct })
       onSelectProduct(product)
       onClose()
     } else {
-      navigate(`/product/${product.productId}`)
+      navigate(`/product/${product.code}`)
     }
   }
 
@@ -108,17 +107,23 @@ const LiveProductListSheet = ({ open, onClose, products = [], onSelectProduct })
         }}
       />
 
-      <Box sx={{
-        ...PANEL_SX,
-        position: 'absolute', bottom: 0, left: 0, right: 0,
-        height: '68%',
-        borderRadius: '20px 20px 0 0',
-        transform: open ? 'translateY(0)' : 'translateY(100%)',
-        transition: 'transform 0.32s cubic-bezier(0.4,0,0.2,1)',
-        zIndex: 30,
-        display: 'flex', flexDirection: 'column',
-        overflow: 'hidden'
-      }}>
+      <Box
+        onWheel={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
+        sx={{
+          ...PANEL_SX,
+          position: 'absolute', bottom: 0, left: 0, right: 0,
+          height: '68%',
+          borderRadius: '20px 20px 0 0',
+          transform: open ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.32s cubic-bezier(0.4,0,0.2,1)',
+          zIndex: 30,
+          display: 'flex', flexDirection: 'column',
+          overflow: 'hidden'
+        }}
+      >
         {/* Handle */}
         <Box sx={{ pt: 1.25, pb: 0.75, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
           <Box
@@ -144,12 +149,18 @@ const LiveProductListSheet = ({ open, onClose, products = [], onSelectProduct })
           </Typography>
         </Box>
 
-        {/* List */}
-        <Box sx={{
-          flex: 1, overflowY: 'auto', pt: 1,
-          '&::-webkit-scrollbar': { display: 'none' },
-          scrollbarWidth: 'none'
-        }}>
+        {/* List — stop propagation để scroll list không trigger chuyển live */}
+        <Box
+          onWheel={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+          sx={{
+            flex: 1, overflowY: 'auto', pt: 1,
+            '&::-webkit-scrollbar': { display: 'none' },
+            scrollbarWidth: 'none'
+          }}
+        >
           {products.length === 0 ? (
             <Box sx={{ py: 5, textAlign: 'center' }}>
               <ShoppingBagRoundedIcon sx={{ fontSize: 38, color: 'rgba(52,133,247,0.2)', mb: 1 }} />

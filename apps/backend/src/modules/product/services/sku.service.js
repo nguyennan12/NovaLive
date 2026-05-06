@@ -128,7 +128,7 @@ const getSkusDetails = async (skuIds) => {
   const skus = await skuModel.find({ _id: { $in: objectIds } })
     .populate({
       path: 'sku_spuId',//liên kết tới Spu schema
-      select: 'spu_name spu_thumb spu_shopId', // lấy ra name thumb và shopId
+      select: 'spu_name spu_thumb spu_shopId spu_code', // lấy ra name thumb và shopId
       populate: {
         path: 'spu_shopId',//liên kết từ spu tới shop
         select: 'shop_name' //lấy shop name
@@ -146,6 +146,7 @@ const getSkusDetails = async (skuIds) => {
       sku_attributes: sku.sku_attributes,
       product_id: sku.sku_spuId._id.toString(),
       product_name: sku.sku_spuId.spu_name,
+      product_code: sku.sku_spuId.spu_code,
       shopId: sku.sku_spuId.spu_shopId._id.toString(),
       shop_name: sku.sku_spuId.spu_shopId.shop_name,
     }
@@ -175,6 +176,8 @@ const querySkusList = async ({ page = 1, sort = 'ctime', limit = 50, stock = 'al
       $addFields: {
         spu_name: '$spu.spu_name',
         spu_shopId: '$spu.spu_shopId',
+        spu_thumb: '$spu.spu_thumb',
+        spu_code: '$spu.spu_code'
       }
     }
   ]
