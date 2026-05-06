@@ -1,0 +1,52 @@
+name: CD
+run-name: Deploy bởi ${{ github.actor }}
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - main
+      - master
+
+jobs:
+  cd-pipeline:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            echo "Bắt đầu triển khai lên EC2..."
+            cd /home/ubuntu
+
+            # 1. Cập nhật các biến môi trường mà không xóa sạch file .env cũ
+            # Dùng 'sed' để cập nhật nếu đã tồn tại, hoặc 'echo' để thêm mới
+            touch .env
+            
+            # Cập nhật IMAGE_TAG (nếu bạn dùng tag này trong docker-compose)
+            sed -i '/^IMAGE_TAG=/d' .env
+            echo "IMAGE_TAG=${{ github.event.workflow_run.head_sha }}" >> .env
+            
+            # Cập nhật NODE_ENV luôn là pro
+            sed -i '/^NODE_ENV=/d' .env
+            echo "NODE_ENV=pro" >> .env
+
+            # 2. Pull các image mới nhất (Sử dụng tên service chuẩn trong docker-compose.yml)
+            sudo docker compose pull backend frontend
+
+            # 3. Khởi động lại container với image mới
+            # --force-recreate đảm bảo nó dùng image vừa pull về
+            sudo docker compose up -d --force-recreate backend frontend
+
+            # 4. Dọn dẹp image cũ để giải phóng bộ nhớ (Quan trọng cho t3.small)
+            sudo docker image prune -f
+
+            echo "Deploy EC2 successfully!"
