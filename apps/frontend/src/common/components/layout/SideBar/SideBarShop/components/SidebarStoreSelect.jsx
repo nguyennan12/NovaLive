@@ -1,10 +1,6 @@
 import { Box, Typography, Avatar } from '@mui/material'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 
-const STORES = [
-  { key: 'capstore', label: 'Capstore', abbr: 'C', color: '#3465c8' }
-]
-
 const SidebarStoreSelect = ({ collapsed }) => (
   <Box
     sx={{

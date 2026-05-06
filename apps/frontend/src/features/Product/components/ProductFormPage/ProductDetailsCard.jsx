@@ -1,13 +1,12 @@
 import { Autocomplete, Box, Chip, CircularProgress, MenuItem, Paper, Select, TextField, Typography } from '@mui/material'
-import Grid from '@mui/material/Grid'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Controller, useFormContext, useWatch } from 'react-hook-form'
-import { useEffect, useMemo, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  fetchCategoriesAPI,
   fetchAttributesBySlugAPI,
-  selectCategories,
+  fetchCategoriesAPI,
   selectAttributesBySlug,
+  selectCategories,
   selectCategoryLoading,
   setAttributesBySlug
 } from '~/store/product/categorySlice'
