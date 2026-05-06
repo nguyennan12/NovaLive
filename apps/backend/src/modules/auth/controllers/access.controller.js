@@ -58,7 +58,7 @@ const refreshtoken = async (req, res, next) => {
   if (metadata.tokens && metadata.tokens.refreshToken) {
     res.cookie('refreshToken', metadata.tokens.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'pro',
       sameSite: 'lax',
       maxAge: REFRESHTOKEN_LIFE
     })
