@@ -8,7 +8,7 @@ import LivePlayer from '../shared/LivePlayer'
 import LiveOverlay from './LiveOverlay'
 import { useLiveFeed } from '../../hooks/useLiveFeed'
 
-export const LiveFeed = ({ userId }) => {
+export const LiveFeed = ({ userId, onSelectProduct }) => {
   const {
     lives, loading, currentIndex,
     goNext, goPrev, loadingMore,
@@ -16,13 +16,13 @@ export const LiveFeed = ({ userId }) => {
   } = useLiveFeed()
 
   if (loading) return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'black' }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', bgcolor: '#0a0a0a' }}>
       <CircularProgress sx={{ color: 'white' }} />
     </Box>
   )
 
   if (lives.length === 0) return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', bgcolor: 'black', gap: 1 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', bgcolor: '#0a0a0a', gap: 1 }}>
       <Typography color="white" variant="h6">Chưa có live nào đang phát</Typography>
       <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>Quay lại sau nhé!</Typography>
     </Box>
@@ -36,18 +36,13 @@ export const LiveFeed = ({ userId }) => {
       onTouchEnd={handleTouchEnd}
       onWheel={handleWheel}
       sx={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
+        position: 'relative',
         width: '100%',
-        maxWidth: 400,
-        height: '98vh',
-        mx: 'auto',
+        height: '100%',
         bgcolor: '#101010',
         overflow: 'hidden',
         userSelect: 'none',
-        borderRadius: '18px'
+        borderRadius: { md: '18px' }
       }}
     >
       {/* Video player — key để unmount/remount khi đổi live */}
@@ -57,10 +52,10 @@ export const LiveFeed = ({ userId }) => {
         userId={userId}
       />
 
-      {/* Overlay UI — key sync với player để reset socket state cùng lúc */}
       <LiveOverlay
         key={`overlay-${currentLive._id}`}
         live={currentLive}
+        onSelectProduct={onSelectProduct}
       />
 
       {/* Nav arrows — z:20 để ở trên overlay */}

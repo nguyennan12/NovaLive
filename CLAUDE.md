@@ -1,7 +1,7 @@
 # 📦 E-commerce Project Overview
 
 **Repo:** https://github.com/nguyennan12/E-commerce  
-**Cập nhật:** 03/05/2026 (Payment flow hoàn chỉnh — COD xác nhận OTP, VNPay redirect + IPN callback, nhả kho khi hủy/timeout; unit test full flow + vnpay + livestream + auth + rbac; CI GitHub Actions)  
+**Cập nhật:** 05/05/2026 (Live Feed overlay UI TikTok-style hoàn chỉnh; socket singleton; live host flow fix)  
 **Mục tiêu:** Tăng tốc phát triển frontend các tính năng chính, tối ưu cho teamwork với AI code assistant.
 
 ---
@@ -103,6 +103,7 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
   - ✅ **Trang Cart (consumer)** — layout 7/3, danh sách theo shop, checkbox, stepper, summary, discount shop + global, checkout summary realtime
   - ✅ **Trang Order (consumer)** — layout 7/3, địa chỉ GHN dropdown, phí ship realtime, voucher, PTTT, mobile sticky Portal, COD xác nhận OTP, VNPay redirect, đặt hàng hoàn chỉnh
   - ✅ **Order List / Order Detail** — tabs 6 trạng thái, card đơn hàng với ảnh/tên/giá, hủy đơn pending, detail dialog: timeline, breakdown giá, địa chỉ, thanh toán; route `/orders`
+  - ✅ **Live Feed consumer** — TikTok-style swipe, socket overlay, sản phẩm bottom sheet, desktop right panel
   - ⬜ **Customer / Profile** — thông tin cá nhân, địa chỉ, lịch sử
   - ⬜ **Auth UI** — đăng nhập / đăng ký (API backend đã có)
   - ⬜ **Admin Dashboard & Analytics**
@@ -144,6 +145,59 @@ Tóm tắt nhanh:
 - Card admin: `ProductCard` (dashboard) — có edit/delete, có stock badge
 - Category: gradient blue/cyan, 2 hàng trên desktop (`repeat(10,1fr)` md+)
 - Grid responsive chuẩn: 2→3→4→5 cols theo xs/sm/md/lg
+
+---
+
+## 10. Live Feed Architecture (05/05/2026)
+
+### Flow tạo & bắt đầu phiên live (shop)
+1. Shop tạo phiên → `createLiveSessionAPI` → status `scheduled`, lưu DB
+2. `UpcomingLiveCard` hiển thị danh sách upcoming; nút "Bắt đầu" **chỉ navigate** tới `/shop/live/:liveId`
+3. `LiveHost` mount → `useLiveHost.startLive()` gọi `startLiveAPI(liveId)` **1 lần duy nhất** → nhận token → Agora join với `channelName = liveId.toString()`
+4. **Không gọi `startLiveAPI` ở `UpcomingLiveCard`** — đây là bug đã fix (double call làm mất token)
+
+### Socket Singleton (`src/common/utils/socket.js`)
+- `io({ path: '/socket.io' })` — kết nối qua Vite proxy (không cần URL tuyệt đối, tránh CORS Docker)
+- `connectSocket(userId)` → join room cá nhân theo userId
+- `getSocket()` → dùng chung singleton toàn app
+
+### Live Feed Layout (consumer — route `/live`)
+```
+LiveFeedPage (grid: empty | 400px feed | detail panel)
+  ├── [Left] placeholder sidebar (desktop only)
+  ├── [Center] LiveFeed (swipe up/down, touch + wheel)
+  │     ├── LivePlayer (Agora audience, key=liveId)
+  │     └── LiveOverlay (key=overlay-liveId, pointer-events: none container)
+  │           ├── LiveHeaderInfo — top gradient: avatar + shop + Follow + viewer count + LIVE badge
+  │           ├── ShoppingBag FAB — top right (below header), opens LiveProductListSheet
+  │           ├── PinnedProductCard — bottom: 210, left: 10, 70% width
+  │           └── LiveComments — bottom gradient: comment list (left) + like+share (right) + input bar
+  └── [Right] LiveProductDetailPanel (desktop, shown when product selected)
+```
+
+### Socket events trong `useLiveSocket`
+- Room join/leave: `join-live` / `leave-live` với `liveCode`
+- `UPDATE_VIEWERS` → viewers count
+- `UPDATE_LIKES` → likes count  
+- `NEW_COMMENT` → append comment (max 100, slice(-100))
+- `PRODUCT_PINNED` → enriched từ `liveProductsRef` (full skus data)
+- `COMMENT_ERROR` → hiển thị 3 giây rồi clear
+
+### `live_products` structure (từ backend)
+```js
+{ productId, name, thumb, is_featured, skus: [{ skuId, sku_name, original_price, live_price }] }
+```
+
+### Desktop vs Mobile cho product detail
+- **Desktop (md+)**: `onSelectProduct = setDetailProduct` → `LiveProductDetailPanel` bên phải
+- **Mobile**: `onSelectProduct = null` → `LiveProductListSheet.handleClick` navigate `/product/:productId`
+
+### User fields trong Redux (từ backend login response)
+- `currentUser._id`, `currentUser.user_name`, `currentUser.user_email`, `currentUser.user_avatar`, `currentUser.user_shop`
+
+### Agora channel naming
+- Host & audience đều join cùng `channelName = liveId.toString()` (MongoDB ObjectId string)
+- Token tạo với `account = userId.toString()`, role = HOST / AUDIENCE
 
 ---
 

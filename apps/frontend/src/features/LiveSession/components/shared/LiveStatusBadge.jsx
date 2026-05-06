@@ -2,7 +2,7 @@ import { Chip } from '@mui/material'
 
 const STATUS_CONFIG = {
   scheduled: { label: 'scheduled', bg: '#f0fbfdff', text: '#2c8ae8ff' },
-  live: { label: 'live', bg: '#f0fdf4', text: '#15803d' },
+  live: { label: 'live', bg: '#ff3131ff', text: '#ffffffff' },
   ended: { label: 'ended', bg: '#fdf8f0ff', text: '#f1aa27ff' },
   cancelled: { label: 'cancelled', bg: '#fdf0f0ff', text: '#e82f2cff' }
 }
@@ -14,6 +14,7 @@ const LiveStatusBadge = ({ status, size = 'small' }) => {
       label={cfg.label}
       size={size}
       sx={{
+        p: 1,
         bgcolor: cfg.bg,
         color: cfg.text,
         fontWeight: 600,

@@ -11,20 +11,20 @@ const PinnedProductCard = ({ product, onClick }) => {
       onClick={onClick}
       sx={{
         position: 'absolute',
-        bottom: 196,
+        bottom: 210,
         left: 10,
-        width: '66%',
-        bgcolor: 'rgba(0,0,0,0.55)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
+        width: '70%',
+        bgcolor: 'rgba(12,18,48,0.72)',
+        backdropFilter: 'blur(14px)',
+        WebkitBackdropFilter: 'blur(14px)',
         borderRadius: 2,
-        p: 0.8,
-        display: 'flex', alignItems: 'center', gap: 1,
-        border: '1px solid rgba(255,255,255,0.15)',
+        p: 0.75,
+        display: 'flex', alignItems: 'center', gap: 0.9,
+        border: '1px solid rgba(255,255,255,0.18)',
         textAlign: 'left',
         pointerEvents: 'auto',
         transition: 'background 0.15s',
-        '&:hover': { bgcolor: 'rgba(0,0,0,0.72)' }
+        '&:hover': { bgcolor: 'rgba(20,30,80,0.8)' }
       }}
     >
       {product.thumb && (

@@ -3,8 +3,7 @@ import amqp from 'amqplib'
 import { env } from '#infrastructure/config/environment.config.js'
 import orderWorker from '#infrastructure/workers/order.worker.js'
 import inventoryWorker from '#infrastructure/workers/inventory.worker.js'
-import flashsaleWorker from '#infrastructure/workers/flashsale.worker'
-
+import flashsaleWorker from '#infrastructure/workers/flashSale.worker.js'
 
 let channel = null
 

@@ -1,19 +1,17 @@
-import { Box } from '@mui/material'
+import ShoppingBagRoundedIcon from '@mui/icons-material/ShoppingBagRounded'
+import { Box, IconButton } from '@mui/material'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/store/user/userSlice'
 import { useLiveSocket } from '../../hooks/useLiveSocket'
 import LiveComments from './LiveComments'
 import LiveHeaderInfo from './LiveHeaderInfo'
-import LiveStats from './LiveStats'
+import LiveProductListSheet from './LiveProductListSheet'
 import PinnedProductCard from './PinnedProductCard'
-import ProductDetailSheet from './ProductDetailSheet'
 
-const LiveOverlay = ({ live }) => {
+const LiveOverlay = ({ live, onSelectProduct }) => {
   const currentUser = useSelector(selectCurrentUser)
-  const [sheetOpen, setSheetOpen] = useState(false)
-  const [sheetProduct, setSheetProduct] = useState(null)
-  console.log("🚀 ~ LiveOverlay ~ sheetProduct:", sheetProduct)
+  const [listOpen, setListOpen] = useState(false)
 
   const { viewers, likes, comments, pinnedProduct, sendLike, sendComment, commentError } = useLiveSocket({
     liveCode: live?.live_code,
@@ -25,45 +23,58 @@ const LiveOverlay = ({ live }) => {
     initialLikes: live?.live_metrics?.total_likes ?? 0
   })
 
-  const handleOpenSheet = (product) => {
-    setSheetProduct(product)
-    setSheetOpen(true)
-  }
+  const liveProducts = live?.live_products ?? []
 
   return (
     <>
       <Box sx={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 10,
-        pointerEvents: 'none',
-        borderRadius: 'inherit'
+        position: 'absolute', inset: 0, zIndex: 10,
+        pointerEvents: 'none', borderRadius: 'inherit'
       }}>
-        <LiveHeaderInfo live={live} />
+        {/* Top header */}
+        <LiveHeaderInfo live={live} viewers={viewers} />
 
-        <LiveStats
-          viewers={viewers}
-          likes={likes}
-          onLike={sendLike}
-        />
+        {/* Products FAB — top right, below header */}
+        {liveProducts.length > 0 && (
+          <IconButton
+            onClick={() => setListOpen(true)}
+            sx={{
+              position: 'absolute', top: 72, right: 10,
+              width: 40, height: 40,
+              bgcolor: 'rgba(255,255,255,0.18)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              pointerEvents: 'auto',
+              '&:hover': { bgcolor: 'rgba(74,127,255,0.4)' }
+            }}
+          >
+            <ShoppingBagRoundedIcon sx={{ color: 'white', fontSize: 20 }} />
+          </IconButton>
+        )}
 
+        {/* Pinned product — above comment area */}
         <PinnedProductCard
           product={pinnedProduct}
-          onClick={() => pinnedProduct && handleOpenSheet(pinnedProduct)}
+          onClick={() => pinnedProduct && (onSelectProduct ? onSelectProduct(pinnedProduct) : setListOpen(true))}
         />
 
+        {/* Bottom: comments + like/share */}
         <LiveComments
           comments={comments}
           onSend={sendComment}
           commentError={commentError}
+          likes={likes}
+          onLike={sendLike}
         />
       </Box>
 
-      {/* Bottom sheet nằm ngoài overlay để không bị pointer-events: none */}
-      <ProductDetailSheet
-        open={sheetOpen}
-        onClose={() => setSheetOpen(false)}
-        product={sheetProduct}
+      {/* Product list bottom sheet — outside overlay (not affected by pointer-events: none) */}
+      <LiveProductListSheet
+        open={listOpen}
+        onClose={() => setListOpen(false)}
+        products={liveProducts}
+        onSelectProduct={onSelectProduct}
       />
     </>
   )

@@ -1,5 +1,5 @@
 import MyLogger from '#infrastructure/loggers/MyLogger.js'
-import { flashSaleCampaignModel } from '#modules/flashSale/models/flashSaleCampaign.model'
+import { flashSaleCampaignModel } from '#modules/flashSale/models/flashSaleCampaign.model.js'
 
 const listenStartFlashSaleQueue = async (channel) => {
   const queueName = 'flashsale_delay_queue'

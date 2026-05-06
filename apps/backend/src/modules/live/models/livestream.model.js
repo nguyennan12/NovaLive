@@ -21,6 +21,7 @@ const livestreamSchema = new Schema({
     skus: [{
       skuId: { type: Schema.Types.ObjectId, ref: 'Sku', required: true },
       sku_name: String,
+      original_price: { type: Number },
       live_price: { type: Number, required: true },
     }]
   }],
