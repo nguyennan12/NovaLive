@@ -21,10 +21,10 @@ Router.patch('/:liveId/unpin', grantAccess('update:own', 'LIVESTREAM'), asyncHan
 Router.post('/:liveId/product', grantAccess('update:own', 'LIVESTREAM'), validate(addProductsToLiveSchema), asyncHandler(livestreamController.addProductToLiveSession))
 Router.delete('/:liveId/product/:productId', grantAccess('update:own', 'LIVESTREAM'), asyncHandler(livestreamController.removeProductFromLiveSession))
 Router.patch('/:liveId/cancel', grantAccess('update:own', 'LIVESTREAM'), asyncHandler(livestreamController.cancelLiveSession))
-Router.get('/:liveId', grantAccess('read:own', 'LIVESTREAM'), asyncHandler(livestreamController.getLiveById))
 Router.get('/history', grantAccess('read:own', 'LIVESTREAM'), asyncHandler(livestreamController.getHistoryLiveByShop))
 Router.get('/upcomming', grantAccess('read:any', 'LIVESTREAM'), asyncHandler(livestreamController.getUpommingLiveSessions))
 Router.get('/stats', grantAccess('read:own', 'LIVESTREAM'), asyncHandler(livestreamController.getLiveStats))
 Router.get('/chart', grantAccess('read:own', 'LIVESTREAM'), validate(liveChartQuerySchema), asyncHandler(livestreamController.getLiveRevenueChart))
+Router.get('/:liveId', grantAccess('read:own', 'LIVESTREAM'), asyncHandler(livestreamController.getLiveById))
 
 export const livestreamRouter = Router

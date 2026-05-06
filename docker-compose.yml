@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: nguyennan12/novalive-frontend:latest
+    # image: nguyennan12/novalive-frontend:latest
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
@@ -24,7 +24,7 @@ services:
       - livestream-ecommerce-network
 
   backend:
-    image: nguyennan12/novalive-backend:latest
+    # image: nguyennan12/novalive-backend:latest
     build:
       context: .
       dockerfile: apps/backend/Dockerfile

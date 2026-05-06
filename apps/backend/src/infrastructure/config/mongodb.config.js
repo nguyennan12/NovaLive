@@ -17,7 +17,7 @@ const pro = {
   app: { port: env.PRO_APP_PORT || 3031 },
   db: {
     url: env.DEV_MONGODB_URI,
-    maxPoolSize: parseInt(env.PRO_MONGODB_MAX_POOL_SIZE) || 50
+    maxPoolSize: parseInt(env.DEV_MONGODB_MAX_POOL_SIZE) || 50
   }
 }
 
