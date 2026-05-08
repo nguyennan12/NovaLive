@@ -286,8 +286,8 @@ livestream-ecommerce/
 
 ```bash
 # Clone the repository
-git clone https://github.com/nguyennan12/E-commerce.git
-cd E-commerce
+git clone https://github.com/nguyennan12/NovaLive.git
+cd NovaLive
 
 # Install all workspace dependencies
 yarn install
