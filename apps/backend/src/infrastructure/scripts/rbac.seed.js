@@ -15,7 +15,7 @@ const RESOURCES = [
   { name: 'ADDRESS', description: 'User Address Management' },
   { name: 'FLASH_SALE', description: 'Flash Sale Campaign Management' },
   { name: 'CART', description: 'Shopping Cart Management' },
-  { name: 'PAYMENT', description: 'Payment Management' }
+  { name: 'PAYMENT', description: 'Payment Management' },
 ]
 
 export async function seedRBAC() {

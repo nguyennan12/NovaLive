@@ -4,7 +4,7 @@ import { DOCUMENT_NAME, COLLECTION_NAME } from '#shared/utils/constant.js'
 const flashSaleCampaignSchema = new Schema({
   campaign_name: { type: String, required: true },
   campaign_description: { type: String, default: '' },
-  campaign_banner: { type: String, default: '' },
+  campaign_banner: { type: [String], default: [] },
 
   start_time: { type: Date, required: true, index: true },
   end_time: { type: Date, required: true, index: true },

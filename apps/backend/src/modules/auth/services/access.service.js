@@ -38,8 +38,6 @@ const SignUp = async ({ email, password }) => {
     privateKey,
     refreshToken: tokens.refreshToken
   })
-
-  console.log('SIGNUP SUCCESSFULLY')
   return {
     user: data.getInfo(['_id', 'user_name', 'user_email'], newUser),
     tokens

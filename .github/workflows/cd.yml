@@ -24,14 +24,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            echo "Bắt đầu triển khai lên EC2..."
+            echo "Start Deploying EC2..."
             cd /home/ubuntu
 
             # 1. Cập nhật các biến môi trường mà không xóa sạch file .env cũ
-            # Dùng 'sed' để cập nhật nếu đã tồn tại, hoặc 'echo' để thêm mới
             touch .env
             
-            # Cập nhật IMAGE_TAG (nếu bạn dùng tag này trong docker-compose)
+            # Cập nhật IMAGE_TAG
             sed -i '/^IMAGE_TAG=/d' .env
             echo "IMAGE_TAG=${{ github.event.workflow_run.head_sha }}" >> .env
             
@@ -39,14 +38,13 @@ jobs:
             sed -i '/^NODE_ENV=/d' .env
             echo "NODE_ENV=pro" >> .env
 
-            # 2. Pull các image mới nhất (Sử dụng tên service chuẩn trong docker-compose.yml)
+            # 2. Pull các image mới nhất
             sudo docker compose pull backend frontend
 
             # 3. Khởi động lại container với image mới
-            # --force-recreate đảm bảo nó dùng image vừa pull về
             sudo docker compose up -d --force-recreate backend frontend
 
-            # 4. Dọn dẹp image cũ để giải phóng bộ nhớ (Quan trọng cho t3.small)
+            # 4. Dọn dẹp image cũ để giải phóng bộ nhớ
             sudo docker image prune -f
 
             echo "Deploy EC2 successfully!"

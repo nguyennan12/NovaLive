@@ -2,13 +2,13 @@ import MyLogger from '#infrastructure/loggers/MyLogger.js'
 import { flashSaleCampaignModel } from '#modules/flashSale/models/flashSaleCampaign.model.js'
 
 const listenStartFlashSaleQueue = async (channel) => {
-  const queueName = 'flashsale_delay_queue'
+  const queueName = 'flashsale_start_queue'
   channel.consume(queueName, async (msg) => {
     const payload = JSON.parse(msg.content.toString())
     MyLogger.info(`Accept campain flashsale ${payload.campaignId}`, 'CAMPAIGN_START')
     try {
       await flashSaleCampaignModel.findOneAndUpdate(
-        { _id: campaignId },
+        { _id: payload.campaignId },
         { status: 'active' },
         { returnDocument: 'after' }
       )

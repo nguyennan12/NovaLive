@@ -1,8 +1,8 @@
 import ApiError from '#shared/core/error.response.js'
 import { StatusCodes } from 'http-status-codes'
-import flashSaleRepo from '../routers/flashSale.repo.js'
-import { flashSaleItemModel } from '../models/flashSaleItem.model'
-import inventoryModel from '#modules/inventory/models/inventory.model'
+import flashSaleRepo from '../repo/flashSale.repo.js'
+import { flashSaleItemModel } from '../models/flashSaleItem.model.js'
+import inventoryModel from '#modules/inventory/models/inventory.model.js'
 
 const addItemToCampaign = async ({ campaignId, items }) => {
   const { original_price, flashsale_price, flashsale_stock, sku_id } = items
@@ -17,7 +17,7 @@ const addItemToCampaign = async ({ campaignId, items }) => {
   if (flashsale_stock >= foundStock.inven_stock) throw new ApiError(StatusCodes.BAD_REQUEST, 'Stock is not enough!')
 
   const newItem = await flashSaleItemModel.create({
-    ...itemPayload,
+    ...items,
     campaignId: campaign._id,
     flashsale_sold: 0,
     status: 'active'
@@ -26,6 +26,16 @@ const addItemToCampaign = async ({ campaignId, items }) => {
   return newItem
 }
 
+const getItemsFlashSale = async (campaignId) => {
+  const campaign = await flashSaleRepo.findCampaignById(campaignId)
+  if (!campaign || campaign.status === 'cancelled' || campaign.status === 'completed') {
+    return []
+  }
+  const filter = { campaignId: campaignId }
+  return await flashSaleRepo.findItemsByCampaignId(filter)
+}
+
 export default {
-  addItemToCampaign
+  addItemToCampaign,
+  getItemsFlashSale
 }
