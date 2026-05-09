@@ -144,5 +144,11 @@ jobs:
           tags: |
             nguyennan12/novalive-frontend:latest
             nguyennan12/novalive-frontend:${{ github.sha }}
+          build-args: |
+            VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL }}
+            VITE_AGORA_APP_ID=${{ secrets.VITE_AGORA_APP_ID }}
+            VITE_AGORA_APP_CERTIFICATE=${{ secrets.VITE_AGORA_APP_CERTIFICATE }}
+            VITE_GHN_API_TOKEN=${{ secrets.VITE_GHN_API_TOKEN }}
+            VITE_GHN_API_URL=${{ secrets.VITE_GHN_API_URL }}
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend

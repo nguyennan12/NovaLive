@@ -24,7 +24,7 @@ const shopOrderSchema = Joi.object({
 })
 
 const checkoutBodyBase = {
-  userAddressId: objectId,
+  userAddressId: String,
   cartId: objectId.allow(null, ''),
   shopOrderIds: Joi.array().items(shopOrderSchema).min(1).required(),
   productDiscountCode: Joi.string().allow(null, ''),
