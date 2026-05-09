@@ -13,6 +13,10 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    allowedHosts: [
+      'static4j.app',
+      'www.static4j.app'
+    ],
     proxy: {
       '/v1/api': {
         target: 'http://backend:3031',
