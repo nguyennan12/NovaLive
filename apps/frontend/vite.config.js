@@ -14,8 +14,8 @@ export default defineConfig({
     host: true,
     port: 5173,
     allowedHosts: [
-      'static4j.app',
-      'www.static4j.app'
+      'novalive.online',
+      'www.novalive.online'
     ],
     proxy: {
       '/v1/api': {
