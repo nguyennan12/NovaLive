@@ -74,3 +74,11 @@ export const formatSold = (n) => {
   if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`
   return `${n}`
 }
+
+// Compact currency for stats displays: 1.500.000đ → "1.5tr", 500.000đ → "500k"
+export const formatCompactVND = (amount) => {
+  if (!amount) return '0 ₫'
+  if (amount >= 1_000_000) return `${(amount / 1_000_000).toFixed(1)}tr`
+  if (amount >= 1_000) return `${Math.round(amount / 1_000)}k`
+  return formatVND(amount)
+}

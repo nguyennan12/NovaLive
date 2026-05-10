@@ -89,7 +89,7 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
 
 ---
 
-## 6. Tiến độ (tính tới 03/05/2026)
+## 6. Tiến độ (tính tới 10/05/2026)
 
 - Backend: 92% (payment flow hoàn chỉnh — COD OTP, VNPay IPN, nhả kho, phân quyền RBAC full router, integration tests)
 - CI/CD: ✅ GitHub Actions — lint (BE+FE), integration tests, Vite build, Docker production build
@@ -104,7 +104,7 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
   - ✅ **Trang Order (consumer)** — layout 7/3, địa chỉ GHN dropdown, phí ship realtime, voucher, PTTT, mobile sticky Portal, COD xác nhận OTP, VNPay redirect, đặt hàng hoàn chỉnh
   - ✅ **Order List / Order Detail** — tabs 6 trạng thái, card đơn hàng với ảnh/tên/giá, hủy đơn pending, detail dialog: timeline, breakdown giá, địa chỉ, thanh toán; route `/orders`
   - ✅ **Live Feed consumer** — TikTok-style swipe, socket overlay, sản phẩm bottom sheet, desktop right panel
-  - ⬜ **Customer / Profile** — thông tin cá nhân, địa chỉ, lịch sử
+  - ✅ **Customer / Profile** — banner/avatar, thông tin cá nhân (edit per-field dialog), bảo mật (đổi mật khẩu, logout-all, 2FA TODO), thống kê đơn hàng, CTA shop/seller; route `/profile`
   - ⬜ **Auth UI** — đăng nhập / đăng ký (API backend đã có)
   - ⬜ **Admin Dashboard & Analytics**
 

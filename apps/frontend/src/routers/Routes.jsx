@@ -17,6 +17,7 @@ import OrderPage from '~/features/Order/pages/OrderPage'
 import OrderHistoryPage from '~/features/Order/pages/OrderHistoryPage'
 import VNPayReturnPage from '~/features/Order/pages/VNPayReturnPage'
 import ConsumerLayout from '~/common/components/layout/ConsumerLayout/ConsumerLayout'
+import ProfilePage from '~/features/Profile/pages/ProfilePage'
 
 const AppRoutes = () => {
   return (
@@ -29,6 +30,7 @@ const AppRoutes = () => {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/order" element={<OrderPage />} />
         <Route path="/orders" element={<OrderHistoryPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Route>
 
       {/* AUTH */}

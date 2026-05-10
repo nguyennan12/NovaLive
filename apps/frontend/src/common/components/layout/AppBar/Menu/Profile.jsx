@@ -1,5 +1,5 @@
 import Logout from '@mui/icons-material/Logout'
-import PersonAdd from '@mui/icons-material/PersonAdd'
+import PersonIcon from '@mui/icons-material/Person'
 import Settings from '@mui/icons-material/Settings'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
@@ -12,6 +12,7 @@ import Tooltip from '@mui/material/Tooltip'
 import { useConfirm } from 'material-ui-confirm'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { logoutUserAPI, selectCurrentUser } from '~/store/user/userSlice'
 
 function Profiles() {
@@ -21,6 +22,7 @@ function Profiles() {
   const dispatch = useDispatch()
   const currentUser = useSelector(selectCurrentUser)
   const confirmLogout = useConfirm()
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
     const { confirmed } = await confirmLogout({
@@ -49,7 +51,7 @@ function Profiles() {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
         >
-          <Avatar sx={{ width: 30, height: 30 }} src={currentUser?.avatar} alt="avatar user" />
+          <Avatar sx={{ width: 30, height: 30 }} src={currentUser?.user_avatar} alt="avatar user" />
         </IconButton>
       </Tooltip>
 
@@ -63,21 +65,22 @@ function Profiles() {
           'aria-labelledby': 'basic-button-recent'
         }}
       >
-        <MenuItem>
-          <Avatar sx={{ width: '28px', height: '28px', mr: 2 }} src={currentUser?.avatar} /> Profile
+        <MenuItem onClick={() => { handleClose(); navigate('/profile') }}>
+          <Avatar sx={{ width: '28px', height: '28px', mr: 2 }} src={currentUser?.user_avatar} />
+          {currentUser?.user_name || 'Hồ sơ của tôi'}
         </MenuItem>
         <Divider />
-        <MenuItem>
+        <MenuItem onClick={() => { handleClose(); navigate('/profile') }}>
           <ListItemIcon>
-            <PersonAdd fontSize="small" />
+            <PersonIcon fontSize="small" />
           </ListItemIcon>
-          Add another account
+          Hồ sơ cá nhân
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
-          Settings
+          Cài đặt
         </MenuItem>
         <MenuItem onClick={handleLogout} sx={{
           '&:hover': {
