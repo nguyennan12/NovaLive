@@ -31,10 +31,19 @@ const changeRole = async ({ userId, role, shopId = null }) => {
   return await UserModel.updateOne({ _id: userId }, { $set: { user_role: role, user_shop: converter.toObjectId(shopId) } })
 }
 
+const updateUserById = async ({ userId, data }) => {
+  return await UserModel.findByIdAndUpdate(
+    userId,
+    { $set: data },
+    { new: true, lean: true }
+  )
+}
+
 export default {
   findUserByEmail,
   findUserById,
   createUser,
   changeStatus,
-  changeRole
+  changeRole,
+  updateUserById
 }

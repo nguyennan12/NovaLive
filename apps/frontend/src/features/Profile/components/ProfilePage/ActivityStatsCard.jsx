@@ -42,10 +42,10 @@ const ActivityStatsCard = ({ totalOrders, totalSpent, pendingOrders, isLoading, 
       <SectionTitle title="Hoạt động" icon={BarChartIcon} accentColor="#f59e0b" />
 
       <Box sx={{ display: 'flex', justifyContent: 'space-around', mb: 2 }}>
-        <Grid item xs={4}>
+        <Grid xs={4}>
           <StatBox icon={ShoppingBagIcon} label="Tổng đơn" value={totalOrders} isLoading={isLoading} />
         </Grid>
-        <Grid item xs={4}>
+        <Grid xs={4}>
           <StatBox
             icon={PaymentsIcon}
             label="Đã chi"
@@ -54,7 +54,7 @@ const ActivityStatsCard = ({ totalOrders, totalSpent, pendingOrders, isLoading, 
             isLoading={isLoading}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid xs={4}>
           <StatBox icon={PendingActionsIcon} label="Chờ xử lý" value={pendingOrders} color="#f59e0b" isLoading={isLoading} />
         </Grid>
       </Box>

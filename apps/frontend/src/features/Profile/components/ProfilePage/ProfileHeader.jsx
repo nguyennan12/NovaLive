@@ -1,12 +1,16 @@
+import styled from '@emotion/styled'
 import CameraAltIcon from '@mui/icons-material/CameraAlt'
-import EditIcon from '@mui/icons-material/Edit'
 import StoreIcon from '@mui/icons-material/Store'
 import StorefrontIcon from '@mui/icons-material/Storefront'
 import VerifiedIcon from '@mui/icons-material/Verified'
 import { Avatar, Box, Button, Chip, IconButton, Skeleton, Stack, Tooltip, Typography } from '@mui/material'
-import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
 import { glassSx } from '~/theme'
+import { useRef } from 'react'
+import { toast } from 'react-toastify'
+import { uploadAvatarAPI } from '~/common/apis/services/uploadService'
+import { useQueryClient } from '@tanstack/react-query'
+import { useUpload } from '~/common/hooks/useUpload'
 
 const Banner = styled(Box)({
   height: 160,
@@ -36,15 +40,25 @@ function ProfileHeaderSkeleton() {
   )
 }
 
-const ProfileHeader = ({ profile, isLoading, onEditProfile, isShop }) => {
+const ProfileHeader = ({ profile, isLoading, isShop }) => {
   const navigate = useNavigate()
+  const inputRef = useRef()
+  const queryClient = useQueryClient()
+
+  const uploadAvatar = useUpload({
+    api: uploadAvatarAPI,
+    afterUpload: () => queryClient.refetchQueries({ queryKey: ['my_profile', profile?._id] }),
+    pendingMsg: 'Đang tải lên ảnh đại diện...',
+    successMsg: 'Uploaded avatar!',
+    errorMsg: 'Upload avatar failed!'
+  })
 
   if (isLoading) return <ProfileHeaderSkeleton />
 
   return (
     <Box sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', ...glassSx }}>
       <Banner>
-        <Tooltip title="Đổi ảnh bìa">
+        {isShop && <Tooltip title="Đổi ảnh bìa">
           <IconButton
             size="small"
             sx={{
@@ -52,10 +66,19 @@ const ProfileHeader = ({ profile, isLoading, onEditProfile, isShop }) => {
               background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)',
               '&:hover': { background: '#fff' }
             }}
+          // onClick={uploadCover.openFileDialog}
           >
+            {/* <input
+              ref={inputRef}
+              type="file"
+              accept=".png,.jpg,.jpeg"
+              style={{ display: 'none' }}
+              onChange={uploadCover.openFileDialog}
+            /> */}
             <CameraAltIcon fontSize="small" />
           </IconButton>
-        </Tooltip>
+        </Tooltip>}
+
       </Banner>
 
       <Box sx={{ px: 3, pb: 3, position: 'relative' }}>
@@ -82,20 +105,20 @@ const ProfileHeader = ({ profile, isLoading, onEditProfile, isShop }) => {
                 width: 26, height: 26,
                 '&:hover': { background: '#fff' }
               }}
+              onClick={uploadAvatar.openFileDialog}
             >
+              <input {...uploadAvatar.fileInputProps} />
               <CameraAltIcon sx={{ fontSize: 13 }} />
             </IconButton>
           </Tooltip>
         </Box>
 
         <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          alignItems={{ xs: 'flex-start', sm: 'flex-end' }}
-          justifyContent="space-between"
-          gap={1.5}
+          sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', gap: 1 }}
+
         >
           <Box>
-            <Stack direction="row" alignItems="center" gap={0.75} flexWrap="wrap">
+            <Stack direction="row" gap={0.75}>
               <Typography variant="h5" fontWeight={700} sx={{ color: 'primary.contrastText', lineHeight: 1.2 }}>
                 {profile?.user_name || 'Người dùng'}
               </Typography>
@@ -122,16 +145,7 @@ const ProfileHeader = ({ profile, isLoading, onEditProfile, isShop }) => {
             )}
           </Box>
 
-          <Stack direction="row" gap={1} flexWrap="wrap">
-            <Button
-              variant="outlined" size="small"
-              startIcon={<EditIcon sx={{ fontSize: '15px !important' }} />}
-              onClick={onEditProfile}
-              sx={{ borderColor: 'secondary.main', color: 'secondary.main', fontSize: '0.8rem', py: 0.6, '&:hover': { background: 'rgba(83,155,255,0.08)' } }}
-            >
-              Chỉnh sửa
-            </Button>
-
+          <Stack sx={{ display: 'flex', gap: 1, flexDirection: 'row' }}>
             {isShop ? (
               <Button
                 variant="contained" size="small"

@@ -1,10 +1,11 @@
 import PersonIcon from '@mui/icons-material/Person'
-import { Box, Paper } from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
+import { Box, Paper, IconButton, Tooltip } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { formatDate } from '~/common/utils/formatters'
 import SectionTitle from '../shared/SectionTitle'
 import InfoRow from '../shared/InfoRow'
-import EditInfoDialog from './EditInfoDialog'
+import FullEditProfileDialog from './FullEditProfileDialog'
 import { glassSx } from '~/theme'
 
 const GENDER_LABEL = { male: 'Nam', female: 'Nữ', other: 'Khác' }
@@ -41,49 +42,56 @@ const buildRows = (profile) => [
 ]
 
 const PersonalInfoCard = ({ profile, isLoading, onSave, isSaving }) => {
-  const [editField, setEditField] = useState(null)
+  const [isFullEditOpen, setIsFullEditOpen] = useState(false)
 
   const rows = useMemo(() => buildRows(profile), [profile])
 
-  const openEdit = (field, editLabel, rawValue) =>
-    setEditField({ field, label: editLabel, currentValue: rawValue ?? profile?.[field] })
-
-  const closeEdit = () => setEditField(null)
-
-  const handleSave = (data) => onSave(data, { onSuccess: closeEdit })
+  const handleSave = (data, options) => onSave(data, options)
 
   return (
     <>
       <Paper
         elevation={0}
-        sx={{ borderRadius: 3, p: { xs: 2, sm: 2.5 }, bgcolor: 'primary.main', border: '1px solid', borderColor: 'divider', ...glassSx }}
+        sx={{ borderRadius: 3, p: { xs: 2, sm: 2.5 }, bgcolor: 'primary.main', border: '1px solid', borderColor: 'divider', minWidth: '360px', ...glassSx }}
       >
-        <SectionTitle title="Thông tin cá nhân" icon={PersonIcon} />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <SectionTitle title="Thông tin cá nhân" icon={PersonIcon} />
+          {!isLoading && (
+            <Tooltip title="Sửa tất cả">
+              <IconButton
+                size="small"
+                onClick={() => setIsFullEditOpen(true)}
+                sx={{
+                  color: 'secondary.main',
+                  mt: -0.5,
+                  '&:hover': { background: 'rgba(83,155,255,0.08)' }
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
         <Box>
-          {rows.map(({ label, value, verified, field, editLabel, rawValue }) => (
+          {rows.map(({ label, value, verified }) => (
             <InfoRow
               key={label}
               label={label}
               value={value}
               verified={verified}
-              onEdit={field ? () => openEdit(field, editLabel, rawValue) : undefined}
               loading={isLoading}
             />
           ))}
         </Box>
       </Paper>
 
-      {editField && (
-        <EditInfoDialog
-          open
-          onClose={closeEdit}
-          field={editField.field}
-          label={editField.label}
-          currentValue={editField.currentValue}
-          onSave={handleSave}
-          isSaving={isSaving}
-        />
-      )}
+      <FullEditProfileDialog
+        open={isFullEditOpen}
+        onClose={() => setIsFullEditOpen(false)}
+        profile={profile}
+        onSave={handleSave}
+        isSaving={isSaving}
+      />
     </>
   )
 }

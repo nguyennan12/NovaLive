@@ -14,6 +14,7 @@ import { livestreamRouter } from './live/routes/livestream.router.js'
 import { uploadRouter } from './common/routers/upload.router.js'
 import { addressRouter } from './address/routes/address.router.js'
 import { flashSaleRouter } from './flashSale/routers/flashSale.router.js'
+import { userRouter } from './auth/routes/user.router.js'
 
 const Router = express.Router()
 
@@ -32,6 +33,7 @@ Router.use('/v1/api/livestream', livestreamRouter)
 Router.use('/v1/api/upload', uploadRouter)
 Router.use('/v1/api/address', addressRouter)
 Router.use('/v1/api/flash-sale', flashSaleRouter)
+Router.use('/v1/api/user', userRouter)
 
 
 export default Router

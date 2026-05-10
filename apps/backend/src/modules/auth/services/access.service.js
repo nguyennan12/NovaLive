@@ -119,10 +119,28 @@ const refreshtoken = async ({ refreshToken, user, keyStore }) => {
 }
 
 
+const changePassword = async ({ userId, currentPassword, newPassword }) => {
+  const user = await userRepo.findUserById(userId)
+  if (!user) throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+
+  const match = await bcrypt.compare(currentPassword, user.user_password)
+  if (!match) throw new ApiError(StatusCodes.BAD_REQUEST, 'Mật khẩu hiện tại không đúng')
+
+  const passwordHash = await bcrypt.hash(newPassword, 10)
+  await userRepo.updateUserById({ userId, data: { user_password: passwordHash } })
+  return true
+}
+
+const logoutAllDevices = async ({ userId }) => {
+  return await tokenService.deleteKeyStoreByUserId(userId)
+}
+
 export default {
   SignUp,
   verify,
   login,
   logout,
-  refreshtoken
+  refreshtoken,
+  changePassword,
+  logoutAllDevices
 }

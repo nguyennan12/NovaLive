@@ -80,11 +80,29 @@ const sendMail = async (req, res, next) => {
 }
 
 
+const changePassword = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Change password successfully!',
+    metadata: await accessService.changePassword({ userId: req.user.userId, ...req.body })
+  }).send(res)
+}
+
+const logoutAllDevices = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Logged out all devices successfully!',
+    metadata: await accessService.logoutAllDevices({ userId: req.user.userId })
+  }).send(res)
+}
+
 export default {
   signUp,
   verify,
   login,
   logout,
   refreshtoken,
-  sendMail
+  sendMail,
+  changePassword,
+  logoutAllDevices
 }

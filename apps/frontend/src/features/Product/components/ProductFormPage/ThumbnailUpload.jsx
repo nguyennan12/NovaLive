@@ -81,7 +81,6 @@ const ThumbnailUpload = () => {
               onChange={(e) => {
                 const file = e.target.files?.[0]
                 if (file) uploadFile(file)
-                // reset input để chọn lại cùng 1 file vẫn trigger change
                 e.target.value = ''
               }}
             />

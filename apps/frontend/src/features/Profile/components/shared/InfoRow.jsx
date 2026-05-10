@@ -1,9 +1,8 @@
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import EditIcon from '@mui/icons-material/Edit'
-import { Box, Chip, IconButton, Skeleton, Tooltip, Typography } from '@mui/material'
+import { Box, Chip, Skeleton, Tooltip, Typography } from '@mui/material'
 
 // Single field row: label | value + optional verification badge | edit button
-const InfoRow = ({ label, value, verified, onEdit, loading }) => {
+const InfoRow = ({ label, value, verified, loading }) => {
   if (loading) {
     return (
       <Box sx={{
@@ -53,17 +52,6 @@ const InfoRow = ({ label, value, verified, onEdit, loading }) => {
         )}
       </Box>
 
-      {onEdit && (
-        <Tooltip title="Chỉnh sửa">
-          <IconButton
-            size="small"
-            onClick={onEdit}
-            sx={{ color: 'secondary.main', ml: 'auto', flexShrink: 0, '&:hover': { background: 'rgba(83,155,255,0.1)' } }}
-          >
-            <EditIcon sx={{ fontSize: 15 }} />
-          </IconButton>
-        </Tooltip>
-      )}
     </Box>
   )
 }

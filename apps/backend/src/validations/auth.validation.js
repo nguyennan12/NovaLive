@@ -28,9 +28,20 @@ const sendMail = {
   })
 }
 
+const changePassword = {
+  body: Joi.object().keys({
+    currentPassword: Joi.string().required().messages({ 'any.required': 'Mật khẩu hiện tại là bắt buộc' }),
+    newPassword: Joi.string().required().pattern(PASSWORD_RULE).messages({
+      ...PASSWORD_RULE_MESSAGE,
+      'any.required': 'Mật khẩu mới là bắt buộc'
+    })
+  })
+}
+
 export default {
   signUp,
   verify,
   login,
-  sendMail
+  sendMail,
+  changePassword
 }

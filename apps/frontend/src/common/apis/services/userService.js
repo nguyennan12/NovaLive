@@ -1,24 +1,21 @@
 import authorizedAxiosInstance from '../custom/authorizeAxios'
 import { toast } from 'react-toastify'
 
-export const getMyProfileAPI = async () => {
-  const response = await authorizedAxiosInstance.get('user/me')
-  return response.metadata
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+export const loginAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post('access/login', data)
+  return response
 }
 
-export const updateMyProfileAPI = async (data) => {
-  const response = await authorizedAxiosInstance.patch('user/me', data)
-  return response.metadata
+export const logoutAPI = async () => {
+  const response = await authorizedAxiosInstance.post('access/logout')
+  return response
 }
 
-export const changePasswordAPI = async (data) => {
-  const response = await authorizedAxiosInstance.patch('access/change-password', data)
-  return response.metadata
-}
-
-export const logoutAllDevicesAPI = async () => {
-  const response = await authorizedAxiosInstance.post('access/logout-all')
-  return response.metadata
+export const refreshTokenAPI = async () => {
+  const response = await authorizedAxiosInstance.post('access/refreshtoken')
+  return response
 }
 
 export const registerUserAPI = async (data) => {
@@ -38,12 +35,22 @@ export const resendMailAPI = async (data) => {
   return response
 }
 
-export const loginAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post('access/login', data)
-  return response
+export const changePasswordAPI = async (data) => {
+  const response = await authorizedAxiosInstance.patch('access/change-password', data)
+  return response.metadata
 }
 
-export const refreshTokenAPI = async () => {
-  const response = await authorizedAxiosInstance.post('access/refreshtoken')
-  return response
+export const getMyProfileAPI = async () => {
+  const response = await authorizedAxiosInstance.get('user/me')
+  return response.metadata
+}
+
+export const logoutAllDevicesAPI = async () => {
+  const response = await authorizedAxiosInstance.post('access/logout-all')
+  return response.metadata
+}
+
+export const updateMyProfileAPI = async (data) => {
+  const response = await authorizedAxiosInstance.patch('user/me', data)
+  return response.metadata
 }

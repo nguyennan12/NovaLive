@@ -1,11 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
-import {
-  changePasswordAPI,
-  logoutAllDevicesAPI,
-  updateMyProfileAPI
-} from '~/common/apis/services/userService'
+import { changePasswordAPI, updateMyProfileAPI, logoutAllDevicesAPI } from '~/common/apis/services/userService'
 import { logoutUserAPI, selectCurrentUser, setCurrentUser } from '~/store/user/userSlice'
 
 export const useProfileMutation = () => {

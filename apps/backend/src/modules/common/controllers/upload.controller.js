@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import ApiSuccess from '#shared/core/success.response.js'
 import uploadService from '#modules/common/services/upload.service.js'
+import userRepo from '#modules/auth/repos/user.repo.js'
 import { CLOUDINARY_ROOT_FOLDER } from '#shared/utils/constant.js'
 import { StatusCodes } from 'http-status-codes'
 
@@ -28,10 +29,12 @@ const uploadAvatar = async (req, res, next) => {
   const file = req.file
   const userId = req.user.userId
   const folderName = `${CLOUDINARY_ROOT_FOLDER}/Users/${userId}/avatar`
+  const result = await uploadService.uploadImageFromLocal({ path: file.path, folderName })
+  await userRepo.updateUserById({ userId, data: { user_avatar: result.image_url } })
   new ApiSuccess({
     statusCode: StatusCodes.OK,
     message: 'Upload avatar successfully!',
-    metadata: await uploadService.uploadImageFromLocal({ path: file.path, folderName: folderName })
+    metadata: result
   }).send(res)
 }
 

@@ -81,7 +81,7 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
 
 1. **Luôn đọc file này (CLAUDE.md) để nắm toàn bộ context dự án trước khi sinh code.**
 2. Khi sinh code:
-   - Tuân thủ organization structure, code style, slot các file vào đúng thư mục, dùng lại các utils/hooks cũ nếu có.
+   - Tuân thủ organization structure, code style, slot các file vào đúng thư , không dùng useState trong useEffect mục, dùng lại các utils/hooks cũ nếu có.
    - Ưu tiên làm từng bước nhỏ (component → page → kết nối API).
    - Nếu thiếu API/backend, báo lại để tôi bổ sung.
 3. Khi hoàn thành mỗi phần, update lại CLAUDE.md trạng thái/tính năng mới để lần sau AI/Claude support sát thực tế hơn.

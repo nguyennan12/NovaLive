@@ -15,7 +15,9 @@ Router.post('/login', validate(authValidation.login), asyncHandler(accessControl
 Router.use(authentication)
 
 Router.post('/logout', asyncHandler(accessController.logout))
+Router.post('/logout-all', asyncHandler(accessController.logoutAllDevices))
 Router.post('/refreshtoken', asyncHandler(accessController.refreshtoken))
+Router.patch('/change-password', validate(authValidation.changePassword), asyncHandler(accessController.changePassword))
 
 
 export const AccessRouter = Router

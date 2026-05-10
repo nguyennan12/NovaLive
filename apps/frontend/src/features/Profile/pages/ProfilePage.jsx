@@ -1,19 +1,19 @@
 import { Box, Container } from '@mui/material'
-import { useRef } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useConfirm } from 'material-ui-confirm'
-import { WaterDropBackground } from '~/common/components/common/style/WaterDropBackground'
 import { logoutUserAPI, selectCurrentUser } from '~/store/user/userSlice'
-import ActivityStatsCard from '../components/ActivityStatsCard/ActivityStatsCard'
-import PersonalInfoCard from '../components/PersonalInfoCard/PersonalInfoCard'
-import ProfileHeader from '../components/ProfileHeader/ProfileHeader'
-import SecurityCard from '../components/SecurityCard/SecurityCard'
+import ActivityStatsCard from '../components/ProfilePage/ActivityStatsCard'
+import PersonalInfoCard from '../components/ProfilePage/PersonalInfoCard'
+import ProfileHeader from '../components/ProfilePage/ProfileHeader'
+import SecurityCard from '../components/ProfilePage/SecurityCard'
+import FullEditProfileDialog from '../components/ProfilePage/FullEditProfileDialog'
 import { useOrderStats } from '../hooks/useOrderStats'
 import { useProfile } from '../hooks/useProfile'
 import { useProfileMutation } from '../hooks/useProfileMutation'
 
 function ProfilePage() {
-  const personalInfoRef = useRef(null)
+  const [isFullEditOpen, setIsFullEditOpen] = useState(false)
   const currentUser = useSelector(selectCurrentUser)
   const isShop = !!currentUser?.user_shop
 
@@ -33,10 +33,6 @@ function ProfilePage() {
     if (confirmed) dispatch(logoutUserAPI())
   }
 
-  const scrollToPersonalInfo = () => {
-    personalInfoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-
   return (
     <Container
       maxWidth="lg"
@@ -46,7 +42,7 @@ function ProfilePage() {
         profile={profile}
         isLoading={isLoading}
         isShop={isShop}
-        onEditProfile={scrollToPersonalInfo}
+        onEditProfile={() => setIsFullEditOpen(true)}
         sx={{ mb: { xs: 2, sm: 2.5 } }}
       />
 
@@ -60,7 +56,7 @@ function ProfilePage() {
           alignItems: 'stretch'
         }}
       >
-        <Box ref={personalInfoRef}>
+        <Box>
           <PersonalInfoCard
             profile={profile}
             isLoading={isLoading}
@@ -80,8 +76,15 @@ function ProfilePage() {
           isChangingPassword={isChangingPassword}
           onLogoutAll={handleLogoutAll}
         />
-
       </Box>
+
+      <FullEditProfileDialog
+        open={isFullEditOpen}
+        onClose={() => setIsFullEditOpen(false)}
+        profile={profile}
+        onSave={updateProfile}
+        isSaving={isUpdating}
+      />
     </Container>
   )
 }
