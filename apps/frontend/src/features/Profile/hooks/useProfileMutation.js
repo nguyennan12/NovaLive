@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { changePasswordAPI, updateMyProfileAPI, logoutAllDevicesAPI } from '~/common/apis/services/userService'
-import { logoutUserAPI, selectCurrentUser, setCurrentUser } from '~/store/user/userSlice'
+import { changePasswordAPI, logoutAllDevicesAPI, updateMyProfileAPI } from '~/common/apis/services/userService'
+import { clearCurrentUser, selectCurrentUser, setCurrentUser } from '~/store/user/userSlice'
 
 export const useProfileMutation = () => {
   const queryClient = useQueryClient()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const currentUser = useSelector(selectCurrentUser)
 
   const updateMutation = useMutation({
@@ -31,7 +33,10 @@ export const useProfileMutation = () => {
 
   const logoutAllMutation = useMutation({
     mutationFn: logoutAllDevicesAPI,
-    onSuccess: () => dispatch(logoutUserAPI(false)),
+    onSuccess: () => {
+      dispatch(clearCurrentUser())
+      navigate('/login')
+    },
     onError: () => toast.error('Không thể đăng xuất tất cả thiết bị!')
   })
 

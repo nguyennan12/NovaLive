@@ -1,7 +1,7 @@
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Grid, MenuItem, TextField } from '@mui/material'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, MenuItem, TextField } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useTheme } from '@mui/material/styles'
 
 const GENDER_OPTIONS = [
   { label: 'Nam', value: 'male' },
@@ -94,7 +94,7 @@ const FullEditProfileDialog = ({ open, onClose, profile, onSave, isSaving }) => 
                 size="small"
                 variant="outlined"
                 sx={dateSx}
-                InputLabelProps={{ shrink: true }}
+                slotProps={{ shrink: true }}
                 inputProps={{ max: new Date().toISOString().slice(0, 10) }}
                 error={!!errors.user_birthday}
                 helperText={errors.user_birthday?.message}
@@ -109,7 +109,7 @@ const FullEditProfileDialog = ({ open, onClose, profile, onSave, isSaving }) => 
             type="submit"
             variant="contained"
             disabled={isSaving}
-            startIcon={isSaving ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : null}
+            sx={{ background: 'linear-gradient(90deg,#0095ff,#14c3eb)', color: '#fff' }}
           >
             Lưu thay đổi
           </Button>

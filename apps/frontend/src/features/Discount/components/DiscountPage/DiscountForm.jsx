@@ -127,7 +127,7 @@ export const DiscountForm = ({ onSubmit, editData }) => {
                   <TextField {...field} label="Discount code" size="small" fullWidth
                     placeholder="SUMMER24"
                     onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                    inputProps={{ style: { fontFamily: 'monospace', fontWeight: 800, letterSpacing: '0.08em' } }}
+                    slotProps={{ style: { fontFamily: 'monospace', fontWeight: 800, letterSpacing: '0.08em' } }}
                     helperText="Optional" sx={inputSx} />
                 )}
               />

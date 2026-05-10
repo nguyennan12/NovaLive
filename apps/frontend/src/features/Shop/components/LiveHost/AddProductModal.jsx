@@ -167,7 +167,7 @@ const AddProductModal = ({ open, onClose, liveProducts = [], onAddProduct, isAdd
           onChange={(e) => setSearch(e.target.value)}
           size="small"
           autoFocus
-          InputProps={{
+          slotProps={{
             startAdornment: (
               <InputAdornment position="start">
                 <SearchRoundedIcon sx={{ color: '#bbb', fontSize: 20 }} />

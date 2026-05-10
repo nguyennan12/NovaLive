@@ -11,6 +11,7 @@ Router.use(authentication)
 Router.post('/product/thumb', uploadCloud.single('file'), asyncHandler(uploadController.uploadProductImage))
 Router.post('/multi-product/thumb', uploadCloud.array('files', 10), asyncHandler(uploadController.uploadMultiProductImage))
 Router.post('/user/avatar', uploadCloud.single('file'), asyncHandler(uploadController.uploadAvatar))
+Router.post('/shop/logo', uploadCloud.single('file'), asyncHandler(uploadController.uploadShopLogo))
 
 
 export const uploadRouter = Router

@@ -1,20 +1,21 @@
 # 📦 E-commerce Project Overview
 
 **Repo:** https://github.com/nguyennan12/E-commerce  
-**Cập nhật:** 05/05/2026 (Live Feed overlay UI TikTok-style hoàn chỉnh; socket singleton; live host flow fix)  
+**Cập nhật:** 10/05/2026 (Profile hoàn chỉnh: địa chỉ, shop info, đăng ký shop; backend user routes; AppBar profile)  
 **Mục tiêu:** Tăng tốc phát triển frontend các tính năng chính, tối ưu cho teamwork với AI code assistant.
 
 ---
 
 ## 1. Trạng thái hiện tại
 
-- **Backend:** Hoàn thiện 92% — Payment flow hoàn chỉnh: COD xác nhận OTP qua email, VNPay IPN callback xác thực hash + xác nhận/hủy kho, nhả kho tự động khi hủy đơn hoặc VNPay timeout. Grant phân quyền đã thêm vào toàn bộ router. Integration tests đầy đủ (full flow, vnpay, livestream, auth, rbac).
+- **Backend:** Hoàn thiện 95% — Payment flow hoàn chỉnh: COD xác nhận OTP qua email, VNPay IPN callback xác thực hash + xác nhận/hủy kho, nhả kho tự động khi hủy đơn hoặc VNPay timeout. Grant phân quyền đã thêm vào toàn bộ router. Integration tests đầy đủ. **Đã thêm:** `GET/PATCH /v1/api/user/me`, `PATCH /access/change-password`, `POST /access/logout-all`; upload avatar lưu URL vào DB; user.service.js map field name FE↔DB.
 - **Frontend:**
   - Đã có UI quản lý sản phẩm, kho với các component/module chính (hiển thị, filter, tạo & sửa sản phẩm, nhập/xuất kho, thống kê tồn kho).
   - **Trang Home** (consumer) đã hoàn thành: banner slider, danh mục, 3 layout list sản phẩm, filter bar.
   - **Trang Cart** (consumer) đã hoàn thành: layout 7/3, list theo shop, checkbox chọn/xóa, tăng/giảm số lượng, CartSummary tính tiền realtime, chọn discount shop + global với API check availability, tính tổng có tích hợp discount.
   - **Trang Order** (consumer) đã hoàn thành toàn bộ: review sản phẩm theo shop, quản lý địa chỉ giao hàng (modal + GHN cascading dropdown), phí ship GHN API realtime, voucher, tóm tắt đơn, PTTT, mobile sticky bar qua React Portal, COD xác nhận OTP (`CodOtpDialog`), VNPay redirect tới `paymentUrl`.
-  - Các phần còn lại (order list/detail, customer/profile, auth UI, dashboard, analytics) CHƯA LÀM.
+  - **Trang Profile (consumer)** đã hoàn thành: thông tin cá nhân (RHF edit dialog), đổi mật khẩu (RHF), quản lý địa chỉ (AddressCard + AddressModal tái dùng từ Order), thông tin shop (ShopInfoCard + edit), đăng ký shop (RegisterShopDialog + GHN address), AppBar hiện avatar/login dựa theo Redux.
+  - Các phần còn lại (auth UI, dashboard, analytics) CHƯA LÀM.
 
 ---
 
@@ -69,8 +70,8 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
 - ~~Trang **giỏ hàng (Cart)**~~ ✅ HOÀN THÀNH (xem FEATURE.md)
 - ~~Trang **Order (đặt hàng)**~~ ✅ HOÀN THÀNH — kể cả COD OTP + VNPay redirect (xem FEATURE.md)
 - ~~Trang **chi tiết sản phẩm**~~ ✅ HOÀN THÀNH (xem FEATURE.md)
-- Trang **đơn hàng của tôi (Order List/Detail)**: list đơn, chi tiết, trạng thái thanh toán/vận chuyển, VNPay return page.
-- Trang **customer/profile**: info khách hàng, lịch sử mua hàng, quản lý địa chỉ.
+- ~~Trang **đơn hàng của tôi (Order List/Detail)**~~ ✅ HOÀN THÀNH (xem FEATURE.md)
+- ~~Trang **customer/profile**~~ ✅ HOÀN THÀNH — thông tin cá nhân, địa chỉ, shop info, đăng ký shop (xem FEATURE.md)
 - **Đăng nhập/đăng ký**: sử dụng API Auth Backend (đã có `loginUserAPI` trong Redux).
 - **Dashboard** cho admin: tổng quan chỉ số, số sản phẩm, doanh thu.
 - **Analytics đơn giản**: dùng recharts.
@@ -91,7 +92,7 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
 
 ## 6. Tiến độ (tính tới 10/05/2026)
 
-- Backend: 92% (payment flow hoàn chỉnh — COD OTP, VNPay IPN, nhả kho, phân quyền RBAC full router, integration tests)
+- Backend: 95% (payment flow hoàn chỉnh — COD OTP, VNPay IPN, nhả kho, phân quyền RBAC full router, integration tests; user routes GET/PATCH /user/me, change-password, logout-all)
 - CI/CD: ✅ GitHub Actions — lint (BE+FE), integration tests, Vite build, Docker production build
 - Frontend:
   - ✅ Quản lý sản phẩm (shop)
@@ -104,7 +105,7 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
   - ✅ **Trang Order (consumer)** — layout 7/3, địa chỉ GHN dropdown, phí ship realtime, voucher, PTTT, mobile sticky Portal, COD xác nhận OTP, VNPay redirect, đặt hàng hoàn chỉnh
   - ✅ **Order List / Order Detail** — tabs 6 trạng thái, card đơn hàng với ảnh/tên/giá, hủy đơn pending, detail dialog: timeline, breakdown giá, địa chỉ, thanh toán; route `/orders`
   - ✅ **Live Feed consumer** — TikTok-style swipe, socket overlay, sản phẩm bottom sheet, desktop right panel
-  - ✅ **Customer / Profile** — banner/avatar, thông tin cá nhân (edit per-field dialog), bảo mật (đổi mật khẩu, logout-all, 2FA TODO), thống kê đơn hàng, CTA shop/seller; route `/profile`
+  - ✅ **Customer / Profile** — banner/avatar upload, thông tin cá nhân (RHF FullEditProfileDialog), đổi mật khẩu (RHF + getValues), logout-all → clearCurrentUser + navigate, AddressCard (danh sách + AddressModal), ShopInfoCard (metrics + edit dialog), đăng ký shop (RegisterShopDialog + GHN address), AppBar avatar/login button; route `/profile`
   - ⬜ **Auth UI** — đăng nhập / đăng ký (API backend đã có)
   - ⬜ **Admin Dashboard & Analytics**
 

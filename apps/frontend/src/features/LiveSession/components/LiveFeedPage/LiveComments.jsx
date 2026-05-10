@@ -168,7 +168,7 @@ const LiveComments = ({ comments, onSend, commentError, likes, onLike }) => {
               flex: 1, color: 'white', fontSize: '0.8rem',
               '& input::placeholder': { color: 'rgba(255,255,255,0.5)' }
             }}
-            inputProps={{ maxLength: 200 }}
+            slotProps={{ maxLength: 200 }}
           />
           <IconButton
             onClick={handleSend}

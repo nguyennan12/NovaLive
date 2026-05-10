@@ -15,6 +15,15 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { gradientText } from '~/theme'
 
+const iconBoxSx = {
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  minWidth: 36, height: 36,
+  bgcolor: 'rgba(83,155,255,0.10)',
+  border: '1px solid rgba(83,155,255,0.25)',
+  borderRadius: '50%',
+  color: 'secondary.main'
+}
+
 function AppBar() {
   const [searchValue, setSearchValue] = useState('')
   const navigate = useNavigate()
@@ -127,63 +136,32 @@ function AppBar() {
         </Box>
       </Box>
 
-      {/* Right icons: thông báo, chat, cài đặt */}
+      {/* Right icons: thông báo, chat, cài đặt, profile */}
       <Box sx={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: { xs: 0.25, sm: 0.5 } }}>
 
-        <IconButton size="small" >
+        <IconButton size="small">
           <Badge badgeContent={3} color="error" max={9}
             sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', minWidth: 16, height: 16, p: '0 3px' } }}
           >
-            <Tooltip title='notifications'>
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minWidth: 36,
-                height: 36,
-                bgcolor: 'rgba(83,155,255,0.10)',
-                border: '1px solid rgba(83,155,255,0.25)',
-                borderRadius: '50%',
-                color: 'secondary.main'
-              }}>
+            <Tooltip title='Thông báo'>
+              <Box sx={iconBoxSx}>
                 <NotificationsNoneIcon sx={{ fontSize: '1.2rem' }} />
               </Box>
             </Tooltip>
           </Badge>
         </IconButton>
 
-
-        <IconButton size="small" >
-          <Tooltip title='chat'>
-            <Box sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minWidth: 36,
-              height: 36,
-              bgcolor: 'rgba(83,155,255,0.10)',
-              border: '1px solid rgba(83,155,255,0.25)',
-              borderRadius: '50%',
-              color: 'secondary.main'
-            }}>
+        <IconButton size="small">
+          <Tooltip title='Tin nhắn'>
+            <Box sx={iconBoxSx}>
               <ChatBubbleOutlineRoundedIcon sx={{ fontSize: '1.2rem' }} />
             </Box>
           </Tooltip>
         </IconButton>
 
-        <IconButton size="small" >
-          <Tooltip title='setting'>
-            <Box sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minWidth: 36,
-              height: 36,
-              bgcolor: 'rgba(83,155,255,0.10)',
-              border: '1px solid rgba(83,155,255,0.25)',
-              borderRadius: '50%',
-              color: 'secondary.main'
-            }}>
+        <IconButton size="small">
+          <Tooltip title='Cài đặt'>
+            <Box sx={iconBoxSx}>
               <SettingsOutlinedIcon sx={{ fontSize: '1.2rem' }} />
             </Box>
           </Tooltip>

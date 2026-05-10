@@ -19,3 +19,12 @@ export const uploadAvatarAPI = async (file) => {
   })
   return response.metadata
 }
+
+export const uploadShopLogoAPI = async (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  const response = await authorizedAxiosInstance.post('upload/shop/logo', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+  return response.metadata
+}

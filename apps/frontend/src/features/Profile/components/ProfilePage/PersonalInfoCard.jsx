@@ -21,7 +21,6 @@ const buildRows = (profile) => [
   {
     label: 'Số điện thoại',
     value: profile?.user_phone,
-    verified: profile?.user_phone ? (profile?.phone_verified ?? false) : undefined,
     field: 'user_phone',
     editLabel: 'Số điện thoại'
   },
@@ -37,8 +36,7 @@ const buildRows = (profile) => [
     field: 'user_birthday',
     editLabel: 'Ngày sinh',
     rawValue: profile?.user_birthday?.slice(0, 10)
-  },
-  { label: 'Địa chỉ mặc định', value: profile?.default_address?.full_address, field: null }
+  }
 ]
 
 const PersonalInfoCard = ({ profile, isLoading, onSave, isSaving }) => {
@@ -52,7 +50,7 @@ const PersonalInfoCard = ({ profile, isLoading, onSave, isSaving }) => {
     <>
       <Paper
         elevation={0}
-        sx={{ borderRadius: 3, p: { xs: 2, sm: 2.5 }, bgcolor: 'primary.main', border: '1px solid', borderColor: 'divider', minWidth: '360px', ...glassSx }}
+        sx={{ borderRadius: 3, p: { xs: 2, sm: 2.5 }, bgcolor: 'primary.main', border: '1px solid', borderColor: 'divider', minWidth: '360px', height: '100%', ...glassSx }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <SectionTitle title="Thông tin cá nhân" icon={PersonIcon} />

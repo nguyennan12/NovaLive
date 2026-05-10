@@ -48,7 +48,7 @@ const SecurityCard = ({ onChangePassword, isChangingPassword, onLogoutAll }) => 
     <>
       <Paper
         elevation={0}
-        sx={{ borderRadius: 3, p: { xs: 2, sm: 2.5 }, bgcolor: 'primary.main', border: '1px solid', borderColor: 'divider', minWidth: '380px', ...glassSx }}
+        sx={{ borderRadius: 3, p: { xs: 2, sm: 2.5 }, bgcolor: 'primary.main', border: '1px solid', borderColor: 'divider', height: '100%', minWidth: '380px', ...glassSx }}
       >
         <SectionTitle title="Bảo mật" icon={SecurityIcon} accentColor="#8b5cf6" />
         <List dense disablePadding>

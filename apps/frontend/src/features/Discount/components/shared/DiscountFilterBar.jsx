@@ -34,7 +34,7 @@ export const DiscountFilterBar = ({
       value={search}
       onChange={(e) => onSearchChange(e.target.value)}
       size='small'
-      InputProps={{
+      slotProps={{
         startAdornment: (
           <InputAdornment position='start'>
             <SearchRoundedIcon sx={{ fontSize: 18, color: '#94a3b8' }} />

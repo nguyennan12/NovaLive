@@ -32,7 +32,7 @@ const getShopByUser = async ({ userId }) => {
 }
 
 const updateInfoShop = async ({ userId, shopId, reqBody }) => {
-  const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId, userId })
+  const foundShop = await shopRepo.findShopByIdAndOwnId({ shopId, ownId: userId })
   if (!foundShop) throw new ApiError(StatusCodes.BAD_REQUEST, 'User does not exists')
   return await updateSubModel({
     model: shopModel,

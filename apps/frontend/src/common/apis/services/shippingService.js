@@ -13,15 +13,15 @@ const ghnAxios = axios.create({
 
 export const getProvincesAPI = async () => {
   const res = await ghnAxios.get('/master-data/province')
-  return res.data.data
+  return res.data.data ?? []
 }
 
 export const getDistrictsAPI = async (provinceId) => {
   const res = await ghnAxios.get('/master-data/district', { params: { province_id: provinceId } })
-  return res.data.data
+  return res.data.data ?? []
 }
 
 export const getWardsAPI = async (districtId) => {
   const res = await ghnAxios.get('/master-data/ward', { params: { district_id: districtId } })
-  return res.data.data
+  return res.data.data ?? []
 }

@@ -14,7 +14,8 @@ import { useAddressMutations } from '~/features/Address/hooks/useAddressMutation
 import { useDistricts, useProvinces, useWards } from '~/features/Address/hooks/useShipping'
 import { glassSx } from '~/theme'
 
-function AddressModal({ open, onClose, onSelect, selectedAddress, userId, addresses = [] }) {
+function AddressModal({ open, onClose, onSelect, selectedAddress, userId, addresses = [], ownerType = 'user' }) {
+  const isShop = ownerType === 'shop'
 
   const [showFormExplicit, setShowFormExplicit] = useState(null)
   const showCreateForm = showFormExplicit !== null ? showFormExplicit : addresses.length === 0
@@ -78,9 +79,9 @@ function AddressModal({ open, onClose, onSelect, selectedAddress, userId, addres
 
   const onSubmit = (formData) => {
     const payload = {
-      owner_type: 'user',
-      owner_name: formData.owner_name,
-      owner_phone: formData.owner_phone,
+      owner_type: ownerType,
+      ...(formData.owner_name && { owner_name: formData.owner_name }),
+      ...(formData.owner_phone && { owner_phone: formData.owner_phone }),
       province: selectedProvince.ProvinceName,
       province_id: selectedProvince.ProvinceID,
       district: selectedDistrict.DistrictName,
@@ -116,8 +117,10 @@ function AddressModal({ open, onClose, onSelect, selectedAddress, userId, addres
       }}
     >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pb: 1.25 }}>
-        <LocationOnRoundedIcon sx={{ color: 'secondary.main', fontSize: 20 }} />
-        <Typography sx={{ fontSize: '1rem', fontWeight: 700 }}>Địa chỉ giao hàng</Typography>
+        <LocationOnRoundedIcon sx={{ color: isShop ? '#8b5cf6' : 'secondary.main', fontSize: 20 }} />
+        <Typography sx={{ fontSize: '1rem', fontWeight: 700 }}>
+          {isShop ? 'Địa chỉ cửa hàng' : 'Địa chỉ giao hàng'}
+        </Typography>
       </DialogTitle>
 
       <Divider sx={{ borderColor: 'divider' }} />
@@ -223,26 +226,28 @@ function AddressModal({ open, onClose, onSelect, selectedAddress, userId, addres
         <Collapse in={showCreateForm} unmountOnExit>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
 
-            {/* Họ tên + SĐT */}
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <TextField
-                label="Họ tên người nhận"
-                size="small" fullWidth
-                error={!!errors.owner_name}
-                helperText={errors.owner_name?.message}
-                {...register('owner_name', { required: 'Vui lòng nhập tên người nhận' })}
-              />
-              <TextField
-                label="Số điện thoại"
-                size="small" fullWidth
-                error={!!errors.owner_phone}
-                helperText={errors.owner_phone?.message}
-                {...register('owner_phone', {
-                  required: 'Vui lòng nhập SĐT',
-                  pattern: { value: /^[0-9]{9,11}$/, message: 'SĐT không hợp lệ' }
-                })}
-              />
-            </Box>
+            {/* Họ tên + SĐT — ẩn khi tạo địa chỉ shop */}
+            {!isShop && (
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  label="Họ tên người nhận"
+                  size="small" fullWidth
+                  error={!!errors.owner_name}
+                  helperText={errors.owner_name?.message}
+                  {...register('owner_name', { required: 'Vui lòng nhập tên người nhận' })}
+                />
+                <TextField
+                  label="Số điện thoại"
+                  size="small" fullWidth
+                  error={!!errors.owner_phone}
+                  helperText={errors.owner_phone?.message}
+                  {...register('owner_phone', {
+                    required: 'Vui lòng nhập SĐT',
+                    pattern: { value: /^[0-9]{9,11}$/, message: 'SĐT không hợp lệ' }
+                  })}
+                />
+              </Box>
+            )}
 
             {/* Tỉnh / Thành phố */}
             <Controller
