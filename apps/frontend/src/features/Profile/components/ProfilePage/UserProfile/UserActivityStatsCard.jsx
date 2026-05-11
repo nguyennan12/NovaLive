@@ -1,10 +1,14 @@
 import BarChartIcon from '@mui/icons-material/BarChart'
+import CloseIcon from '@mui/icons-material/Close'
+import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import PaymentsIcon from '@mui/icons-material/Payments'
 import PendingActionsIcon from '@mui/icons-material/PendingActions'
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag'
-import StoreIcon from '@mui/icons-material/Store'
-import { Box, Button, Divider, Grid, Paper, Skeleton, Typography } from '@mui/material'
+import { Box, Button, Chip, Dialog, DialogContent, DialogTitle, Divider, Grid, IconButton, Paper, Skeleton, Typography } from '@mui/material'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { DiscountCardMini } from '~/features/Discount/components/DIscountSelect/DiscountCardMini'
+import { useDiscounts } from '~/features/Discount/hook/useDiscounts'
 import { formatCompactVND } from '~/common/utils/formatters'
 import { glassSx } from '~/theme'
 import SectionTitle from '../../shared/SectionTitle'
@@ -25,6 +29,70 @@ const StatBox = ({ icon: Icon, label, value, color = 'secondary.main', isLoading
     <Typography sx={{ fontSize: '0.7rem', color: 'text.secondary', lineHeight: 1.2 }}>{label}</Typography>
   </Box>
 )
+
+const VoucherDialog = ({ open, onClose }) => {
+  const { filtered: discounts, isLoading } = useDiscounts({ scope: 'global', status: 'active' })
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <LocalOfferIcon sx={{ fontSize: 20, color: '#8b5cf6' }} />
+          <Typography sx={{ fontWeight: 700, fontSize: '1rem' }}>Mã giảm giá của bạn</Typography>
+          {!isLoading && discounts.length > 0 && (
+            <Chip
+              label={discounts.length}
+              size="small"
+              sx={{ height: 18, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#8b5cf6', color: '#fff', '& .MuiChip-label': { px: 0.75 } }}
+            />
+          )}
+        </Box>
+        <IconButton size="small" onClick={onClose}><CloseIcon fontSize="small" /></IconButton>
+      </DialogTitle>
+
+      <DialogContent sx={{ pt: 0 }}>
+        {isLoading ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Skeleton variant="rounded" height={64} />
+            <Skeleton variant="rounded" height={64} />
+            <Skeleton variant="rounded" height={64} />
+          </Box>
+        ) : discounts.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <LocalOfferIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+            <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>
+              Chưa có mã giảm giá khả dụng
+            </Typography>
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+            {discounts.map(d => (
+              <DiscountCardMini key={d.code ?? d._id} discount={d} selected={false} onSelect={() => {}} />
+            ))}
+          </Box>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+const UserVoucherButton = () => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Button
+        fullWidth size="small" variant="outlined"
+        startIcon={<LocalOfferIcon sx={{ fontSize: '16px !important' }} />}
+        onClick={() => setOpen(true)}
+        sx={{ borderColor: '#8b5cf6', color: '#8b5cf6', '&:hover': { background: 'rgba(139,92,246,0.08)' } }}
+      >
+        Xem mã giảm giá
+      </Button>
+      <VoucherDialog open={open} onClose={() => setOpen(false)} />
+    </>
+  )
+}
 
 const UserActivityStatsCard = ({ totalOrders, totalSpent, pendingOrders, isLoading }) => {
   const navigate = useNavigate()
@@ -55,18 +123,7 @@ const UserActivityStatsCard = ({ totalOrders, totalSpent, pendingOrders, isLoadi
 
       <Divider sx={{ mb: 1.5, opacity: 0.5 }} />
 
-      <Box sx={{ textAlign: 'center' }}>
-        <Typography sx={{ fontSize: '0.77rem', color: 'text.secondary', mb: 1 }}>
-          Muốn bán hàng trên nền tảng?
-        </Typography>
-        <Button
-          fullWidth size="small" variant="outlined"
-          startIcon={<StoreIcon />}
-          sx={{ borderColor: '#8b5cf6', color: '#8b5cf6', '&:hover': { background: 'rgba(139,92,246,0.08)' } }}
-        >
-          Đăng ký làm Seller
-        </Button>
-      </Box>
+      <UserVoucherButton />
     </Paper>
   )
 }
