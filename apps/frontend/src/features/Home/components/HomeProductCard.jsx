@@ -5,8 +5,10 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatSold, formatVND } from '~/common/utils/formatters'
 
-const PortraitCard = React.forwardRef(({ product }, ref) => {
+const PortraitCard = React.forwardRef(({ product, showFlashBadge = false }, ref) => {
   const navigate = useNavigate()
+  // Only apply flash sale pricing/badge when explicitly in flash sale context
+  const isFlashSale = showFlashBadge && product.is_flash_sale
   return (
     <Box
       ref={ref}
@@ -28,7 +30,7 @@ const PortraitCard = React.forwardRef(({ product }, ref) => {
           alt={product.spu_name}
           sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
-        {product.is_flash_sale && (
+        {isFlashSale && (
           <Box sx={{
             position: 'absolute', top: 10, right: -1,
             background: 'linear-gradient(90deg, #ff6a00 20%, #ee0979 100%)',
@@ -53,12 +55,12 @@ const PortraitCard = React.forwardRef(({ product }, ref) => {
         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
           <Typography sx={{
             fontSize: { xs: '1rem', sm: '1.1rem' }, fontWeight: 800,
-            color: product.is_flash_sale ? '#e8472a' : 'secondary.main',
+            color: isFlashSale ? '#e8472a' : 'secondary.main',
             letterSpacing: '-0.02em', lineHeight: 1
           }}>
-            {formatVND(product.is_flash_sale ? product.flash_price : product.spu_price)}
+            {formatVND(isFlashSale ? product.flash_price : product.spu_price)}
           </Typography>
-          {product.is_flash_sale && (
+          {isFlashSale && (
             <Typography sx={{ fontSize: '0.7rem', color: '#aaa', textDecoration: 'line-through', lineHeight: 1 }}>
               {formatVND(product.spu_price)}
             </Typography>
@@ -147,7 +149,7 @@ export const HomeProductCardSkeleton = ({ variant = 'portrait' }) => {
   )
 }
 
-export const HomeProductCard = React.forwardRef(({ product, variant = 'portrait' }, ref) => {
+export const HomeProductCard = React.forwardRef(({ product, variant = 'portrait', showFlashBadge = false }, ref) => {
   if (variant === 'landscape') return <LandscapeCard product={product} />
-  return <PortraitCard ref={ref} product={product} />
+  return <PortraitCard ref={ref} product={product} showFlashBadge={showFlashBadge} />
 })

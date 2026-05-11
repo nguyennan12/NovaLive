@@ -5,7 +5,6 @@ import ProductList from '../components/ProductPage/ProductList'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useQuery } from '@tanstack/react-query'
 import { getProductStatsAPI } from '~/common/apis/services/productService'
-import { MOCK_DISCOUNTS } from '~/../mockdata/discount'
 
 const ProductsPage = () => {
   const methods = useForm({
@@ -28,8 +27,8 @@ const ProductsPage = () => {
     lowStockCount: serverStats?.lowStockCount || 0,
     outOfStockCount: serverStats?.outOfStockCount || 0,
     addedThisWeek: 0,
-    activeDiscounts: MOCK_DISCOUNTS.filter(d => d.status === 'active').length,
-    endingSoonDiscounts: MOCK_DISCOUNTS.filter(d => d.status === 'active').length,
+    activeDiscounts: 0,
+    endingSoonDiscounts: 0,
     nextEventDate: 'Oct 30',
     nextEventTitle: 'Flash Sale',
     daysRemaining: 5

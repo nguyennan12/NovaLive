@@ -28,8 +28,16 @@ const getItemsFlashSale = async (req, res, next) => {
 const getCampaign = async (req, res, next) => {
   new ApiSuccess({
     statusCode: StatusCodes.OK,
-    message: 'Get Campaing successfully!',
+    message: 'Get Campaign successfully!',
     metadata: await flashSaleCampaignService.getCampaign(req.params.campaignId)
+  }).send(res)
+}
+
+const getActiveCampaign = async (req, res, next) => {
+  new ApiSuccess({
+    statusCode: StatusCodes.OK,
+    message: 'Get active campaign successfully!',
+    metadata: await flashSaleCampaignService.getActiveCampaign()
   }).send(res)
 }
 
@@ -37,5 +45,6 @@ export default {
   createCampaign,
   addItemToCampaign,
   getItemsFlashSale,
-  getCampaign
+  getCampaign,
+  getActiveCampaign
 }

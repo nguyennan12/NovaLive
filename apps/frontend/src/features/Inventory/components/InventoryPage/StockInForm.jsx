@@ -4,7 +4,8 @@ import { Autocomplete, Box, Button, FormControl, FormHelperText, InputLabel, Men
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { addInventoryAPI } from '~/common/apis/services/inventoryService'
-import { WAREHOUSES } from '../../../../../mockdata/stockdata'
+
+const WAREHOUSES = ['Kho Hồ Chí Minh', 'Kho Hà Nội', 'Kho Đà Nẵng', 'Kho Cần Thơ']
 import SectionCard from '../shared/SectionCard'
 import { useQueryClient } from '@tanstack/react-query'
 

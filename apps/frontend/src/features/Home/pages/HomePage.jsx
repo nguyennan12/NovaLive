@@ -9,6 +9,7 @@ import ProductBestSellerSection from '../components/ProductBestSellerSection'
 import ProductGridSection from '../components/ProductGridSection'
 import ProductScrollSection from '../components/ProductScrollSection'
 import { useHomeProducts } from '../hooks/useHomeProducts'
+import { useFlashSale } from '../hooks/useFlashSale'
 
 import { DEFAULT_FILTERS } from '~/common/utils/constant'
 
@@ -22,6 +23,12 @@ export const HomePage = () => {
   const { isFiltering, filteredProducts, filterLoading, featuredProducts, bestSellers, newArrivals, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useHomeProducts(filters)
   const lastProductRef = useInfiniteScroll({ isFiltering, isFetchingNextPage, hasNextPage, fetchNextPage })
 
+  const { campaign, flashSaleProducts, isLoading: flashSaleLoading, hasActiveCampaign } = useFlashSale()
+
+  // Show flash sale products when active, otherwise fall back to featured products
+  const scrollProducts = hasActiveCampaign ? flashSaleProducts : featuredProducts
+  const scrollLoading = hasActiveCampaign ? flashSaleLoading : isLoading
+
   return (
     <Box sx={{
       maxWidth: 1440,
@@ -32,13 +39,13 @@ export const HomePage = () => {
       minHeight: '100vh',
       background: 'transparent'
     }}>
-      <BannerHomePage />
+      <BannerHomePage flashSaleBanners={campaign?.campaign_banner ?? []} />
 
       <CategorySection />
 
       <Divider sx={{ mb: { xs: 2, md: 3 }, opacity: 0.4 }} />
 
-      <ProductScrollSection products={featuredProducts} isLoading={isLoading} />
+      <ProductScrollSection products={scrollProducts} isLoading={scrollLoading} campaign={campaign} showFlashBadge={hasActiveCampaign} />
 
       <ProductBestSellerSection products={bestSellers} isLoading={isLoading} />
 

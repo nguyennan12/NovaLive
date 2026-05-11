@@ -5,7 +5,8 @@ const useCountdown = (endTime) => {
   const calcTimeLeft = () => {
     const diff = Math.max(0, new Date(endTime) - new Date())
     return {
-      h: Math.floor(diff / 3600000),
+      d: Math.floor(diff / 86400000),
+      h: Math.floor((diff % 86400000) / 3600000),
       m: Math.floor((diff % 3600000) / 60000),
       s: Math.floor((diff % 60000) / 1000)
     }

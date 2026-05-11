@@ -2,7 +2,7 @@ import LiveTvIcon from '@mui/icons-material/LiveTv'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
-import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -13,7 +13,6 @@ import { glassSx } from '~/theme'
 const BASE_NAV_ITEMS = [
   { label: 'Đơn hàng', Icon: ArticleOutlinedIcon, path: '/orders' },
   { label: 'Live', Icon: LiveTvIcon, path: '/live' },
-  { label: 'Voucher', Icon: LocalOfferOutlinedIcon, path: '/discount' },
   { label: 'Hồ sơ', Icon: AccountCircleOutlinedIcon, path: '/profile' }
 ]
 
@@ -23,6 +22,7 @@ function BottomActionBar() {
   const { cartCount } = useCart()
 
   const navItems = [
+    { label: 'Home', Icon: HomeOutlinedIcon, path: '/' },
     { label: 'Giỏ hàng', Icon: ShoppingCartOutlinedIcon, path: '/cart', badge: cartCount },
     ...BASE_NAV_ITEMS
   ]

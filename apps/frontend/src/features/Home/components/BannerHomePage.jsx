@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { Box, IconButton } from '@mui/material'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { Box, Chip, IconButton } from '@mui/material'
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material'
+import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
 
 
-const mainSlides = [
+const DEFAULT_SLIDES = [
   { id: 1, image: 'https://res.cloudinary.com/nguyennan12/image/upload/v1777387470/Livestream-ecommerce/Shops/69e364dfdf24f31846f15580/Products/gstp4pfnvjaohn6oqjak.jpg' },
   { id: 2, image: 'https://res.cloudinary.com/nguyennan12/image/upload/v1777387363/Livestream-ecommerce/wlvujjxht3rrvggulws1.jpg' },
   { id: 3, image: 'https://res.cloudinary.com/nguyennan12/image/upload/v1777387348/Livestream-ecommerce/xaou64ix5ryp8wviivwt.jpg' }
@@ -13,12 +14,19 @@ const mainSlides = [
 const leftSlides = 'https://res.cloudinary.com/nguyennan12/image/upload/v1777389114/Livestream-ecommerce/Shops/69e364dfdf24f31846f15580/Products/tnr7e4ybaso0fa33no65.jpg'
 
 
-export const BannerHomePage = ({ autoPlayInterval = 4000 }) => {
+export const BannerHomePage = ({ autoPlayInterval = 4000, flashSaleBanners = [] }) => {
+  // Prepend flash sale banners so they appear first in the carousel
+  const mainSlides = useMemo(() => [
+    ...flashSaleBanners.map((url, i) => ({ id: `fs-${i}`, image: url, isFlashSale: true })),
+    ...DEFAULT_SLIDES
+  ], [flashSaleBanners])
+
   const [active, setActive] = useState(0)
   const timerRef = useRef(null)
+  const slidesLen = mainSlides.length
 
-  const next = useCallback(() => setActive(p => (p + 1) % mainSlides.length), [])
-  const prev = () => setActive(p => (p - 1 + mainSlides.length) % mainSlides.length)
+  const next = useCallback(() => setActive(p => (p + 1) % slidesLen), [slidesLen])
+  const prev = () => setActive(p => (p - 1 + slidesLen) % slidesLen)
 
   const resetTimer = useCallback(() => {
     clearInterval(timerRef.current)
@@ -40,17 +48,31 @@ export const BannerHomePage = ({ autoPlayInterval = 4000 }) => {
           transform: `translateX(-${active * 100}%)`
         }}>
           {mainSlides.map(slide => (
-            <Box
-              key={slide.id}
-              component="img"
-              src={slide.image}
-              sx={{
-                minWidth: '100%',
-                height: { xs: 250, sm: 350, md: 500 },
-                objectFit: 'cover',
-                display: 'block'
-              }}
-            />
+            <Box key={slide.id} sx={{ minWidth: '100%', position: 'relative', flexShrink: 0 }}>
+              <Box
+                component="img"
+                src={slide.image}
+                sx={{
+                  width: '100%',
+                  height: { xs: 250, sm: 350, md: 500 },
+                  objectFit: 'cover',
+                  display: 'block'
+                }}
+              />
+              {slide.isFlashSale && (
+                <Chip
+                  icon={<BoltRoundedIcon sx={{ fontSize: '14px !important', color: '#fff !important' }} />}
+                  label="FLASH SALE"
+                  size="small"
+                  sx={{
+                    position: 'absolute', top: 12, left: 12,
+                    bgcolor: '#e8472a', color: '#fff',
+                    fontWeight: 800, fontSize: '0.7rem', letterSpacing: '0.05em',
+                    height: 24, borderRadius: '6px'
+                  }}
+                />
+              )}
+            </Box>
           ))}
         </Box>
 

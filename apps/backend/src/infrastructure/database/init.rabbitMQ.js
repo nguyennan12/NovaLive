@@ -21,6 +21,9 @@ const connectRabbitMQ = async () => {
     await setupTimeStartFlashsale(channel)
     console.log('RabbitMQ Time Start Flashsale Queue Setup Success!')
 
+    await setupTimeEndFlashsale(channel)
+    console.log('RabbitMQ Time End Flashsale Queue Setup Success!')
+
     await inventoryWorker.ListenToReserveInventory(channel)
     console.log('Inventory worker run success')
 
@@ -31,7 +34,10 @@ const connectRabbitMQ = async () => {
     console.log('Inventory history worker run success')
 
     await flashsaleWorker.listenStartFlashSaleQueue(channel)
-    console.log('Flashsale campaign worker run success')
+    console.log('Flashsale start campaign worker run success')
+
+    await flashsaleWorker.listenEndFlashSaleQueue(channel)
+    console.log('Flashsale end campaign worker run success')
 
     console.log('RabbitMQ Connected!')
   } catch (error) {
@@ -80,6 +86,23 @@ const setupTimeStartFlashsale = async (channel) => {
     }
   })
 }
+const setupTimeEndFlashsale = async (channel) => {
+  const EXCHANGE = 'flashsale_end_exchange'
+  const DELAY_QUEUE = 'flashsale_end_delay_queue'
+  const END_QUEUE = 'flashsale_end_queue'
+
+  await channel.assertExchange(EXCHANGE, 'direct', { durable: true })
+  await channel.assertQueue(END_QUEUE, { durable: true })
+  await channel.bindQueue(END_QUEUE, EXCHANGE, 'end_flashsale')
+  await channel.assertQueue(DELAY_QUEUE, {
+    durable: true,
+    arguments: {
+      'x-dead-letter-exchange': EXCHANGE,
+      'x-dead-letter-routing-key': 'end_flashsale'
+    }
+  })
+}
+
 //hàm gửi mã order lên queue và xử lý ở worker
 const sendOrderToDelayQueue = async (orderId) => {
   if (!channel) throw new Error('RabbitMQ channel is not ready')
@@ -95,7 +118,16 @@ const sendFlashsaleStart = async ({ campaignId, startTime }) => {
   await channel.sendToQueue('flashsale_delay_queue', Buffer.from(JSON.stringify({ campaignId })), {
     expiration: delay.toString(),
     persistent: true
+  })
+}
 
+const sendFlashsaleEnd = async ({ campaignId, endTime }) => {
+  if (!channel) throw new Error('RabbitMQ channel is not ready')
+  const delay = new Date(endTime).getTime() - Date.now()
+  if (delay < 0) return
+  await channel.sendToQueue('flashsale_end_delay_queue', Buffer.from(JSON.stringify({ campaignId })), {
+    expiration: delay.toString(),
+    persistent: true
   })
 }
 
@@ -104,5 +136,6 @@ export const RabbitMQClient = {
   connectRabbitMQ,
   publishMessage,
   sendOrderToDelayQueue,
-  sendFlashsaleStart
+  sendFlashsaleStart,
+  sendFlashsaleEnd
 }

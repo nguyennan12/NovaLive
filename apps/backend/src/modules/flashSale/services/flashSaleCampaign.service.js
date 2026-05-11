@@ -22,6 +22,7 @@ const createCampaign = async (reqBody) => {
 
   try {
     await RabbitMQClient.sendFlashsaleStart({ campaignId: newCampaign._id, startTime: newCampaign.start_time })
+    await RabbitMQClient.sendFlashsaleEnd({ campaignId: newCampaign._id, endTime: newCampaign.end_time })
     MyLogger.info('Send to queue flash sale success!', 'WORKER_FLASHSALE')
   } catch {
     MyLogger.error('Error when send to queue flash sale', 'WORKER_FLASHSALE')
@@ -33,7 +34,12 @@ const getCampaign = async (campaignId) => {
   return await flashSaleRepo.findCampaignById(campaignId)
 }
 
+const getActiveCampaign = async () => {
+  return await flashSaleRepo.findActiveCampaign()
+}
+
 export default {
   createCampaign,
-  getCampaign
+  getCampaign,
+  getActiveCampaign
 }

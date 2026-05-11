@@ -6,8 +6,9 @@ import grantAccess from '#shared/middlewares/rbac.middleware.js'
 
 const Router = express.Router()
 
-Router.get('/:campaignId', asyncHandler(flashSaleController.getCampaign))
+Router.get('/active', asyncHandler(flashSaleController.getActiveCampaign))
 Router.get('/items/:campaignId', asyncHandler(flashSaleController.getItemsFlashSale))
+Router.get('/:campaignId', asyncHandler(flashSaleController.getCampaign))
 
 Router.use(authentication)
 Router.post('/', grantAccess('create:any', 'FLASH_SALE'), asyncHandler(flashSaleController.createCampaign))

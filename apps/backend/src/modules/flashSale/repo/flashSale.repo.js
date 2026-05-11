@@ -5,6 +5,12 @@ const findCampaignById = async (campaignId) => {
   return await flashSaleCampaignModel.findById(campaignId).lean()
 }
 
+const findActiveCampaign = async () => {
+  return await flashSaleCampaignModel
+    .findOne({ status: 'active', isDeleted: false })
+    .lean()
+}
+
 const findItemsByCampaignId = async ({ limit, sort, page, filter }) => {
   const skip = (page - 1) * limit
   const sortBy = sort === 'ctime' ? { _id: -1 } : { _id: 1 }
@@ -22,5 +28,6 @@ const findItemsByCampaignId = async ({ limit, sort, page, filter }) => {
 
 export default {
   findCampaignById,
+  findActiveCampaign,
   findItemsByCampaignId
 }

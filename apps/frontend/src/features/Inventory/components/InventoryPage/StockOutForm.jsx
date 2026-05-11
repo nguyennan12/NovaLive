@@ -4,7 +4,6 @@ import { Autocomplete, Box, Button, Chip, FormControl, FormHelperText, InputLabe
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { addInventoryAPI } from '~/common/apis/services/inventoryService'
-import { OUT_REASONS } from '../../../../../mockdata/stockdata'
 import SectionCard from '../shared/SectionCard'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -27,6 +26,8 @@ const REASON_META = {
   transfer: { label: 'Warehouse Transfer', color: '#f59e0b' },
   adjustment: { label: 'Stock Adjustment', color: '#9ca3af' }
 }
+
+const OUT_REASONS = ['order', 'damaged', 'transfer', 'adjustment']
 
 const StockOutForm = ({ skus, setParams }) => {
   const methods = useForm({

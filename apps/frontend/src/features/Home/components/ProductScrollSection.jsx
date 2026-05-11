@@ -2,7 +2,7 @@ import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRound
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import { Box, IconButton, Typography } from '@mui/material'
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { HomeProductCard, HomeProductCardSkeleton } from './HomeProductCard'
 import { FlashSaleCountdown } from '~/common/components/common/countdown/CoundownBox'
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
@@ -59,9 +59,9 @@ const FlashSaleHeader = ({ endTime, onViewAll }) => {
 
 const SCROLL_AMOUNT = 460
 
-const ProductScrollSection = ({ products = [], isLoading }) => {
+const ProductScrollSection = ({ products = [], isLoading, campaign, showFlashBadge = false }) => {
   const scrollRef = useRef(null)
-  const [flashSaleEndTime] = useState(() => new Date(Date.now() + 40 * 60 * 1000 + 7 * 1000))
+  const endTime = campaign?.end_time ? new Date(campaign.end_time) : null
 
   const scroll = (dir) => {
     scrollRef.current?.scrollBy({ left: dir * SCROLL_AMOUNT, behavior: 'smooth' })
@@ -77,10 +77,7 @@ const ProductScrollSection = ({ products = [], isLoading }) => {
         boxShadow: '0 4px 30px rgba(0, 0, 0, 0.05)',
         p: 2, mb: { xs: 3.5, md: 4 }
       }}>
-      <FlashSaleHeader
-        endTime={flashSaleEndTime}
-      // onViewAll={() => navigate('/flash-sale')}
-      />
+      <FlashSaleHeader endTime={endTime} />
 
       <Box sx={{ position: 'relative' }}>
         <IconButton
@@ -120,7 +117,7 @@ const ProductScrollSection = ({ products = [], isLoading }) => {
                 key={product.spu_code || product.mongo_id || product._id}
                 sx={{ flexShrink: 0, width: { xs: 150, sm: 185, md: 210 }, scrollSnapAlign: 'start' }}
               >
-                <HomeProductCard product={product} variant="portrait" />
+                <HomeProductCard product={product} variant="portrait" showFlashBadge={showFlashBadge} />
               </Box>
             ))}
             {products.length === 0 && (

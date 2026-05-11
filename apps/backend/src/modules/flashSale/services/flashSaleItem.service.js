@@ -31,8 +31,12 @@ const getItemsFlashSale = async (campaignId) => {
   if (!campaign || campaign.status === 'cancelled' || campaign.status === 'completed') {
     return []
   }
-  const filter = { campaignId: campaignId }
-  return await flashSaleRepo.findItemsByCampaignId(filter)
+  return await flashSaleRepo.findItemsByCampaignId({
+    filter: { campaignId },
+    limit: 20,
+    page: 1,
+    sort: 'ctime'
+  })
 }
 
 export default {
