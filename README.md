@@ -502,7 +502,7 @@ All jobs run on `ubuntu-latest` with Node.js 20 and Yarn caching enabled.
 | ✅ | COD flow with email OTP confirmation |
 | ✅ | VNPay redirect + IPN callback + inventory lock/release |
 | ✅ | RBAC on all routes + integration tests + CI |
-| ⬜ | Order list & order detail pages |
-| ⬜ | VNPay return page (post-payment status) |
-| ⬜ | Customer profile & address management |
+| ✅ | Order list & order detail pages |
+| ✅ | VNPay return page (post-payment status) |
+| ✅ | Customer profile & address management |
 | ⬜ | Admin dashboard & analytics (recharts) |
