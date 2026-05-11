@@ -8,7 +8,7 @@
 
 ## 1. Trạng thái hiện tại
 
-- **Backend:** Hoàn thiện 95% — Payment flow hoàn chỉnh: COD xác nhận OTP qua email, VNPay IPN callback xác thực hash + xác nhận/hủy kho, nhả kho tự động khi hủy đơn hoặc VNPay timeout. Grant phân quyền đã thêm vào toàn bộ router. Integration tests đầy đủ. **Đã thêm:** `GET/PATCH /v1/api/user/me`, `PATCH /access/change-password`, `POST /access/logout-all`; upload avatar lưu URL vào DB; user.service.js map field name FE↔DB.
+- **Backend:** Hoàn thiện 97% — Payment flow hoàn chỉnh: COD xác nhận OTP qua email, VNPay IPN callback xác thực hash + xác nhận/hủy kho, nhả kho tự động khi hủy đơn hoặc VNPay timeout. Grant phân quyền đã thêm vào toàn bộ router. Integration tests đầy đủ. **Đã thêm:** `GET/PATCH /v1/api/user/me`, `PATCH /access/change-password`, `POST /access/logout-all`; upload avatar lưu URL vào DB; user.service.js map field name FE↔DB. **Flash Sale:** RabbitMQ end-time worker (`listenEndFlashSaleQueue`), `GET /flash-sale/active`, fix bug `getItemsFlashSale` params, `cart.service.getCart` & `order.service.checkoutReview` tự động áp giá flash sale khi có campaign active.
 - **Frontend:**
   - Đã có UI quản lý sản phẩm, kho với các component/module chính (hiển thị, filter, tạo & sửa sản phẩm, nhập/xuất kho, thống kê tồn kho).
   - **Trang Home** (consumer) đã hoàn thành: banner slider, danh mục, 3 layout list sản phẩm, filter bar.
@@ -90,22 +90,22 @@ Component  →  useDiscounts(filters)  →  discountService  →  API
 
 ---
 
-## 6. Tiến độ (tính tới 10/05/2026)
+## 6. Tiến độ (tính tới 11/05/2026)
 
-- Backend: 95% (payment flow hoàn chỉnh — COD OTP, VNPay IPN, nhả kho, phân quyền RBAC full router, integration tests; user routes GET/PATCH /user/me, change-password, logout-all)
+- Backend: 97% (payment flow hoàn chỉnh — COD OTP, VNPay IPN, nhả kho, phân quyền RBAC full router, integration tests; user routes GET/PATCH /user/me, change-password, logout-all; flash sale end-time worker + GET /active endpoint; cart & checkout áp dụng giá flash sale tự động)
 - CI/CD: ✅ GitHub Actions — lint (BE+FE), integration tests, Vite build, Docker production build
 - Frontend:
   - ✅ Quản lý sản phẩm (shop)
   - ✅ Quản lý kho (shop)
   - ✅ Quản lý mã giảm giá (shop)
   - ✅ Quản lý phiên live (shop)
-  - ✅ **Trang Home (consumer)** — banner, danh mục, 3 layout list sản phẩm
-  - ✅ **Trang Product Detail (consumer)** — ảnh, SKU cards, giá, attributes, shop card, description
-  - ✅ **Trang Cart (consumer)** — layout 7/3, danh sách theo shop, checkbox, stepper, summary, discount shop + global, checkout summary realtime
-  - ✅ **Trang Order (consumer)** — layout 7/3, địa chỉ GHN dropdown, phí ship realtime, voucher, PTTT, mobile sticky Portal, COD xác nhận OTP, VNPay redirect, đặt hàng hoàn chỉnh
+  - ✅ **Trang Home (consumer)** — banner + flash sale banners, danh mục, 3 layout list sản phẩm; `useFlashSale` hook; countdown DD:HH:MM:SS; flash badge/price chỉ hiện ở scroll section
+  - ✅ **Trang Product Detail (consumer)** — ảnh, SKU cards, giá (flash price + strikethrough khi có flash sale), attributes, shop card, description
+  - ✅ **Trang Cart (consumer)** — layout 7/3, danh sách theo shop, checkbox, stepper, giá flash sale, summary, discount shop + global, checkout summary realtime
+  - ✅ **Trang Order (consumer)** — layout 7/3, địa chỉ GHN dropdown, phí ship realtime, voucher, PTTT, giá flash sale áp vào tổng, mobile sticky Portal, COD xác nhận OTP, VNPay redirect, đặt hàng hoàn chỉnh
   - ✅ **Order List / Order Detail** — tabs 6 trạng thái, card đơn hàng với ảnh/tên/giá, hủy đơn pending, detail dialog: timeline, breakdown giá, địa chỉ, thanh toán; route `/orders`
   - ✅ **Live Feed consumer** — TikTok-style swipe, socket overlay, sản phẩm bottom sheet, desktop right panel
-  - ✅ **Customer / Profile** — banner/avatar upload, thông tin cá nhân (RHF FullEditProfileDialog), đổi mật khẩu (RHF + getValues), logout-all → clearCurrentUser + navigate, AddressCard (danh sách + AddressModal), ShopInfoCard (metrics + edit dialog), đăng ký shop (RegisterShopDialog + GHN address), AppBar avatar/login button; route `/profile`
+  - ✅ **Customer / Profile** — banner/avatar upload, thông tin cá nhân (RHF FullEditProfileDialog), đổi mật khẩu (RHF + getValues), logout-all → clearCurrentUser + navigate, AddressCard (danh sách + AddressModal), ShopInfoCard (metrics + edit dialog), đăng ký shop (RegisterShopDialog + GHN address), AppBar avatar/login button; route `/profile`; VoucherDialog hiển thị global discounts
   - ⬜ **Auth UI** — đăng nhập / đăng ký (API backend đã có)
   - ⬜ **Admin Dashboard & Analytics**
 

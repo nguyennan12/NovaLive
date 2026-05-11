@@ -12,6 +12,8 @@ import { generateOrderCode } from '#shared/utils/generator.js'
 import { StatusCodes } from 'http-status-codes'
 import cartService from '../../cart/services/cart.service.js'
 import discountService from '#modules/discount/services/discount.service.js'
+import flashSaleRepo from '#modules/flashSale/repo/flashSale.repo.js'
+import { flashSaleItemModel } from '#modules/flashSale/models/flashSaleItem.model.js'
 import inventoryService from '#modules/inventory/services/inventory.service.js'
 import shippingService from '../../shipping/services/shipping.service.js'
 import socketService from '../../common/services/socket.service.js'
@@ -27,6 +29,19 @@ const checkoutReview = async ({ userId, reqBody }) => {
   }
   else {
     await validateBuyNowItems({ shopOrderIds })
+  }
+
+  // Build flash sale price map once for all shops: sku_id → flashsale_price
+  const allSkuIds = shopOrderIds.flatMap(shop => shop.item_products.map(item => item.skuId))
+  const flashSaleSkuMap = new Map()
+  const activeCampaign = await flashSaleRepo.findActiveCampaign()
+  if (activeCampaign) {
+    const fsItems = await flashSaleItemModel.find({
+      campaignId: activeCampaign._id,
+      sku_id: { $in: allSkuIds.map(id => converter.toObjectId(id)) },
+      status: 'active'
+    }).lean()
+    fsItems.forEach(item => flashSaleSkuMap.set(item.sku_id.toString(), item.flashsale_price))
   }
 
   //duyệt order của từng shop
@@ -46,7 +61,8 @@ const checkoutReview = async ({ userId, reqBody }) => {
       const { rawPrice, totalWeight } = item_products.reduce((acc, product) => {
         const sku = skuMap[product.skuId]
         if (!sku) throw new ApiError(StatusCodes.BAD_REQUEST, `SKU ${product.skuId} not found`)
-        acc.rawPrice += (product.quantity * sku.sku_price)
+        const effectivePrice = flashSaleSkuMap.get(sku._id.toString()) ?? sku.sku_price
+        acc.rawPrice += (product.quantity * effectivePrice)
         acc.totalWeight += (product.quantity * sku.sku_weight)
         return acc
       }, { rawPrice: 0, totalWeight: 0 })

@@ -5,6 +5,8 @@ import { StatusCodes } from 'http-status-codes'
 import inventoryService from '#modules/inventory/services/inventory.service.js'
 import skuService from '../../product/services/sku.service.js'
 import converter from '#shared/utils/converter.js'
+import flashSaleRepo from '#modules/flashSale/repo/flashSale.repo.js'
+import { flashSaleItemModel } from '#modules/flashSale/models/flashSaleItem.model.js'
 
 const addToCart = async ({ userId, reqBody }) => {
   const { skuId, quantity } = reqBody
@@ -99,6 +101,18 @@ const getCart = async ({ userId }) => {
     skusDetails.map(sku => [sku.sku_id.toString(), sku])
   )
 
+  // Build flash sale price map: sku_id → flashsale_price
+  const flashSaleSkuMap = new Map()
+  const activeCampaign = await flashSaleRepo.findActiveCampaign()
+  if (activeCampaign) {
+    const fsItems = await flashSaleItemModel.find({
+      campaignId: activeCampaign._id,
+      sku_id: { $in: skuIds.map(id => converter.toObjectId(id)) },
+      status: 'active'
+    }).lean()
+    fsItems.forEach(item => flashSaleSkuMap.set(item.sku_id.toString(), item.flashsale_price))
+  }
+
   const shopMap = new Map()
 
   for (const cartItem of userCart.cart_products) {
@@ -106,12 +120,15 @@ const getCart = async ({ userId }) => {
     if (!skuInfo) continue
 
     const shopId = cartItem.shopId?.toString() || 'unknown_shop'
+    const flashSalePrice = flashSaleSkuMap.get(cartItem.skuId.toString())
 
     const mappedItem = {
       skuId: cartItem.skuId,
       productId: cartItem.productId,
       quantity: cartItem.quantity,
       price: skuInfo.sku_price,
+      isFlashSale: !!flashSalePrice,
+      flashSalePrice: flashSalePrice ?? null,
       name: skuInfo.product_name,
       image: skuInfo.sku_image,
       addedAt: cartItem.addedAt,

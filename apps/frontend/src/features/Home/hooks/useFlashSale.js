@@ -27,6 +27,7 @@ export const useFlashSale = () => {
       spu_thumb: item.spu_thumb,
       spu_price: item.original_price,
       flash_price: item.flashsale_price,
+      spu_code: item.spu_code,
       is_flash_sale: true,
       total_sold: item.flashsale_sold,
       flashsale_stock: item.flashsale_stock,

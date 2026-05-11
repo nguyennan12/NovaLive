@@ -1,4 +1,5 @@
 import AssignmentReturnRoundedIcon from '@mui/icons-material/AssignmentReturnRounded'
+import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
 import FactCheckRoundedIcon from '@mui/icons-material/FactCheckRounded'
 import NearMeIcon from '@mui/icons-material/NearMe'
 import ShieldRoundedIcon from '@mui/icons-material/ShieldRounded'
@@ -11,7 +12,7 @@ import { formatSold, formatVND } from '~/common/utils/formatters'
 import { gradientText } from '~/theme'
 
 
-const ProductInfo = ({ product, selectedSku }) => {
+const ProductInfo = ({ product, selectedSku, flashSaleItem }) => {
   const categories = useSelector(selectCategories)
 
   if (!product) {
@@ -107,15 +108,34 @@ const ProductInfo = ({ product, selectedSku }) => {
         boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
         p: 3
       }}>
-        <Typography variant="h5" sx={{
-          fontSize: { xs: '1.6rem', md: '2rem' },
-          fontWeight: 800,
-          ...gradientText,
-          letterSpacing: '-0.02em',
-          lineHeight: 1.1
-        }}>
-          {formatVND(displayPrice ?? 0)}
-        </Typography>
+        {flashSaleItem ? (
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.75 }}>
+              <BoltRoundedIcon sx={{ fontSize: 14, color: '#e8472a' }} />
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 800, color: '#e8472a', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                Flash Sale
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.5 }}>
+              <Typography variant="h5" sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, fontWeight: 800, color: '#e8472a', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                {formatVND(flashSaleItem.flash_price)}
+              </Typography>
+              <Typography sx={{ fontSize: '0.95rem', color: '#aaa', textDecoration: 'line-through', lineHeight: 1 }}>
+                {formatVND(displayPrice ?? 0)}
+              </Typography>
+            </Box>
+          </Box>
+        ) : (
+          <Typography variant="h5" sx={{
+            fontSize: { xs: '1.6rem', md: '2rem' },
+            fontWeight: 800,
+            ...gradientText,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.1
+          }}>
+            {formatVND(displayPrice ?? 0)}
+          </Typography>
+        )}
       </Box>
 
       {/* Category chips */}

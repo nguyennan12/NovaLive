@@ -26,7 +26,7 @@ function CartShopGroup({ group }) {
   const shopSubtotal = useMemo(() => {
     return items
       .filter(i => selectedIds.includes(String(i.skuId)))
-      .reduce((s, i) => s + i.price * i.quantity, 0)
+      .reduce((s, i) => s + (i.isFlashSale ? i.flashSalePrice : i.price) * i.quantity, 0)
   }, [items, selectedIds])
 
 

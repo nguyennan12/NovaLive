@@ -67,9 +67,16 @@ function CartItem({ item }) {
             display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', flexWrap: 'wrap', gap: 1, mt: 0.5
           }}>
-            <Typography sx={{ fontSize: '0.95rem', fontWeight: 700, color: 'secondary.main' }}>
-              {formatVND(item.price)}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
+              <Typography sx={{ fontSize: '0.95rem', fontWeight: 700, color: item.isFlashSale ? '#e8472a' : 'secondary.main' }}>
+                {formatVND(item.isFlashSale ? item.flashSalePrice : item.price)}
+              </Typography>
+              {item.isFlashSale && (
+                <Typography sx={{ fontSize: '0.72rem', color: '#aaa', textDecoration: 'line-through' }}>
+                  {formatVND(item.price)}
+                </Typography>
+              )}
+            </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
               <QuantityStepper

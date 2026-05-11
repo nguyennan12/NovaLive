@@ -20,6 +20,7 @@ import ProductVariantSelector, { SkuPriceLine } from '../components/ProductDetai
 import ShopInfoCard from '../components/ProductDetailPage/ShopInfoCard'
 import { useProductDetail, useSelectedSku } from '../hooks/useProductDetail'
 import { useProducts } from '../hooks/useProducts'
+import { useFlashSale } from '~/features/Home/hooks/useFlashSale'
 
 
 const ProductDetailPage = () => {
@@ -51,6 +52,11 @@ const ProductDetailPage = () => {
   const { data: fetchedSku } = useSelectedSku(product?._id, selectedSkuId)
   const selectedSku = fetchedSku ?? localSku
   const attributes = product?.spu_attributes ?? []
+
+  const { flashSaleProducts, hasActiveCampaign } = useFlashSale()
+  const flashSaleItem = hasActiveCampaign
+    ? flashSaleProducts.find(p => p._id === product?._id)
+    : null
 
   const dispatch = useDispatch()
   const { addToCartAsync } = useCartMutations()
@@ -95,7 +101,7 @@ const ProductDetailPage = () => {
               bgcolor: 'primary.main', ...glassSx, borderRadius: '12px',
               height: '100%', justifyContent: 'space-between'
             }}>
-              <ProductInfo product={product} selectedSku={selectedSku} />
+              <ProductInfo product={product} selectedSku={selectedSku} flashSaleItem={flashSaleItem} />
 
               {/* Price + action buttons */}
               <Box>
