@@ -9,8 +9,15 @@ let channel = null
 
 const connectRabbitMQ = async () => {
   try {
-
-    const connection = await amqp.connect(`${env.RABBITMQ_HOST}:${env.RABBITMQ_PORT}`)
+    const rawHost = env.RABBITMQ_HOST
+    const isLocalDockerHost = rawHost === 'rabbitmq' || rawHost === 'amqp://guest:123456@rabbitmq'
+    const rabbitUrl = env.RABBITMQ_URL || (!isLocalDockerHost && rawHost ? (env.RABBITMQ_PORT ? `${rawHost}:${env.RABBITMQ_PORT}` : rawHost) : null)
+    
+    if (!rabbitUrl) {
+      console.warn('⚠️ RabbitMQ is not configured for Cloud (Skipping RabbitMQ connection).')
+      return
+    }
+    const connection = await amqp.connect(rabbitUrl)
     channel = await connection.createChannel()
 
     await channel.assertQueue('inventory_queue', { durable: true })

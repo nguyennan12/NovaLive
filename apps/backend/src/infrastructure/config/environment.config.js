@@ -31,6 +31,7 @@ export const env = {
   RABBITMQ_PORT: process.env.RABBITMQ_PORT,
   RABBITMQ_HOST: process.env.RABBITMQ_HOST,
   RABBITMQ_USER_NAME: process.env.RABBITMQ_USER_NAME,
+  RABBITMQ_URL: process.env.RABBITMQ_URL,
 
   VNP_TMN_CODE: process.env.VNP_TMN_CODE,
   VNP_HASH_SECRET: process.env.VNP_HASH_SECRET,
