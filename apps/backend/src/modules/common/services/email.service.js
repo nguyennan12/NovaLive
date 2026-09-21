@@ -5,7 +5,8 @@ import otpService from '#modules/auth/services/otp.service.js'
 
 const sendVerificationEmail = async ({ email, title }) => {
   const otpToken = await otpService.createOtp({ email })
-  const verifyUrl = `${env.BASE_URL_LOCAL}/verify-account?token=${otpToken.otp_token}&email=${email}`
+  const frontendHost = process.env.FRONTEND_URL || env.BASE_URL_LOCAL || 'https://novalive.online'
+  const verifyUrl = `${frontendHost.replace(/\/$/, '')}/verify-account?token=${otpToken.otp_token}&email=${email}`
   const html = htmlEmailToken(verifyUrl, otpToken.otp_token, title)
   const subject = 'Xác thực tài khoản của bạn'
   try {
