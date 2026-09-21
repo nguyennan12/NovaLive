@@ -3,8 +3,10 @@ import axios from 'axios'
 import { clearCurrentUser } from '~/store/user/userSlice'
 import { store } from '~/store/store'
 
+const backendUrl = (import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_SOCKET_URL || '').replace(/\/$/, '')
+
 const authorizedAxiosInstance = axios.create({
-  baseURL: '/v1/api',
+  baseURL: backendUrl ? `${backendUrl}/v1/api` : '/v1/api',
   timeout: 1000 * 60 * 10,
   withCredentials: true
 })
