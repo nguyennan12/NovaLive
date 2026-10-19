@@ -60,7 +60,6 @@ có thể dùng ...glassSX
 // Accent bar (thanh màu dọc trái)
 <Box sx={{ width: 3.5, height: 22, borderRadius: '2px', bgcolor: accentColor, flexShrink: 0 }} />
 
-// Gradient title (dùng cho Best Seller / Flash Sale)
 <Typography sx={{
   background: 'linear-gradient(to right, #FFD700 0%, #FFA500 100%)',
   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
